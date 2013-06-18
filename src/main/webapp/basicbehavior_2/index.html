@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <title>Seek or thee shall flee</title>
+
+        <link rel="stylesheet" href="http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.css" type="text/css" />
+        <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+
+        <!--script src='http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.uncompressed.js'></script-->
+        <script src="ext/jquery.min.js"></script>
+        <script src="underscore-min.js"></script>
+
+        <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+
+        <script>
+            
+            $(document).ready(function(){
+                setupMap();
+                //                setupUav();
+                $('#seekflee').click(function(){
+                    var text = $('#seekflee').text();
+                    if(text == 'seek'){
+                        $('#seekflee').text('flee')
+                        setSeek(false);
+                    }else{
+                        $('#seekflee').text('seek')
+                        setSeek(true);
+                    }
+				
+                });
+                
+                $('#mostwalkable').click(function(){
+                    findMostWalkable();
+                });
+                
+                $('#radialsearch').click(function(){
+                    radialSearch();
+                });
+                
+                
+                $('#high').click(function(){
+                    advanceThings('high');
+                    setDirection('high')
+                    selectBehaviorLink( $(this) );
+                });
+                
+                $('#flat').click(function(){
+                    advanceThings('flat');
+                    setDirection('flat')
+                    selectBehaviorLink( $(this) );
+                });
+                
+                $('#highflat').click(function(){
+                    advanceThings('highflat');
+                    setDirection('highflat')
+                    selectBehaviorLink( $(this) );
+                });
+                
+                $('#underflat').click(function(){
+                    advanceThings('underflat');
+                    setDirection('underflat')
+                    selectBehaviorLink( $(this)  );
+                });
+                
+                $('#overflat').click(function(){
+                    advanceThings('overflat');
+                    setDirection('overflat');
+                    selectBehaviorLink( $(this) );
+                });
+                
+                $('#range').click(function(){
+                    advanceThings('range');
+                    setDirection('range');
+                    selectBehaviorLink( $(this)  );
+                });
+                
+                $('#viewshed').click(function(){
+                    
+                    doViewshed();
+                    selectBehaviorLink( $(this)  );
+                    
+                });
+                
+                getBoard();
+                getMaxHood();
+                
+            });
+        </script>
+
+    </head>
+
+    <body class="right">
+        <div id="branding"></div>
+        <div id="content">
+            <div class="limiter">
+
+                <div id="about">
+                    <h1 class=''>Agent motion over terrain</h1>
+<!--                    <p class='description'>The target marker is draggable</p>-->
+                </div>
+
+                <div class="clearfix section" >
+                    <p> Choose an agent behavior</p>
+                    
+                    <p> <span id='high' style='cursor:pointer; color:#2E9AFE'>high</span>  <span id='flat' style='cursor:pointer; color:#2E9AFE'>flat</span> </p>
+                    <p> <span id='overflat' style='cursor:pointer; color:#2E9AFE'>overflat</span>  <span id='underflat' style='cursor:pointer; color:#2E9AFE'>underflat</span> </p>
+                    <p> <span id='range' style='cursor:pointer; color:#2E9AFE'>range</span>  <span id='highflat' style='cursor:pointer; color:#2E9AFE'>highflat</span> </p>
+                    <p> <span id='mostwalkable' style='cursor:pointer; color:#2E9AFE'>most walkable</span>  </p>
+                    <p> <span id='radialsearch' style='cursor:pointer; color:#2E9AFE'>radial search</span>  </p>
+                    
+                    <p> <span id='viewshed' style='cursor:pointer; color:#2E9AFE'>view shed</span>  </p>
+                    
+                    <p> Number of iterations</p>
+                    <p> <span id='iteration_20' style='cursor:pointer; color:#2E9AFE'>20</span>  </p>
+                    <p> <span id='iteration_40' style='cursor:pointer; color:#2E9AFE'>40</span>  </p>
+                    <p> <span id='iteration_60' style='cursor:pointer; color:#2E9AFE'>60</span>  </p>
+                    
+                    
+                </div>
+
+
+            </div>
+        </div>
+        <div id="map" class="map"></div>
+
+
+        <script src="script.js"></script>    
+    </body>
+</html>

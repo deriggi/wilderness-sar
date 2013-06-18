@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <title>Seek or thee shall flee</title>
+
+        <link rel="stylesheet" href="http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.css" type="text/css" />
+        <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+
+        <!--script src='http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.uncompressed.js'></script-->
+        <script src="ext/jquery.min.js"></script>
+        <script src="underscore-min.js"></script>
+
+        <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+
+        <script>
+            
+            $(document).ready(function(){
+                setupMap();
+                //                setupUav();
+                
+                $('#wander').click(function(){
+                    wander();
+                });
+                
+                
+                $('#viewshed').click(function(){
+                    
+                    doViewshed();
+                    selectBehaviorLink( $(this)  );
+                    
+                });
+                
+                getBoard();
+               
+                
+            });
+        </script>
+
+    </head>
+
+    <body class="right">
+        <div id="branding"></div>
+        <div id="content">
+            <div class="limiter">
+                <div id="about">
+                    <h1 class=''>Agent motion over terrain</h1>
+<!--                    <p class='description'>The target marker is draggable</p>-->
+                </div>
+
+                <div class="clearfix section" >
+                    <p> Choose an agent behavior</p>
+                    
+                    <p> <span id='wander' style='cursor:pointer; color:#2E9AFE'>wander</span>  </p>
+                    <p> <span id='viewshed' style='cursor:pointer; color:#2E9AFE'>view shed</span>  </p>
+                    
+                </div>
+            </div>
+        </div>
+        <div id="map" class="map"></div>
+
+
+        <script src="script.js"></script>    
+    </body>
+</html>
