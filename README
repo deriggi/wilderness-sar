@@ -1,0 +1,1 @@
+The objective is to build a simulation in which lost person agents are sought by smart UAVs. Lost person agents will take on one of several behaviours depending on their skill level and level of duress. Behaviours may change depeneding on obstacles encountered or the duration of agent's wandering.  
