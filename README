@@ -1,3 +1,10 @@
 The objective is to build a simulation in which lost person agents are sought by smart UAVs. Lost person agents will take on one of several behaviours depending on their skill level and level of duress. Behaviours may change depeneding on obstacles encountered or the duration of agent's wandering. UAV agents will be given an initial behaviour based on a best guess about the lost person's disposition. 
 
 Behaviours are produced by the FSMFactory. Finite State Machines in this siumation can be though of as individual accelerators acting on the velocity of the agent. Behaviour at any time in the agent's existence is defined the set of accelerators. An agent with a wandering behaviour and a tendency to travel east could be built with two accelerators. One accelerator contributes a wandering behaviour which simply deviates the agent's heading a small random amount at each step. The eastern accelerator can ensure there is an always an east-bound vector. Each accelerator can switch to a different accelerator by defining a condition triggering the change, and the accelerator to switch to when the condition is met.
+
+Anyway, to create the war file for this badboy:
+
+	 mvn package
+
+Then find the wisar.war file and deploy!
+
