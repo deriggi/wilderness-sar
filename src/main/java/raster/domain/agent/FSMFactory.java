@@ -9,6 +9,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.logging.Logger;
 import strategy.DirectionUpdater;
+import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
@@ -41,8 +42,20 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine();
     }
 
+    private static class ValleyPeakMaker implements FSMMaker {
+        @Override
+        public List<DirectionUpdater> makeMachine(){
+            List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
+
+            updaterList.add(new EastHighsWestLowsDirectionUpdater());
+            updaterList.add(new WanderDirectionUpdater());
+
+            return updaterList; 
+        }
+    }
     /**
-     * Creates a pattern like
+     * Swings east bactracks west, backtracks then goes south and repeats
+     * Has no wander built into it
      *          ------------------------
      *                  |
      *                  |
@@ -52,6 +65,8 @@ public class FSMFactory {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
+
+            // the accelerators
             EasternDirectionUpdater easternUpdater = new EasternDirectionUpdater();
             SouthernDirectionUpdater southernUpdater = new SouthernDirectionUpdater();
             WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater();
@@ -73,12 +88,12 @@ public class FSMFactory {
             westernUpdater.setCondition(westToBacktrackCondition);
             westToBacktrackCondition.setNextState(backtrackUpdater2);
 
-            // back to original east
+            // back to south
             StateCondition back2Condition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 0);
             backtrackUpdater2.setCondition(back2Condition);
             back2Condition.setNextState(southernUpdater);
 
-            // back to original east
+            // back to original east to close the loop
             StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 30);
             backtrackUpdater2.setCondition(southToEastCondition);
             southToEastCondition.setNextState(easternUpdater);
@@ -96,6 +111,10 @@ public class FSMFactory {
         }
     }
 
+    /**
+    *   Creates a lawnmower motion with no wander
+    *
+    */
     private static class LawnMowerMaker implements FSMMaker {
 
         @Override

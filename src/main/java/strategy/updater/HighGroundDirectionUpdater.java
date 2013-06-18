@@ -19,11 +19,12 @@ public class HighGroundDirectionUpdater extends SkelatalDirectionUpdater{
 
     @Override
     public String toString(){
-        return "Walk High";
+        return "Walk High"; 
     }
     
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+        
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
         ArrayList<ArrayList<SlopeDataCell>> cells = raster.getSlopeDataNeighborhood( (int)loc[0], (int)loc[1], 6);
