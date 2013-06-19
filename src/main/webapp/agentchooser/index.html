@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <title>Seek or thee shall flee</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- resoureces from flat -->
+        <link href="flat/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <link href="flat/css/flat-ui.css" rel="stylesheet">
+        <link rel="shortcut icon" href="flat/images/favicon.ico">
+
+
+        <link rel="stylesheet" href="http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.css" type="text/css" />
+        <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+
+        <!--script src='http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.uncompressed.js'></script-->
+        <script src="ext/jquery.min.js"></script>
+        <script src="underscore-min.js"></script>
+
+        <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+
+        <script>
+            
+            $(document).ready(function(){
+                setupMap();
+                
+                
+                // setup stuff
+                $('#wander').click(function(){
+                    wander();
+                });
+
+                $('#next_0').click(function(){
+                    // $('#page_1').hide();
+                    $('#page_1').hide('slide',{direction:'left'}, 500, function(){
+                        $('#page_2').show('slide', {direction:'right'}, 500)
+                    });
+                });
+
+                $('#viewshed').click(function(){
+                    doViewshed();
+                    selectBehaviorLink( $(this)  );                    
+                });
+
+                $('.behaviouritem').click(function(){
+
+                    var previous = getSelectedBehaviourItem();
+                    if(previous){
+                        $(previous).attr('lebronned','');
+                        $(previous).css('background-color','#34495E');
+                        if(previous.is($(this))){
+                            return;
+                        }    
+                    }
+
+                    var theChosen = $(this).attr('lebronned');
+                    if(theChosen != 'yes'){ 
+                        
+                        $(this).css('background-color','#1ABC9C');
+                        $(this).attr('lebronned', 'yes');
+                        setSelectedBehaviourItem($(this));
+                        
+                    }
+                    else{
+                        $(this).css('background-color','#34495E');
+                        $(this).attr('lebronned', '');   
+                    }
+
+                });
+
+                
+                
+                getBoard();
+               
+                
+            });
+        </script>
+
+    </head>
+
+    <body class="right">
+        <div id="branding"></div>
+        <div id="content">
+            <div class="limiter">
+                <div id="about">
+                    <h1 class=''>Wilderness Search and Rescue</h1>
+<!--                    <p class='description'>The target marker is draggable</p>-->
+                </div>
+
+                <div class="clearfix section" >
+                    <p> Start by adding agents </p>
+                    
+                    <p> <a id='addagent' href='#' class ='btn btn-large btn-inverse' style='cursor:pointer;'>  Add Agent </a> </p>
+                    
+                    
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--  
+            parent chooser window  
+        -->
+        <div id= 'agentchooser' style = 'background-color: #fff; left:900px; width:400px; height: 420px; top: 60px; right:40px; z-index:1000'>
+            
+            <p style = 'margin:auto; width:150px;padding-top:20px; font-size:1.5em' > Agent Design </p>
+            <div  style = 'margin:auto; width:320px;padding-top:20px; height:250px ' > 
+                
+                <div id='page_1'>
+                    <label class ='radio'>        
+                        <input type='radio' name='optionsRadios' id='optionsRadios1' value='option1' data-toggle='radio' checked=''>
+                            UAV agent
+                    </label>
+
+                    <label class ='radio'>
+                        <input type = 'radio' name = 'optionsRadios' id = 'optionsRadios1' value = 'option1' data-toggle = 'radio' >
+                            Lost Person Agent
+                    </label>
+                </div>
+
+                
+
+                <div id='page_3' style='display:none'>
+                    <select name ='herolist' value='behaviour' class='select-block span3'>
+                        <option value='0'>Choose thing</option>
+                        <option value='1' >Second thing</option>
+                        <option value='2'>Third thing</option>
+                        <option value='3'>Fourth thing</option>
+                    </select>
+                </div>
+
+
+                <div id='page_2' style='display:none'>
+
+                    
+                    <ul style='margin-right:10px;background-color:#2C3E50; width:110px; margin:auto; padding 2px;'>
+                        <li class ='behaviouritem' style='cursor:pointer;background-color:#34495E; padding-top:10px; padding-bottom:10px; width:107px; color:#fff; margin:2px'>
+                            <span style='padding-left:10px'>ONE</span>
+                        </li>
+
+                        <li class ='behaviouritem' style='cursor:pointer;background-color:#34495E; padding-top:10px; padding-bottom:10px; width:107px; color:#fff ; margin:2px'>
+                            <span style='padding-left:10px'>TWO</span>
+                        </li>
+
+                        <li class ='behaviouritem' style='cursor:pointer;background-color:#34495E; padding-top:10px; padding-bottom:10px; width:107px; color:#fff; margin:2px'>
+                            <span style='padding-left:10px'>THREE</span>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <!--  
+                navigation buttons  
+            -->
+            <div id='navvy' style='width:320px; margin:auto'>
+
+                <div style='float:right'>
+                   <a id='next_0' href='#fakeshit' class=' btn '> next </a> 
+                </div>
+
+                <div style='float:left'>
+                   <a id='pev_2' href='#fakeshit' class=' btn '> back </a> 
+                </div>
+
+             </div>
+
+
+
+        </div>
+
+
+
+
+        <div id="map" class="map"></div>
+
+
+        <script src="flat/js/jquery-ui-1.10.3.custom.min.js"></script>
+        <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+        
+        <script src="flat/js/jquery.ui.touch-punch.min.js"></script>
+        <script src="flat/js/bootstrap.min.js"></script>
+        <script src="flat/js/bootstrap-select.js"></script>
+        <script src="flat/js/bootstrap-switch.js"></script>
+        <script src="flat/js/flatui-checkbox.js"></script>
+        <script src="flat/js/flatui-radio.js"></script>
+        <script src="flat/js/jquery.tagsinput.js"></script>
+        <script src="flat/js/jquery.placeholder.js"></script>
+        <script src="flat/js/jquery.stacktable.js"></script>
+        <script src="script.js"></script>
+
+
+    </body>
+</html>

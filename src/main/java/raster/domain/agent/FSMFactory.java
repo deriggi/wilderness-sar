@@ -33,7 +33,7 @@ public class FSMFactory {
 
     public static enum MachineName {
 
-        EAST_WEST_HIGHS, EAST_WEST_LOWS, EAST_WEST_LAWN_MOWER, SIMPLE_WANDER, LOW_WANDER;
+        EAST_WEST_HIGHS, EAST_WEST_LOWS, EAST_WEST_LAWN_MOWER, SIMPLE_WANDER, LOW_EAST_WANDER, LOW_WEST_WANDER, EAST_WEST_VALLEY_RIDGE;
     }
     private static final EnumMap<MachineName, FSMMaker> machineMap;
 
@@ -42,15 +42,50 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine();
     }
 
-    private static class ValleyPeakMaker implements FSMMaker {
+    /**
+    *
+    *   East highs west lows in a lawn mower behavior 
+    */
+    private static class ValleyRidgeMowerMaker implements FSMMaker {
         @Override
         public List<DirectionUpdater> makeMachine(){
-            List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
 
+            EasternDirectionUpdater east = new EasternDirectionUpdater();
+            SouthernDirectionUpdater south = new SouthernDirectionUpdater();
+            WesternDirectionUpdater west = new WesternDirectionUpdater();
+            SouthernDirectionUpdater south2 = new SouthernDirectionUpdater();
+
+             // east to south
+            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 60);
+            eastToSouthCondition.setNextState(south);
+            east.setCondition(eastToSouthCondition);
+            east.addExitObserver(new ClearStackExitObserver());
+
+            // south to west
+            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 20);
+            southToWestCondition.setNextState(west);
+            south.setCondition(southToWestCondition);
+            south.addExitObserver(new ClearStackExitObserver());
+            
+            // west to south
+            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 60);
+            westToSouthCondition.setNextState(south2);
+            west.setCondition(westToSouthCondition);
+            west.addExitObserver(new ClearStackExitObserver());
+            
+            // close the loop south back to east
+            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 20);
+            southToOriginalEastCondition.setNextState(east);
+            south2.setCondition(southToOriginalEastCondition);
+            south2.addExitObserver(new ClearStackExitObserver());
+
+            List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
+            updaterList.add(east);
             updaterList.add(new EastHighsWestLowsDirectionUpdater());
             updaterList.add(new WanderDirectionUpdater());
 
-            return updaterList; 
+            return updaterList;
+
         }
     }
     /**
@@ -104,8 +139,8 @@ public class FSMFactory {
 
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(new HighGroundDirectionUpdater());
-            updaters.add(easternUpdater);
 
+            updaters.add(easternUpdater);
             return updaters;
 
         }
@@ -167,7 +202,7 @@ public class FSMFactory {
         }
     }
     
-     private static class LowWanderMaker implements FSMMaker {
+     private static class LowEastWanderMaker implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -175,6 +210,19 @@ public class FSMFactory {
             
             updaters.add(new LowerGroundDirectionUpdater());
             updaters.add(new EasternDirectionUpdater());
+            updaters.add(new WanderDirectionUpdater());
+            return updaters;
+        }
+    }
+
+    private static class LowWestWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            
+            updaters.add(new LowerGroundDirectionUpdater());
+            updaters.add(new WesternDirectionUpdater());
             updaters.add(new WanderDirectionUpdater());
             return updaters;
         }
@@ -189,7 +237,10 @@ public class FSMFactory {
         machineMap.put(MachineName.EAST_WEST_HIGHS, new EastWestHighsMaker());
         machineMap.put(MachineName.EAST_WEST_LAWN_MOWER, new LawnMowerMaker());
         machineMap.put(MachineName.SIMPLE_WANDER, new SimpleWanderMaker());
-        machineMap.put(MachineName.LOW_WANDER, new LowWanderMaker());
+        machineMap.put(MachineName.LOW_EAST_WANDER, new LowEastWanderMaker());
+        machineMap.put(MachineName.LOW_WEST_WANDER, new LowWestWanderMaker());
+        machineMap.put(MachineName.EAST_WEST_VALLEY_RIDGE, new ValleyRidgeMowerMaker());
+
     }
 //    private static HashMap<
 }
