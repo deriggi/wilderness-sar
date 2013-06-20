@@ -40,6 +40,7 @@ L.Map.include({
                 document.mozCancelFullScreen();
             } else if (document.webkitCancelFullScreen) {
                 document.webkitCancelFullScreen();
+                this._isFullscreen = false;
             } else {
                 L.DomUtil.removeClass(container, 'leaflet-pseudo-fullscreen');
                 this.invalidateSize();
