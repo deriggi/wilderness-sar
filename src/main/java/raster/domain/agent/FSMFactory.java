@@ -33,8 +33,33 @@ public class FSMFactory {
 
     public static enum MachineName {
 
-        EAST_WEST_HIGHS, EAST_WEST_LOWS, EAST_WEST_LAWN_MOWER, SIMPLE_WANDER, LOW_EAST_WANDER, LOW_WEST_WANDER, EAST_WEST_VALLEY_RIDGE;
+        EAST_WEST_HIGHS("East west highs"), 
+        EAST_WEST_LOWS("East west lows"),
+        EAST_WEST_LAWN_MOWER("East west lawnmore"),
+        SIMPLE_WANDER("Wander"), 
+        LOW_EAST_WANDER("East lows"), 
+        LOW_WEST_WANDER("West lows"),
+        EAST_WEST_VALLEY_RIDGE("East highs west lows");
+
+        
+        private String displayName;
+        private String description;
+
+        MachineName(String displayName){
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName(){
+            return this.displayName;
+        }
+
+        public String getDescription(){
+            return this.description;
+        }
+        
+
     }
+
     private static final EnumMap<MachineName, FSMMaker> machineMap;
 
     private static interface FSMMaker {
