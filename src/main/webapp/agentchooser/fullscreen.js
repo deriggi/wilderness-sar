@@ -33,6 +33,7 @@ L.Map.include({
     toggleFullscreen: function () {
         var container = this.getContainer();
         if (this.isFullscreen()) {
+            
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.mozCancelFullScreen) {
@@ -46,12 +47,16 @@ L.Map.include({
                 this.fire('fullscreenchange');
             }
         } else {
+            
             if (container.requestFullscreen) {
                 container.requestFullscreen();
+                
             } else if (container.mozRequestFullScreen) {
                 container.mozRequestFullScreen();
+                
             } else if (container.webkitRequestFullscreen) {
                 container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                this._isFullscreen = true;
             } else {
                 L.DomUtil.addClass(container, 'leaflet-pseudo-fullscreen');
                 this.invalidateSize();
