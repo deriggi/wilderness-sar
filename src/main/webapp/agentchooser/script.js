@@ -207,6 +207,9 @@ function setupMap(){
         });
    
     });
+
+    fullscreenControl = new L.Control.Fullscreen();
+    fullscreenControl.addTo(map);
 }
 
 function getThemBehaviours(){
