@@ -155,7 +155,6 @@ var setLastLocation
 
 var getSelectedBehaviourItem;
 var setSelectedBehaviourItem;
-
 (function setupSelectBehaviourItem(){
     
     var selectedBehaviour;
@@ -172,23 +171,7 @@ var setSelectedBehaviourItem;
 
 
 
-var getAgent
-var addAgent
-(function setupAgentHolder(){
-    allAgents = [];
-    addAgent = function(id,location){
-        allAgents[id] = {'id' : id, 'location':location};
-    }
-    
-    getAgent = function(id){
-        return allAgents[id];
-    }
-    
-    getAllAgents = function(){
-        return allAgents;
-    }
-    
-})
+
 
 
 
@@ -223,6 +206,74 @@ function setupMap(){
             drawAgentLocation(data);
         });
    
+    });
+}
+
+function getThemBehaviours(){
+    var ul = makeBehaviourList();
+
+    $.getJSON('/wisar/q/behaviour/list', function(data){
+        
+        for(var dataIndex in data ){
+            $(ul).append(makeListItem(data[dataIndex].name));
+        }
+
+
+        $('#page_2').append(ul);
+
+    });
+}
+
+function makeBehaviourList(theStyle){
+    if(!theStyle){
+        theStyle = 'behaviourlist'
+    }
+    var ul = document.createElement('ul');
+    $(ul).addClass(theStyle);
+    return ul;
+}
+
+
+
+
+
+function makeListItem(data, theStyle){
+    if(!theStyle){
+        theStyle = 'behaviouritem'
+    }
+    
+    var li = $(document.createElement('li')).addClass(theStyle).append(data);
+    giveItemClickyBehaviour(li);
+
+    return li;
+}
+
+function giveItemClickyBehaviour(listItem){
+    
+    $(listItem).click(function(){
+
+        var previous = getSelectedBehaviourItem();
+        if(previous){
+            $(previous).attr('lebronned','');
+            $(previous).css('background-color','#34495E');
+            if(previous.is($(this))){
+                return;
+            }    
+        }
+
+        var theChosen = $(this).attr('lebronned');
+        if(theChosen != 'yes'){ 
+            
+            $(this).css('background-color','#1ABC9C');
+            $(this).attr('lebronned', 'yes');
+            setSelectedBehaviourItem($(this));
+            
+        }
+        else{
+            $(this).css('background-color','#34495E');
+            $(this).attr('lebronned', '');   
+        }
+
     });
 }
 

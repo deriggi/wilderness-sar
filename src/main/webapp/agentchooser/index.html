@@ -52,35 +52,12 @@
                     selectBehaviorLink( $(this)  );                    
                 });
 
-                $('.behaviouritem').click(function(){
-
-                    var previous = getSelectedBehaviourItem();
-                    if(previous){
-                        $(previous).attr('lebronned','');
-                        $(previous).css('background-color','#34495E');
-                        if(previous.is($(this))){
-                            return;
-                        }    
-                    }
-
-                    var theChosen = $(this).attr('lebronned');
-                    if(theChosen != 'yes'){ 
-                        
-                        $(this).css('background-color','#1ABC9C');
-                        $(this).attr('lebronned', 'yes');
-                        setSelectedBehaviourItem($(this));
-                        
-                    }
-                    else{
-                        $(this).css('background-color','#34495E');
-                        $(this).attr('lebronned', '');   
-                    }
-
-                });
+                
 
                 
                 
                 getBoard();
+                getThemBehaviours();
                
                 
             });
@@ -143,20 +120,21 @@
 
                 <div id='page_2' style='display:none'>
 
-                    
-                    <ul style='margin-right:10px;background-color:#2C3E50; width:110px; margin:auto; padding 2px;'>
-                        <li class ='behaviouritem' style='cursor:pointer;background-color:#34495E; padding-top:10px; padding-bottom:10px; width:107px; color:#fff; margin:2px'>
+                    <!-- append dynamically -->
+
+                    <!-- <ul style=''>
+                        <li class ='behaviouritem' >
                             <span style='padding-left:10px'>ONE</span>
                         </li>
 
-                        <li class ='behaviouritem' style='cursor:pointer;background-color:#34495E; padding-top:10px; padding-bottom:10px; width:107px; color:#fff ; margin:2px'>
+                        <li class ='behaviouritem' >
                             <span style='padding-left:10px'>TWO</span>
                         </li>
 
-                        <li class ='behaviouritem' style='cursor:pointer;background-color:#34495E; padding-top:10px; padding-bottom:10px; width:107px; color:#fff; margin:2px'>
+                        <li class ='behaviouritem' >
                             <span style='padding-left:10px'>THREE</span>
                         </li>
-                    </ul>
+                     --></ul>
 
                 </div>
 

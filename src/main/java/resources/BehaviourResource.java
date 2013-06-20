@@ -45,9 +45,8 @@ public class BehaviourResource {
     public String getBehaviours() {
         // Collection<FSMFactory.MachineName> fsms = FSMFactory.MachineName.values();
         List<WebBehaviour> fsmList = new ArrayList<WebBehaviour>();
-        
         fsmList  =  WebBehaviourFactory.toList(Arrays.asList(FSMFactory.MachineName.values()));
-
+        
         return GsonGetter.get().toJson(fsmList);
     }
 

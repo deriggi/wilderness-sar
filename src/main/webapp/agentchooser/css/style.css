@@ -455,6 +455,17 @@ strong { font-weight:bold; }
      }
 .clearfix { display: inline-block; }
 
+ 
+ .behaviourlist {
+    /*margin-right:10px;*/
+    background-color:#2C3E50; width:180px; margin:auto; padding 2px;
+ }
+
+
+ .behaviouritem {
+    cursor:pointer; padding-left:2px; font-size:11px; background-color:#34495E; padding-top:10px; padding-bottom:10px; width:171px; color:#fff; margin:2px;
+  }
+
 /* touch tweaks */
 
 * {
