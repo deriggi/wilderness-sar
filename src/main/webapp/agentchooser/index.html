@@ -40,11 +40,11 @@
                     wander();
                 });
 
-                $('#next_0').click(function(){
-                    // $('#page_1').hide();
-                    $('#page_1').hide('slide',{direction:'left'}, 500, function(){
-                        $('#page_2').show('slide', {direction:'right'}, 500)
-                    });
+                $('#nextpage').click(function(){
+                    getPageHandler(getPageNumber())[1]();
+                });
+                $('#prevpage').click(function(){
+                    getPageHandler(getPageNumber())[0]();
                 });
 
                 $('#viewshed').click(function(){
@@ -92,7 +92,8 @@
         <div id= 'agentchooser' style = 'background-color: #fff; position:absolute; width:400px; height: 420px; top: 60px; right:330px; z-index:1000'>
             
             <p style = 'margin:auto; width:150px;padding-top:20px; font-size:1.5em' > Agent Design </p>
-            <div  style = 'margin:auto; width:320px;padding-top:20px; height:250px ' > 
+
+            <div id='designcontainer' style = 'margin:auto; width:320px;padding-top:20px; height:250px ' > 
                 
                 <div id='page_1'>
                     <label class ='radio'>        
@@ -146,11 +147,11 @@
             <div id='navvy' style='width:320px; margin:auto'>
 
                 <div style='float:right'>
-                   <a id='next_0' href='#fakeshit' class=' btn '> next </a> 
+                   <a id='nextpage' href='#fakeshit' class=' btn '> next </a> 
                 </div>
 
                 <div style='float:left'>
-                   <a id='pev_2' href='#fakeshit' class=' btn '> back </a> 
+                   <a id='prevpage' href='#fakeshit' class=' btn '> back </a> 
                 </div>
 
              </div>

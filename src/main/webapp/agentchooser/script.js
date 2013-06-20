@@ -277,6 +277,88 @@ function giveItemClickyBehaviour(listItem){
     });
 }
 
+var getPageNumber;
+var incrementPageNumber;
+var decrementPageNumber;
+(function setupPageNumberMachine(){
+    var pageNumber = 0;
+    incrementPageNumber = function(){
+        pageNumber++;
+    }
+
+    decrementPageNumber = function(){
+        if(pageNumber == 0){
+            return;
+        }
+        pageNumber--;
+    }
+
+    getPageNumber = function(){
+        return pageNumber;
+    }
+
+})();
+
+
+var getPageHandler;
+(function setupNextHandlers(){
+    
+    var nextHandlers = [];    
+    getPageHandler = function(handlerIndex){
+        return nextHandlers[handlerIndex];
+    }
+
+    // 2D array where prev is element 0 and next is element 1 
+    // page 0 handlers
+    var page0 = [];
+    page0.push(function() {});
+    page0.push(function() {
+                        incrementPageNumber();
+                        $('#page_1').hide('slide',{direction:'left'}, 200, function(){
+                            $('#page_2').show('slide', {direction:'right'}, 200)
+                        });
+                    }
+    );
+
+
+    // page 1 handlers
+    page1 = [];
+    page1.push(function() {
+                        decrementPageNumber();
+                        $('#page_2').hide('slide',{direction:'right'}, 200, function(){
+                            $('#page_1').show('slide', {direction:'left'}, 200)
+                        });
+                    }
+    );                                
+    page1.push(function() {
+                        incrementPageNumber();
+                        $('#agentchooser').animate({height:'100px'}, 200);
+                        $('#designcontainer').hide();
+                    }                
+    );
+
+    // page 2 handlers
+    page2 = [];
+    page2.push(function() {
+                        decrementPageNumber();
+                        $('#agentchooser').animate({height:'420px'}, 200);
+                        $('#designcontainer').show();
+                    }
+    );                                
+    page2.push(function() {
+                        
+                    }                
+    );
+
+    // push all
+    nextHandlers.push(page0);
+    nextHandlers.push(page1);
+    nextHandlers.push(page2);
+    
+})();
+
+
+
 
 
 
