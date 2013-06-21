@@ -40,6 +40,8 @@ public class FSMFactory {
         LOW_EAST_WANDER("East lows"), 
         LOW_WEST_WANDER("West lows"),
         EAST_WEST_VALLEY_RIDGE("East highs west lows");
+        
+
 
         
         private String displayName;
@@ -265,6 +267,7 @@ public class FSMFactory {
         machineMap.put(MachineName.LOW_EAST_WANDER, new LowEastWanderMaker());
         machineMap.put(MachineName.LOW_WEST_WANDER, new LowWestWanderMaker());
         machineMap.put(MachineName.EAST_WEST_VALLEY_RIDGE, new ValleyRidgeMowerMaker());
+
 
     }
 //    private static HashMap<

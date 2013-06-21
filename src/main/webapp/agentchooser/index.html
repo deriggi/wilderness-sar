@@ -28,7 +28,7 @@
 
         <!--script src='http://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.uncompressed.js'></script-->
         <script src="ext/jquery.min.js"></script>
-        <script src="underscore-min.js"></script>
+        <!-- // <script src="underscore-min.js"></script> -->
 
          
          <!--script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script-->
@@ -63,6 +63,7 @@
                 
                 getBoard();
                 getThemBehaviours();
+                makeAgentTypes();
                
                 
             });
@@ -94,22 +95,14 @@
         <!--  
             parent chooser window  
         -->
-        <div id= 'agentchooser' style = 'background-color: #fff; position:absolute; width:400px; height: 420px; top: 60px; right:330px; z-index:1000'>
+        <div id= 'agentchooser' style = 'background-color: #fff; position:absolute; width:400px; height: 420px; top: 5px; right:330px; z-index:1000'>
             
-            <p style = 'margin:auto; width:150px;padding-top:20px; font-size:1.5em' > Agent Design </p>
+            <p id='agentdesigntitle' style = 'margin:auto; width:250px; padding-top:20px; font-size:1.5em;text-align:center' > Agent Design </p>
 
             <div id='designcontainer' style = 'margin:auto; width:320px;padding-top:20px; height:250px ' > 
                 
                 <div id='page_1'>
-                    <label class ='radio'>        
-                        <input type='radio' name='optionsRadios' id='optionsRadios1' value='option1' data-toggle='radio' checked=''>
-                            UAV agent
-                    </label>
-
-                    <label class ='radio'>
-                        <input type = 'radio' name = 'optionsRadios' id = 'optionsRadios1' value = 'option1' data-toggle = 'radio' >
-                            Lost Person Agent
-                    </label>
+                   
                 </div>
 
                 

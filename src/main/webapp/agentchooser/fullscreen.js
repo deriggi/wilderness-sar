@@ -39,6 +39,7 @@ L.Map.include({
             } else if (document.mozCancelFullScreen) {
                 document.mozCancelFullScreen();
             } else if (document.webkitCancelFullScreen) {
+                // container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
                 document.webkitCancelFullScreen();
                 this._isFullscreen = false;
             } else {
@@ -72,11 +73,13 @@ L.Map.include({
             document.fullscreenElement ||
             document.mozFullScreenElement ||
             document.webkitFullscreenElement;
-
+               
         if (fullscreenElement === this.getContainer()) {
             this._isFullscreen = true;
             this.fire('fullscreenchange');
+
         } else if (this._isFullscreen) {
+            
             this._isFullscreen = false;
             this.fire('fullscreenchange');
         }
@@ -104,6 +107,7 @@ L.Map.addInitHook(function () {
     }
 
     if (fullscreenchange) {
+
         this.on('load', function () {
             L.DomEvent.on(document, fullscreenchange, this._onFullscreenChange, this);
         });

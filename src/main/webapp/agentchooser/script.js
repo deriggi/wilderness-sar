@@ -4,6 +4,28 @@
 var map;
 
 
+var setGameBBox;
+var displayBBox;
+(function setupBBoxAccess(){
+    var nwlon, nwlat, selon, selat;
+
+    setGameBBox = function(nwlon, nwlat, selon, selat){
+        this.nwlon = nwlon;
+        this.nwlat = nwlat;
+        this.selon = selon;
+        this.selat = selat;
+
+    }
+
+    displayBBox = function(theMap){
+        bounds = [[this.nwlat, this.nwlon], [this.selat, this.selon]];
+        L.rectangle(bounds, {color:'#3498DB', weight:0}).addTo(theMap)
+        theMap.fitBounds(bounds);
+    }
+
+
+
+})();
 
 function getBoard(){
     
@@ -13,6 +35,9 @@ function getBoard(){
         
         selon = data.selon;
         selat = data.selat;
+
+        setGameBBox(nwlon, nwlat, selon, selat);
+        
         
         maxlat = data.maxlat;
         maxlon = data.maxlon;
@@ -197,23 +222,17 @@ function setupMap(){
     });
     map.on('click', function(e){
    
-        ltlng = e.latlng;
-        lat = ltlng.lat;
-        lng = ltlng.lng;
-       
-        
-        $.post('/wisar/q/agent/createagent/'+lng + '/' + lat , function(data){
-            drawAgentLocation(data);
-        });
+       handleMapClick(e);
    
     });
 
     fullscreenControl = new L.Control.Fullscreen();
     fullscreenControl.addTo(map);
+
 }
 
 function getThemBehaviours(){
-    var ul = makeBehaviourList();
+    var ul = makeList();
 
     $.getJSON('/wisar/q/behaviour/list', function(data){
         
@@ -227,7 +246,17 @@ function getThemBehaviours(){
     });
 }
 
-function makeBehaviourList(theStyle){
+function makeAgentTypes(){
+    var ul = makeList();
+
+    $(ul).append(makeListItem('UAV AGENT'));
+    $(ul).append(makeListItem('LOST PERSON AGENT'));
+
+    $('#page_1').append(ul);
+    
+}
+
+function makeList(theStyle){
     if(!theStyle){
         theStyle = 'behaviourlist'
     }
@@ -280,6 +309,96 @@ function giveItemClickyBehaviour(listItem){
     });
 }
 
+var handleMapClick;
+var setAction;
+(function setupMapClickHandler(){
+    
+    var isCreateAgentMode = false;
+    var isCreateAgentMode = false;
+
+    var actionHolder = {};
+
+    doNothingAction = function(e){}
+
+    createAgentAction = function(e){
+        ltlng = e.latlng;
+        lat = ltlng.lat;
+        lng = ltlng.lng;
+   
+        $.post('/wisar/q/agent/createagent/'+lng + '/' + lat, function(data){
+            drawAgentLocation(data);
+        });    
+    }
+
+    setLocationAction = function(e) {
+        ltlng = e.latlng;
+        lat = ltlng.lat;
+        lng = ltlng.lng;
+        setAgentStartLoc(lng, lat);
+    }
+
+    setAction = function(someKey){
+        handleMapClick = actionHolder[someKey];
+    }
+
+    actionHolder['nothing'] = doNothingAction;
+    actionHolder['create'] = createAgentAction;
+    actionHolder['set'] = setLocationAction;
+
+    handleMapClick = doNothingAction;
+
+})();
+
+
+var setAgentBehaviour
+var setAgentStartLoc
+var setAgentstartVelocity
+var getConstructedAgent
+var resetAgentCreator
+(function setupAgentCreator(){
+    var behaviour;
+    var startLon;
+    var startLat;
+    var velocity;
+
+    setAgentBehaviour = function(b){
+        this.behaviour =b;
+    }
+
+    setAgentStartLoc = function(lon, lat){
+        this.startLon = lon;
+        this.startLat = lat;
+    }
+
+    setAgentVelocity = function(v){
+        this.velocity = v;
+    }
+
+    getConstructedAgent = function(){
+        return new Agent(this.behaviour, this.startLon, this.startLat, this.velocity);
+    }
+
+    resetAgentCreator = function(){
+        this.behaviour = null;
+        this.startLon = null;
+        this.startLat = null;
+        this.velocity = null;
+    }
+
+})();
+
+
+function VectorAgent(behaviour, startLon, startLat, velocity){
+    this.behaviour = behaviour;
+    this.startLon = startLon;
+    this.startLat = startLat;
+    this.velocity = velocity;
+}
+
+
+
+
+
 var getPageNumber;
 var incrementPageNumber;
 var decrementPageNumber;
@@ -317,6 +436,7 @@ var getPageHandler;
     page0.push(function() {});
     page0.push(function() {
                         incrementPageNumber();
+                        $('#agentdesigntitle').text('Select a Beahaviour')
                         $('#page_1').hide('slide',{direction:'left'}, 200, function(){
                             $('#page_2').show('slide', {direction:'right'}, 200)
                         });
@@ -328,15 +448,21 @@ var getPageHandler;
     page1 = [];
     page1.push(function() {
                         decrementPageNumber();
+                        $('#agentdesigntitle').text('Agent Design');
                         $('#page_2').hide('slide',{direction:'right'}, 200, function(){
                             $('#page_1').show('slide', {direction:'left'}, 200)
                         });
+                        setAction('nothing');
                     }
-    );                                
+    );
+
     page1.push(function() {
                         incrementPageNumber();
+                        displayBBox(map);
+                        $('#agentdesigntitle').text('Choose Start Point');
                         $('#agentchooser').animate({height:'100px'}, 200);
                         $('#designcontainer').hide();
+                        setAction('create');
                     }                
     );
 
@@ -344,8 +470,10 @@ var getPageHandler;
     page2 = [];
     page2.push(function() {
                         decrementPageNumber();
+                        $('#agentdesigntitle').text('Select Behaviour');
                         $('#agentchooser').animate({height:'420px'}, 200);
                         $('#designcontainer').show();
+                        setAction('nothing');
                     }
     );                                
     page2.push(function() {

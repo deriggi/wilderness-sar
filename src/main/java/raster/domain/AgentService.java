@@ -52,7 +52,7 @@ public class AgentService {
         
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
-        wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.LOW_WANDER));
+        wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.LOW_EAST_WANDER));
         a.setMovementStrategy(wanderStrat);
         
         return a;
