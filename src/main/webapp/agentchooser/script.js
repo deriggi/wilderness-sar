@@ -339,6 +339,7 @@ var setAction;
 
     setAction = function(someKey){
         handleMapClick = actionHolder[someKey];
+
     }
 
     actionHolder['nothing'] = doNothingAction;
@@ -462,7 +463,7 @@ var getPageHandler;
                         $('#agentdesigntitle').text('Choose Start Point');
                         $('#agentchooser').animate({height:'100px'}, 200);
                         $('#designcontainer').hide();
-                        setAction('create');
+                        setAction('set');
                     }                
     );
 
