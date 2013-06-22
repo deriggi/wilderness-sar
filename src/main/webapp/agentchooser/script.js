@@ -178,27 +178,41 @@ var setLastLocation
     
 })();
 
+
 var getSelectedBehaviourItem;
 var setSelectedBehaviourItem;
 (function setupSelectBehaviourItem(){
     
     var selectedBehaviour;
     getSelectedBehaviourItem = function(){
-        return selectedBehaviour;
+        return this.selectedBehaviour;
     }
 
-    var setSelectedBehaviour;
     setSelectedBehaviourItem = function(theBehaviour){
-        selectedBehaviour = theBehaviour;
+        this.selectedBehaviour = theBehaviour;
+        setAgentBehaviour(this.selectedBehaviour.text())        
+        
+
     }
 
 })();
 
+var getSelectedTypeItem;
+var setSelectedTypeItem;
+(function setupSelectBehaviourItem(){
+    
+    var selectedTypeItem;
+    getSelectedTypeItem = function(){
+        return this.selectedTypeItem;
+    }
 
+    setSelectedTypeItem = function(theAgentType){
+        this.selectedTypeItem = theAgentType;
+        setAgentType(this.selectedTypeItem.text())
+        // if uav type set velocity to 4 otherwise 2
+    }
 
-
-
-
+})();
 
 var selectBehaviorLink
 (function setupBehaviorSelectionLink(){
@@ -234,10 +248,12 @@ function setupMap(){
 function getThemBehaviours(){
     var ul = makeList();
 
+    
+
     $.getJSON('/wisar/q/behaviour/list', function(data){
         
         for(var dataIndex in data ){
-            $(ul).append(makeListItem(data[dataIndex].name));
+            $(ul).append(makeListItem(data[dataIndex].name, 'behaviouritem', getSelectedBehaviourItem, setSelectedBehaviourItem));
         }
 
 
@@ -249,8 +265,8 @@ function getThemBehaviours(){
 function makeAgentTypes(){
     var ul = makeList();
 
-    $(ul).append(makeListItem('UAV AGENT'));
-    $(ul).append(makeListItem('LOST PERSON AGENT'));
+    $(ul).append(makeListItem('UAV AGENT', 'behaviouritem', getSelectedTypeItem, setSelectedTypeItem));
+    $(ul).append(makeListItem('LOST PERSON AGENT', 'behaviouritem', getSelectedTypeItem, setSelectedTypeItem));
 
     $('#page_1').append(ul);
     
@@ -266,25 +282,23 @@ function makeList(theStyle){
 }
 
 
-
-
-
-function makeListItem(data, theStyle){
+function makeListItem(data, theStyle, getter, setter){
     if(!theStyle){
         theStyle = 'behaviouritem'
     }
     
     var li = $(document.createElement('li')).addClass(theStyle).append(data);
-    giveItemClickyBehaviour(li);
+    
+    giveItemClickyBehaviour(li, getter, setter);
 
     return li;
 }
 
-function giveItemClickyBehaviour(listItem){
+function giveItemClickyBehaviour(listItem, getter, setter){
     
     $(listItem).click(function(){
 
-        var previous = getSelectedBehaviourItem();
+        var previous = getter();
         if(previous){
             $(previous).attr('lebronned','');
             $(previous).css('background-color','#34495E');
@@ -298,7 +312,7 @@ function giveItemClickyBehaviour(listItem){
             
             $(this).css('background-color','#1ABC9C');
             $(this).attr('lebronned', 'yes');
-            setSelectedBehaviourItem($(this));
+            setter($(this));
             
         }
         else{
@@ -309,6 +323,8 @@ function giveItemClickyBehaviour(listItem){
     });
 }
 
+
+
 var handleMapClick;
 var setAction;
 (function setupMapClickHandler(){
@@ -318,32 +334,29 @@ var setAction;
 
     var actionHolder = {};
 
-    doNothingAction = function(e){}
-
-    createAgentAction = function(e){
-        ltlng = e.latlng;
-        lat = ltlng.lat;
-        lng = ltlng.lng;
-   
-        $.post('/wisar/q/agent/createagent/'+lng + '/' + lat, function(data){
-            drawAgentLocation(data);
-        });    
-    }
+    doNothingAction = function(e) {}
 
     setLocationAction = function(e) {
+
         ltlng = e.latlng;
         lat = ltlng.lat;
         lng = ltlng.lng;
-        setAgentStartLoc(lng, lat);
+        someMarker = L.marker([lat, lng], {
+            draggable:true
+        } ).addTo(map);
+
+        setAgentMarker(someMarker);
+        setAction('nothing')
+
     }
 
     setAction = function(someKey){
+
         handleMapClick = actionHolder[someKey];
 
     }
 
     actionHolder['nothing'] = doNothingAction;
-    actionHolder['create'] = createAgentAction;
     actionHolder['set'] = setLocationAction;
 
     handleMapClick = doNothingAction;
@@ -352,31 +365,52 @@ var setAction;
 
 
 var setAgentBehaviour
-var setAgentStartLoc
-var setAgentstartVelocity
+var setAgentMarker
+var setAgentType
 var getConstructedAgent
 var resetAgentCreator
+var isAgentComplete;
 (function setupAgentCreator(){
-    var behaviour;
-    var startLon;
-    var startLat;
-    var velocity;
+    var behaviour = null;
+    var agentType = null;
+    var agentMarker = null;
+
+    isAgentComplete = function(){
+        
+        if(
+            this.behaviour != null && 
+            this.agentType != null &&
+            this.agentMarker != null
+            ){
+            return true;
+        }
+        return false;
+
+    }
 
     setAgentBehaviour = function(b){
-        this.behaviour =b;
+        this.behaviour = b;
     }
 
-    setAgentStartLoc = function(lon, lat){
-        this.startLon = lon;
-        this.startLat = lat;
+    setAgentMarker = function(someMarker){
+        this.agentMarker = someMarker;
     }
 
-    setAgentVelocity = function(v){
-        this.velocity = v;
+    setAgentType = function(t){
+        this.agentType = t;
     }
 
     getConstructedAgent = function(){
-        return new Agent(this.behaviour, this.startLon, this.startLat, this.velocity);
+        var myLat, myLng;
+
+        if(this.agentMarker != null){
+            var latlng = this.agentMarker.getLatLng();
+            myLat = latlng.lat;
+            myLng = latlng.lng;
+            
+
+        }
+        return new VectorAgent(this.behaviour, myLng, myLat, this.velocity);
     }
 
     resetAgentCreator = function(){
@@ -395,10 +429,6 @@ function VectorAgent(behaviour, startLon, startLat, velocity){
     this.startLat = startLat;
     this.velocity = velocity;
 }
-
-
-
-
 
 var getPageNumber;
 var incrementPageNumber;
@@ -478,6 +508,16 @@ var getPageHandler;
                     }
     );                                
     page2.push(function() {
+        // check if agent has everything
+        if(isAgentComplete()){
+            agent = getConstructedAgent();
+            
+            // have completed agent so send to server    
+
+            // reset agent property holder    
+        }
+
+        
                         
                     }                
     );
@@ -491,7 +531,16 @@ var getPageHandler;
 
 
 
+function createAgent() {
+    ltlng = e.latlng;
+    lat = ltlng.lat;
+    lng = ltlng.lng;
+   
+    $.post('/wisar/q/agent/createagent/'+lng + '/' + lat, function(data){
+        drawAgentLocation(data);
+    });
 
+    }
 
 
 
