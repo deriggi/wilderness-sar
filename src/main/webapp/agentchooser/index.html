@@ -44,8 +44,9 @@
                 $('#wander').click(function(){
                     if(isRunning()){
                         alert('already running so ignore');
-                    return;
+                        return;
                     }
+
                     wander();
                     setRunning(true);
                 });
@@ -62,6 +63,13 @@
                     doViewshed();
                     selectBehaviorLink( $(this)  );                    
                 });
+
+                $('#stopsim').click(function() {
+                    
+                    stopSim();
+
+                });
+
 
                 $('#addagent').click(function(){
 
@@ -118,7 +126,7 @@
 
                     <p> <a  id='wander' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Start </a> </p>
 
-                    <p> <a id='stop' href='#' class ='btn btn-large btn-info' style='cursor:pointer;'>Pause </a> </p>
+                    <p> <a id='stopsim' href='#' class ='btn btn-large btn-info' style='cursor:pointer;'> Pause </a> </p>
                     
                 </div>
 

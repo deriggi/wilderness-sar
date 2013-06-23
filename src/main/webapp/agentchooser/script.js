@@ -140,36 +140,50 @@ function drawAgentLocation(data){
 }
 
     
-function isKeepRunning() {
-    return true;
-}
+
 
 function wander(){
     
     //        alert('sending ' + '/wisar/q/board/highflats/'+nexty[1] + '/' + nexty[0] + '/' + direction);
     $.post('/wisar/q/agent/wander/', function(data){
+        
         drawAgentLocation(data);
-        
-        if(isKeepRunning()){
-            window.setTimeout(wander, 200);
-        }
-        
+        setTimeoutKey( window.setTimeout(wander, 200));
+
     });
     
 }
 
 var isRunning;
 var setRunning;
+var setTimeoutKey;
+
+var stopSim;
+var resumeSim;
 (function setupIsRunning(){
-    
+    var keepRunning = true;
     var running = false;
+    var timeoutKey;
     isRunning = function(){
         return running;
     }
+
     setRunning = function(r){
         running = r;
     }
 
+    setTimeoutKey = function(tok){
+        timeoutKey = tok;
+    }
+
+    stopSim = function(){
+
+        window.clearTimeout(timeoutKey);
+        setRunning(false);
+        
+    }
+
+    
 
 })();
 
