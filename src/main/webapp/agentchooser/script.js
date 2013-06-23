@@ -140,17 +140,16 @@ function drawAgentLocation(data){
 }
 
     
-function isKeepRunning(){
+function isKeepRunning() {
     return true;
 }
 
-
-
 function wander(){
+    
     //        alert('sending ' + '/wisar/q/board/highflats/'+nexty[1] + '/' + nexty[0] + '/' + direction);
-     
     $.post('/wisar/q/agent/wander/', function(data){
         drawAgentLocation(data);
+        
         if(isKeepRunning()){
             window.setTimeout(wander, 200);
         }
@@ -158,6 +157,21 @@ function wander(){
     });
     
 }
+
+var isRunning;
+var setRunning;
+(function setupIsRunning(){
+    
+    var running = false;
+    isRunning = function(){
+        return running;
+    }
+    setRunning = function(r){
+        running = r;
+    }
+
+
+})();
 
 
 var doViewshed
@@ -171,6 +185,7 @@ var doViewshed
         });
     }
 })();
+
 
 var getLastLocation
 var setLastLocation
@@ -566,24 +581,12 @@ var getPageHandler;
             setSelectedTypeItem(null);
             setSelectedBehaviourItem(null);
 
-            // == start chooder == //
-            /**
-            $('#agentdesigntitle').text('Agent Design');
-            $('#agentchooser').animate({height:'420px'}, 200, function(){
-                $('#page_2').hide();
-                $('#designcontainer').show();
-                $('#page_1').show('slide', {direction:'left'}, 200);    
-            }); 
-            $('#nextpage').text('next');
-            setAction('nothing');
-            resetPageNumber();
-            **/
-
             $('#agentchooser').hide('slide', {direction:'right'}, 200);
+            $('#addagentsection').hide();
+            $('#runagents').fadeIn('fast');
+
             removeBBox();
             
-
-            // remove bounding box
 
         }    
     }
@@ -600,10 +603,8 @@ var getPageHandler;
 
 function createAgent(agent) {
     
-    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:'uav'}, function(data){
-
+    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:'uav', behaviour:agent.behaviour}, function(data){
         drawAgentLocation(data);
-
         });
 }
 

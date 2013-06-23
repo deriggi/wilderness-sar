@@ -42,7 +42,12 @@
                 
                 // setup stuff
                 $('#wander').click(function(){
+                    if(isRunning()){
+                        alert('already running so ignore');
+                    return;
+                    }
                     wander();
+                    setRunning(true);
                 });
 
                 $('#nextpage').click(function(){
@@ -59,11 +64,13 @@
                 });
 
                 $('#addagent').click(function(){
+
                     var chooser = $('#agentchooser')
                     chooser.show('slide', {direction:'right'}, 200);
                     $('#agentdesigntitle').text('Agent Design');
                     $('#page_2').hide();
                     $('#page_1').show();
+
                     chooser.animate({height:'420px'}, 200, function(){
                         $('#designcontainer').show();
                     }); 
@@ -73,6 +80,7 @@
                     resetPageNumber();
 
                     // clear list selections
+                    // remove polygon
 
                 });
                 
@@ -95,13 +103,25 @@
 <!--                    <p class='description'>The target marker is draggable</p>-->
                 </div>
 
-                <div class="clearfix section" >
+                <div class="clearfix section" id='addagentsection' >
                     <p> Start by adding agents </p>
                     
                     <p> <a id='addagent' href='#' class ='btn btn-large btn-inverse' style='cursor:pointer;'>  Add Agent </a> </p>
-                    
+
+
                     
                 </div>
+
+                <div class="clearfix section" style='display:none' id='runagents'>
+                    
+                    <p> Run the sim </p>
+
+                    <p> <a  id='wander' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Start </a> </p>
+
+                    <p> <a id='stop' href='#' class ='btn btn-large btn-info' style='cursor:pointer;'>Pause </a> </p>
+                    
+                </div>
+
             </div>
         </div>
 
@@ -110,7 +130,7 @@
         <!--  
             parent chooser window  
         -->
-        <div id= 'agentchooser' style = 'background-color: #fff; position:absolute; width:400px; height: 420px; top: 5px; right:330px; z-index:1000'>
+        <div id= 'agentchooser' style = 'display:none; background-color: #fff; position:absolute; width:400px; height: 420px; top: 5px; right:330px; z-index:1000'>
             
             <p id='agentdesigntitle' style = 'margin:auto; width:250px; padding-top:20px; font-size:1.5em;text-align:center' > Agent Design </p>
 
@@ -181,8 +201,6 @@
 
         <script src="flat/js/jquery-ui-1.10.3.custom.min.js"></script>
         <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
-        
         <script src="flat/js/jquery.ui.touch-punch.min.js"></script>
         <script src="flat/js/bootstrap.min.js"></script>
         <script src="flat/js/bootstrap-select.js"></script>
