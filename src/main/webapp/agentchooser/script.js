@@ -6,9 +6,10 @@ var map;
 
 var setGameBBox;
 var displayBBox;
+var removeBBox;
 (function setupBBoxAccess(){
     var nwlon, nwlat, selon, selat;
-
+    var bbox;
     setGameBBox = function(nwlon, nwlat, selon, selat){
         this.nwlon = nwlon;
         this.nwlat = nwlat;
@@ -18,9 +19,18 @@ var displayBBox;
     }
 
     displayBBox = function(theMap){
+        removeBBox();
         bounds = [[this.nwlat, this.nwlon], [this.selat, this.selon]];
-        L.rectangle(bounds, {color:'#3498DB', weight:0}).addTo(theMap)
+        bbox = L.rectangle(bounds, {color:'#3498DB', weight:0}).addTo(theMap)
         theMap.fitBounds(bounds);
+    }
+
+    removeBBox = function(){
+        if(bbox && bbox != null){
+            map.removeLayer(bbox);
+            bbox = null;    
+        }
+        
     }
 
 
@@ -189,6 +199,11 @@ var setSelectedBehaviourItem;
     }
 
     setSelectedBehaviourItem = function(theBehaviour){
+        if(theBehaviour == null){
+            this.selectedBehaviour = null;
+            return;
+        }
+
         this.selectedBehaviour = theBehaviour;
         setAgentBehaviour(this.selectedBehaviour.text())        
         
@@ -207,6 +222,11 @@ var setSelectedTypeItem;
     }
 
     setSelectedTypeItem = function(theAgentType){
+        if(theAgentType == null){
+            this.selectedTypeItem = null;
+            return;
+        }
+
         this.selectedTypeItem = theAgentType;
         setAgentType(this.selectedTypeItem.text())
         // if uav type set velocity to 4 otherwise 2
@@ -323,6 +343,18 @@ function giveItemClickyBehaviour(listItem, getter, setter){
     });
 }
 
+function setToDefaultStyle(listItem){
+    $(listItem).css('background-color','#34495E');
+    $(listItem).attr('lebronned', '');   
+}
+
+function iterateThroughListItems(ul, doToThem){
+    var items = $(ul).children();
+    for( var itemIndex in items){
+        doToThem(items[itemIndex])
+    }
+}
+
 
 
 var handleMapClick;
@@ -344,6 +376,8 @@ var setAction;
         someMarker = L.marker([lat, lng], {
             draggable:true
         } ).addTo(map);
+
+        
 
         setAgentMarker(someMarker);
         setAction('nothing')
@@ -415,9 +449,8 @@ var isAgentComplete;
 
     resetAgentCreator = function(){
         this.behaviour = null;
-        this.startLon = null;
-        this.startLat = null;
-        this.velocity = null;
+        this.agentMarker = null;
+        this.agentType = null;
     }
 
 })();
@@ -425,16 +458,23 @@ var isAgentComplete;
 
 function VectorAgent(behaviour, startLon, startLat, velocity){
     this.behaviour = behaviour;
-    this.startLon = startLon;
-    this.startLat = startLat;
+    this.lon = startLon;
+    this.lat = startLat;
     this.velocity = velocity;
 }
 
+
 var getPageNumber;
+var resetPageNumber;
 var incrementPageNumber;
 var decrementPageNumber;
 (function setupPageNumberMachine(){
     var pageNumber = 0;
+    
+    resetPageNumber = function(){
+        pageNumber = 0;
+    }
+
     incrementPageNumber = function(){
         pageNumber++;
     }
@@ -493,6 +533,8 @@ var getPageHandler;
                         $('#agentdesigntitle').text('Choose Start Point');
                         $('#agentchooser').animate({height:'100px'}, 200);
                         $('#designcontainer').hide();
+                        $('#nextpage').text('done');
+
                         setAction('set');
                     }                
     );
@@ -504,22 +546,48 @@ var getPageHandler;
                         $('#agentdesigntitle').text('Select Behaviour');
                         $('#agentchooser').animate({height:'420px'}, 200);
                         $('#designcontainer').show();
+                        $('#nextpage').text('next');
                         setAction('nothing');
                     }
     );                                
     page2.push(function() {
+
         // check if agent has everything
         if(isAgentComplete()){
             agent = getConstructedAgent();
             
-            // have completed agent so send to server    
+            // have completed agent so send to server
+            createAgent(agent);    
 
-            // reset agent property holder    
-        }
+            // reset agent property holder
+            resetAgentCreator();
+            setToDefaultStyle(getSelectedTypeItem());
+            setToDefaultStyle(getSelectedBehaviourItem());
+            setSelectedTypeItem(null);
+            setSelectedBehaviourItem(null);
 
-        
-                        
-                    }                
+            // == start chooder == //
+            /**
+            $('#agentdesigntitle').text('Agent Design');
+            $('#agentchooser').animate({height:'420px'}, 200, function(){
+                $('#page_2').hide();
+                $('#designcontainer').show();
+                $('#page_1').show('slide', {direction:'left'}, 200);    
+            }); 
+            $('#nextpage').text('next');
+            setAction('nothing');
+            resetPageNumber();
+            **/
+
+            $('#agentchooser').hide('slide', {direction:'right'}, 200);
+            removeBBox();
+            
+
+            // remove bounding box
+
+        }    
+    }
+
     );
 
     // push all
@@ -530,17 +598,14 @@ var getPageHandler;
 })();
 
 
+function createAgent(agent) {
+    
+    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:'uav'}, function(data){
 
-function createAgent() {
-    ltlng = e.latlng;
-    lat = ltlng.lat;
-    lng = ltlng.lng;
-   
-    $.post('/wisar/q/agent/createagent/'+lng + '/' + lat, function(data){
         drawAgentLocation(data);
-    });
 
-    }
+        });
+}
 
 
 

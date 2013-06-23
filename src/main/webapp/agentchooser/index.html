@@ -48,6 +48,7 @@
                 $('#nextpage').click(function(){
                     getPageHandler(getPageNumber())[1]();
                 });
+
                 $('#prevpage').click(function(){
                     getPageHandler(getPageNumber())[0]();
                 });
@@ -57,9 +58,23 @@
                     selectBehaviorLink( $(this)  );                    
                 });
 
-                
+                $('#addagent').click(function(){
+                    var chooser = $('#agentchooser')
+                    chooser.show('slide', {direction:'right'}, 200);
+                    $('#agentdesigntitle').text('Agent Design');
+                    $('#page_2').hide();
+                    $('#page_1').show();
+                    chooser.animate({height:'420px'}, 200, function(){
+                        $('#designcontainer').show();
+                    }); 
 
-                
+                    $('#nextpage').text('next');
+                    setAction('nothing');
+                    resetPageNumber();
+
+                    // clear list selections
+
+                });
                 
                 getBoard();
                 getThemBehaviours();
@@ -107,14 +122,14 @@
 
                 
 
-                <div id='page_3' style='display:none'>
+                <!-- <div id='page_3' style='display:none'>
                     <select name ='herolist' value='behaviour' class='select-block span3'>
                         <option value='0'>Choose thing</option>
                         <option value='1' >Second thing</option>
                         <option value='2'>Third thing</option>
                         <option value='3'>Fourth thing</option>
                     </select>
-                </div>
+                </div> -->
 
 
                 <div id='page_2' style='display:none'>
