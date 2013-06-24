@@ -11,7 +11,15 @@ package raster.domain.agent;
 public class IdLoc {
     private int id;
     private double[] location;
+    private Boolean foundOthers = null;
 
+    public void setFoundOthers(boolean found){
+        foundOthers = found;
+    }
+    public Boolean getFoundOthers(){
+        return foundOthers;
+    }
+    
     public int getId() {
         return id;
     }

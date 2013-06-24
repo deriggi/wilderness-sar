@@ -40,11 +40,9 @@ public class FSMFactory {
         SIMPLE_WANDER("Wander"), 
         LOW_EAST_WANDER("East lows"), 
         LOW_WEST_WANDER("West lows"),
-        EAST_WEST_VALLEY_RIDGE("East highs west lows");
+        EAST_WEST_VALLEY_RIDGE("East highs west lows"),
+        DO_NOTHING("Do nothing");
 
-
-
-        
         private String displayName;
         private String description;
 
@@ -273,6 +271,16 @@ public class FSMFactory {
         }
     }
 
+    private static class DoNothingWanderMaker implements FSMMaker{
+        
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            return updaters;
+        }
+
+    }
+
     public static List<DirectionUpdater> getMachine(MachineName name) {
         return machineMap.get(name).makeMachine();
     }
@@ -285,6 +293,7 @@ public class FSMFactory {
         machineMap.put(MachineName.LOW_EAST_WANDER, new LowEastWanderMaker());
         machineMap.put(MachineName.LOW_WEST_WANDER, new LowWestWanderMaker());
         machineMap.put(MachineName.EAST_WEST_VALLEY_RIDGE, new ValleyRidgeMowerMaker());
+        machineMap.put(MachineName.DO_NOTHING, new DoNothingWanderMaker());
 
 
     }

@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import raster.domain.agent.AgentPropertyManager.AgentProperty;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.VectorAgent;
+import geomutils.VectorUtils;
 import strategy.DirectionUpdater;
 import strategy.updater.HighGroundDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
@@ -42,7 +44,11 @@ public class AgentService {
         return nextId++;
     }
     
-    public VectorAgent createLostPersonAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
+    public void printSomething(){
+        System.out.println("hiii");
+    }
+    
+    public VectorAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
         VectorAgent a = new VectorAgent();
         a.setSpeed(speed);
         a.setLocation(new float[]{column,row});
@@ -113,6 +119,45 @@ public class AgentService {
         updaters.add(new HighGroundDirectionUpdater());
         updaters.add(westernUpdater);
         return updaters;
+    }
+
+    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range, VectorAgent except){
+        Set<Integer> keys = agents.keySet();
+        HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
+        
+        for(Integer i : keys){
+            VectorAgent someAgent = agents.get(i);
+            if(someAgent == except){
+                continue;
+            }
+            double distance = VectorUtils.distance(loc, someAgent.getLocation());
+            
+            if(distance <= range){
+                distanceAgentMap.put(distance, someAgent);
+            }
+
+        }
+
+        return distanceAgentMap;
+    }
+
+    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range){
+
+        Set<Integer> keys = agents.keySet();
+        HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
+        
+        for(Integer i : keys){
+            VectorAgent someAgent = agents.get(i);
+            double distance = VectorUtils.distance(loc, someAgent.getLocation());
+            
+            if(distance <= range){
+                distanceAgentMap.put(distance, someAgent);
+            }
+
+        }
+
+        return distanceAgentMap;
+
     }
     
 

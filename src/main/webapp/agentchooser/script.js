@@ -547,7 +547,10 @@ var getPageHandler;
     // 2D array where prev is element 0 and next is element 1 
     // page 0 handlers
     var page0 = [];
-    page0.push(function() {});
+    page0.push(function() {
+         $('#agentchooser').hide('slide', {direction:'right'}, 200);
+         resetAgentCreatorDialog();
+    });
     page0.push(function() {
                         incrementPageNumber();
                         $('#agentdesigntitle').text('Select a Beahaviour')
@@ -603,14 +606,10 @@ var getPageHandler;
             createAgent(agent);    
 
             // reset agent property holder
-            resetAgentCreator();
-            setToDefaultStyle(getSelectedTypeItem());
-            setToDefaultStyle(getSelectedBehaviourItem());
-            setSelectedTypeItem(null);
-            setSelectedBehaviourItem(null);
+            resetAgentCreatorDialog();
 
             $('#agentchooser').hide('slide', {direction:'right'}, 200);
-            $('#addagentsection').hide();
+            // $('#addagentsection').hide();
             $('#runagents').fadeIn('fast');
 
             removeBBox();
@@ -629,6 +628,13 @@ var getPageHandler;
 })();
 
 
+function resetAgentCreatorDialog(){
+    resetAgentCreator();
+    setToDefaultStyle(getSelectedTypeItem());
+    setToDefaultStyle(getSelectedBehaviourItem());
+    setSelectedTypeItem(null);
+    setSelectedBehaviourItem(null);
+}
 function createAgent(agent) {
     
     $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:agent.agentType, behaviour:agent.behaviour}, function(data){

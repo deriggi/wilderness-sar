@@ -14,6 +14,10 @@ public class VectorUtils {
     public static double distance(int[] start, int[] end){
         return Math.sqrt(Math.pow(end[0] - end[1], 2) + Math.pow(start[0] - start[1], 2));
     }
+
+    public static double distance(float[] start, float[] end){
+        return Math.sqrt(Math.pow(end[0] - end[1], 2) + Math.pow(start[0] - start[1], 2));
+    }
     
     public static double magnitude(double[] vector){
         return Math.sqrt(Math.pow(vector[0], 2) + Math.pow(vector[1], 2));

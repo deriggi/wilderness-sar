@@ -6,9 +6,13 @@ package raster.domain.agent;
 
 import geomutils.VectorUtils;
 import java.util.Stack;
+import java.util.HashMap;
+import java.util.Collection;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import strategy.Strategy;
+import raster.domain.AgentService;
+import raster.domain.agent.IdLoc;
 
 /**
  *
@@ -20,6 +24,15 @@ public class VectorAgent {
     private float[] origin = new float[2];
     private Strategy movementStrategy = null;
     private Stack<float[]> stackedPositions = null;
+    private int simpleDetectionRange = 0;
+
+    public void setSimpleDetectionRange(int detectionRange){
+        this.simpleDetectionRange = detectionRange;
+    }
+
+    public int getSimpleDetectionRange(){
+        return simpleDetectionRange;
+    }
 
     public void setMovementStrategy(Strategy movementStrategy) {
         this.movementStrategy = movementStrategy;
@@ -62,14 +75,15 @@ public class VectorAgent {
     }
 
     public VectorAgent() {
-        velocity = new double[]{4.0, 0.0};
-
+        velocity = new double[]{0.0, 0.0};
 
     }
 
     public IdLoc toIdLoc() {
         IdLoc idLoc = new IdLoc();
         idLoc.setId(getId());
+        idLoc.setFoundOthers(foundOthers(getSimpleDetectionRange()));
+
         return idLoc;
     }
 
@@ -77,10 +91,24 @@ public class VectorAgent {
         this.id = id;
     }
 
+
+    public boolean foundOthers(int range){
+        return detect(range).size() > 1;
+    }
+
+
+    public Collection<VectorAgent> detect(int range) {
+        
+        HashMap<Double, VectorAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this);
+        return distanceAgentMap.values();
+
+    }
+
     // rename to move?
     public void wander() {
         movementStrategy.calculateNextMove(this);
     }
+
     // radians
     private double[] velocity = new double[2];
     // cells per whatever

@@ -68,19 +68,18 @@ public class AgentResource {
             speed = 2;
         }
 
-        VectorAgent a = AgentService.get().createLostPersonAgent(position[0], position[1],speed, behave);
-        VectorAgent b = AgentService.get().createUAVAgent(position[0]+50, position[1]-60);
-
+        
+        AgentService service = AgentService.get();
+        
+        VectorAgent a = service.createAgent(position[0], position[1], speed, behave);
+        
         double[] aLonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
         IdLoc aIdLoc = a.toIdLoc();
         aIdLoc.setLocation(aLonLat);
         
-        double[] bLonLat = raster.getLonLat(b.getLocation()[0], b.getLocation()[1]);
-        IdLoc bIdLoc = b.toIdLoc();
-        bIdLoc.setLocation(bLonLat);
         
         ArrayList<IdLoc> idLocs = new ArrayList<IdLoc>();
-        idLocs.add(bIdLoc);
+        
         idLocs.add(aIdLoc);
         
         return new Gson().toJson(idLocs);
@@ -92,8 +91,6 @@ public class AgentResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String wanderAllAgents() {
         
-        
-
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         Collection<VectorAgent> agents = AgentService.get().getAllAgents();
         ArrayList<IdLoc> locs = new ArrayList<IdLoc>();
@@ -103,8 +100,8 @@ public class AgentResource {
             a.wander();
             double[] lonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
             IdLoc idLoc = a.toIdLoc();
-            idLoc.setLocation(lonLat);
-            locs.add(idLoc);
+            idLoc.setLocation( lonLat );
+            locs.add( idLoc );
 
         }
         
