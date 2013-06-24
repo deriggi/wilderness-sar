@@ -151,7 +151,7 @@ function wander(){
     $.post('/wisar/q/agent/wander/', function(data){
         
         drawAgentLocation(data);
-        setTimeoutKey( window.setTimeout(wander, 200));
+        setTimeoutKey( window.setTimeout(wander, 200) );
 
     });
     
@@ -222,8 +222,8 @@ var pushLine
             for(var i = 0; i < lastLines[agentId].length - 20; i++){
                 map.removeLayer(lastLines[agentId][i]);
             }
+
             var howMuchGreater = lastLines[agentId] - 20; 
-            
             var x=0;
             while(x < howMuchGreater){
                 lastLines[agentId].splice(0,1);
@@ -263,11 +263,10 @@ var setSelectedBehaviourItem;
 
         this.selectedBehaviour = theBehaviour;
         setAgentBehaviour(this.selectedBehaviour.text())        
-        
-
     }
 
 })();
+
 
 var getSelectedTypeItem;
 var setSelectedTypeItem;
@@ -290,6 +289,7 @@ var setSelectedTypeItem;
     }
 
 })();
+
 
 var selectBehaviorLink
 (function setupBehaviorSelectionLink(){
@@ -324,29 +324,23 @@ function setupMap(){
 
 function getThemBehaviours(){
     var ul = makeList();
-
     
-
     $.getJSON('/wisar/q/behaviour/list', function(data){
         
         for(var dataIndex in data ){
             $(ul).append(makeListItem(data[dataIndex].name, 'behaviouritem', getSelectedBehaviourItem, setSelectedBehaviourItem));
         }
-
-
         $('#page_2').append(ul);
-
     });
 }
 
 function makeAgentTypes(){
     var ul = makeList();
 
-    $(ul).append(makeListItem('UAV AGENT', 'behaviouritem', getSelectedTypeItem, setSelectedTypeItem));
-    $(ul).append(makeListItem('LOST PERSON AGENT', 'behaviouritem', getSelectedTypeItem, setSelectedTypeItem));
+    $(ul).append(makeListItem('UAV_AGENT', 'behaviouritem', getSelectedTypeItem, setSelectedTypeItem));
+    $(ul).append(makeListItem('LOST_PERSON_AGENT', 'behaviouritem', getSelectedTypeItem, setSelectedTypeItem));
 
     $('#page_1').append(ul);
-    
 }
 
 function makeList(theStyle){
@@ -365,7 +359,6 @@ function makeListItem(data, theStyle, getter, setter){
     }
     
     var li = $(document.createElement('li')).addClass(theStyle).append(data);
-    
     giveItemClickyBehaviour(li, getter, setter);
 
     return li;
@@ -420,11 +413,9 @@ var setAction;
     
     var isCreateAgentMode = false;
     var isCreateAgentMode = false;
-
     var actionHolder = {};
 
     doNothingAction = function(e) {}
-
     setLocationAction = function(e) {
 
         ltlng = e.latlng;
@@ -434,22 +425,17 @@ var setAction;
             draggable:true
         } ).addTo(map);
 
-        
-
         setAgentMarker(someMarker);
         setAction('nothing')
 
     }
 
     setAction = function(someKey){
-
         handleMapClick = actionHolder[someKey];
-
     }
 
     actionHolder['nothing'] = doNothingAction;
     actionHolder['set'] = setLocationAction;
-
     handleMapClick = doNothingAction;
 
 })();
@@ -501,7 +487,7 @@ var isAgentComplete;
             
 
         }
-        return new VectorAgent(this.behaviour, myLng, myLat, this.velocity);
+        return new VectorAgent(this.behaviour, myLng, myLat, this.agentType);
     }
 
     resetAgentCreator = function(){
@@ -513,11 +499,11 @@ var isAgentComplete;
 })();
 
 
-function VectorAgent(behaviour, startLon, startLat, velocity){
+function VectorAgent(behaviour, startLon, startLat, agentType){
     this.behaviour = behaviour;
     this.lon = startLon;
     this.lat = startLat;
-    this.velocity = velocity;
+    this.agentType = agentType;
 }
 
 
@@ -645,7 +631,7 @@ var getPageHandler;
 
 function createAgent(agent) {
     
-    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:'uav', behaviour:agent.behaviour}, function(data){
+    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:agent.agentType, behaviour:agent.behaviour}, function(data){
         drawAgentLocation(data);
         });
 }

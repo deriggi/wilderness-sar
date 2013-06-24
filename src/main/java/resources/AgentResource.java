@@ -8,10 +8,12 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import middletier.RasterConfig;
@@ -19,7 +21,9 @@ import middletier.RasterLoader;
 import raster.domain.AgentService;
 import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
+import raster.domain.agent.FSMFactory;
 import raster.domain.agent.VectorAgent;
+
 
 /**
  *
@@ -49,11 +53,22 @@ public class AgentResource {
     @POST
     @Path("/createagent/{lon: \\-?[0-9]{1,3}\\.[0-9]+}/{lat: \\-?[0-9]{1,3}\\.[0-9]+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String createAgent(@PathParam("lon") double lon, @PathParam("lat") double lat) {
+    public String createAgent(@PathParam("lon") double lon, @PathParam("lat") double lat, @FormParam("agenttype") String agentType, @FormParam("behaviour") String behaviour) {
+
+        log.log(Level.INFO, "agent type: {0}  behaviour: {1}" ,new Object[] { agentType, behaviour } );
 
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] position = raster.getFloatPosition(lon, lat);
-        VectorAgent a = AgentService.get().createLostPersonAgent(position[0], position[1]);
+        FSMFactory.MachineName behave = FSMFactory.getMachineName(behaviour);
+
+        float speed = 0;
+        if( (agentType != null) && agentType.toLowerCase().startsWith("uav")) {
+            speed = 4;
+        }else{
+            speed = 2;
+        }
+
+        VectorAgent a = AgentService.get().createLostPersonAgent(position[0], position[1],speed, behave);
         VectorAgent b = AgentService.get().createUAVAgent(position[0]+50, position[1]-60);
 
         double[] aLonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
@@ -69,29 +84,34 @@ public class AgentResource {
         idLocs.add(aIdLoc);
         
         return new Gson().toJson(idLocs);
-
-
     }
+
 
     @POST
     @Path("/wander/")
     @Produces(MediaType.APPLICATION_JSON)
     public String wanderAllAgents() {
+        
+        
+
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         Collection<VectorAgent> agents = AgentService.get().getAllAgents();
         ArrayList<IdLoc> locs = new ArrayList<IdLoc>();
         
         for (VectorAgent a : agents) {
+
             a.wander();
             double[] lonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
             IdLoc idLoc = a.toIdLoc();
             idLoc.setLocation(lonLat);
             locs.add(idLoc);
+
         }
         
         Gson gson = new Gson();
         String json = gson.toJson(locs);
         gson = null;
+
         return json;
 
         

@@ -42,9 +42,9 @@ public class AgentService {
         return nextId++;
     }
     
-    public VectorAgent createLostPersonAgent(float column, float row){
+    public VectorAgent createLostPersonAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
         VectorAgent a = new VectorAgent();
-        a.setSpeed(2);
+        a.setSpeed(speed);
         a.setLocation(new float[]{column,row});
         a.setOrigin(new float[]{column,row});
         a.setId(getNextId());
@@ -52,7 +52,7 @@ public class AgentService {
         
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
-        wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.LOW_EAST_WANDER));
+        wanderStrat.addAllDirectinoUpdaters( FSMFactory.getMachine(behaviour) );
         a.setMovementStrategy(wanderStrat);
         
         return a;

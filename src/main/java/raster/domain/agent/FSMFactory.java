@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import strategy.DirectionUpdater;
 import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
@@ -40,7 +41,7 @@ public class FSMFactory {
         LOW_EAST_WANDER("East lows"), 
         LOW_WEST_WANDER("West lows"),
         EAST_WEST_VALLEY_RIDGE("East highs west lows");
-        
+
 
 
         
@@ -62,7 +63,24 @@ public class FSMFactory {
 
     }
 
+
     private static final EnumMap<MachineName, FSMMaker> machineMap;
+
+    public static MachineName getMachineName(String behaviour){
+        MachineName machine = null;
+
+        try{
+            
+             machine = MachineName.valueOf(behaviour);
+            
+
+        } catch (IllegalArgumentException iae){
+            log.log(Level.SEVERE,"unknown machine name {0}", new Object[]{behaviour});
+        }
+
+        return machine;
+    }
+
 
     private static interface FSMMaker {
 
