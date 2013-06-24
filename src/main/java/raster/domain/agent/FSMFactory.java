@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import strategy.DirectionUpdater;
 import strategy.updater.EastHighsWestLowsDirectionUpdater;
+import strategy.updater.DoNothingDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
@@ -23,6 +24,7 @@ import strategy.updater.SouthernDirectionUpdater;
 import strategy.updater.WanderDirectionUpdater;
 import strategy.updater.condition.IntegerAgentStateCondition;
 import strategy.updater.observer.ClearStackExitObserver;
+import strategy.updater.observer.ClearStepsTakenExitObserver;
 
 /**
  *
@@ -151,8 +153,18 @@ public class FSMFactory {
             BacktrackDirectionUpdater backtrackUpdater = new BacktrackDirectionUpdater();
             BacktrackDirectionUpdater backtrackUpdater2 = new BacktrackDirectionUpdater();
 
+            // second track
+            HighGroundDirectionUpdater highGroundUpdater = new HighGroundDirectionUpdater();
+            DoNothingDirectionUpdater nothingUpdater = new DoNothingDirectionUpdater();
+
+            HighGroundDirectionUpdater highGroundUpdater2 = new HighGroundDirectionUpdater();
+            DoNothingDirectionUpdater nothingUpdater2 = new DoNothingDirectionUpdater();
+
+            HighGroundDirectionUpdater highGroundUpdater3 = new HighGroundDirectionUpdater();
+
+
             // east to backtrack
-            StateCondition toBacktrackCondition = new DoubleAgentStateCondition(AgentPropertyManager.AgentProperty.LONGITUDE, Condish.GT, -116.86157);
+            StateCondition toBacktrackCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 50);
             easternUpdater.setCondition(toBacktrackCondition);
             toBacktrackCondition.setNextState(backtrackUpdater);
 
@@ -162,7 +174,7 @@ public class FSMFactory {
             toWestCondition.setNextState(westernUpdater);
 
             // west to backtrack -- owned by westernUpdate
-            StateCondition westToBacktrackCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 20);
+            StateCondition westToBacktrackCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 50);
             westernUpdater.setCondition(westToBacktrackCondition);
             westToBacktrackCondition.setNextState(backtrackUpdater2);
 
@@ -172,18 +184,53 @@ public class FSMFactory {
             back2Condition.setNextState(southernUpdater);
 
             // back to original east to close the loop
-            StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 30);
+            StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 50);
             southernUpdater.setCondition(southToEastCondition);
             southToEastCondition.setNextState(easternUpdater);
 
-            
+            // // back to original east to close the loop
+            // StateCondition southToNothingCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
+            // sitAndDoNothingUpdater.setCondition(southToNothingCondition);
+            // southToNothingCondition.setNextState(easternUpdater);
+
             backtrackUpdater.addExitObserver(new ClearStackExitObserver());
             backtrackUpdater2.addExitObserver(new ClearStackExitObserver());
+            southernUpdater.addExitObserver(new ClearStackExitObserver());
+
+
+            // ===============================
+            // concurrent state machine track!
+            // ===============================
+            StateCondition highToNothingCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
+            highGroundUpdater.setCondition(highToNothingCondition);
+            highToNothingCondition.setNextState(nothingUpdater);
+
+            StateCondition nothingToHighCondition = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 100);
+            nothingUpdater.setCondition(nothingToHighCondition);
+            nothingToHighCondition.setNextState(highGroundUpdater2);
+
+            StateCondition highToNothingCondition2 = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
+            highGroundUpdater2.setCondition(highToNothingCondition2);
+            highToNothingCondition2.setNextState(nothingUpdater2);
+
+            StateCondition nothingToHighCondition2 = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 100);
+            nothingUpdater2.setCondition(nothingToHighCondition2);
+            nothingToHighCondition2.setNextState(highGroundUpdater3);
+
+            StateCondition highToHighCondition = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
+            highGroundUpdater3.setCondition(highToHighCondition);
+            highToHighCondition.setNextState(highGroundUpdater);
+
+
+            nothingUpdater.addExitObserver(new ClearStepsTakenExitObserver());
+            nothingUpdater2.addExitObserver(new ClearStepsTakenExitObserver());
+            highGroundUpdater3.addExitObserver(new ClearStepsTakenExitObserver());
+
 
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            updaters.add(new HighGroundDirectionUpdater());
-
+            updaters.add(highGroundUpdater);
             updaters.add(easternUpdater);
+
             return updaters;
 
         }

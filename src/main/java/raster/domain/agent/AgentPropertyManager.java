@@ -66,7 +66,7 @@ public  class AgentPropertyManager {
         }
     }
     
-     private static class StackSizePropertyGetter implements AgentPropertyGetter {
+    private static class StackSizePropertyGetter implements AgentPropertyGetter {
 
         @Override
         public Integer getAgentProperty(VectorAgent agent) {
@@ -79,10 +79,20 @@ public  class AgentPropertyManager {
         }
     }
 
+    private static class StepsTakenPropertyGetter implements AgentPropertyGetter {
+
+        @Override
+        public Integer getAgentProperty(VectorAgent agent) {
+            return agent.getStepsTaken();
+        }
+
+    }
+
     public static enum AgentProperty {
 
-        LATITUDE, LONGITUDE, COLUMN, ROW, STACK_SIZE;
+        LATITUDE, LONGITUDE, COLUMN, ROW, STACK_SIZE, STEPS_TAKEN;
     }
+
     private static final EnumMap<AgentProperty, AgentPropertyGetter<? extends Number>> numberMap;
 
     static {
@@ -90,6 +100,7 @@ public  class AgentPropertyManager {
         numberMap.put(AgentProperty.LONGITUDE, new LongitudePropertyGetter());
         numberMap.put(AgentProperty.LATITUDE, new LatitudePropertyGetter());
         numberMap.put(AgentProperty.STACK_SIZE, new StackSizePropertyGetter());
+        numberMap.put(AgentProperty.STEPS_TAKEN, new StepsTakenPropertyGetter());
     }
     
     public static Integer getIntegerAgentProperty(AgentProperty prop, VectorAgent agent){

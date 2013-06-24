@@ -23,11 +23,27 @@ public class VectorAgent {
     private Integer id = null;
     private float[] origin = new float[2];
     private Strategy movementStrategy = null;
-    private Stack<float[]> stackedPositions = null;
+    private Stack<float[]> stackedPositions = new Stack<float[]>();
     private int simpleDetectionRange = 0;
+    private int stepsTaken = 0;
+    private int dumbCounter = 0;
+
+    
+
+    public int getStepsTaken(){
+        return this.stepsTaken;
+    }
+
+    public void setStepsTaken(int count){
+        this.stepsTaken = count;
+    }
 
     public void setSimpleDetectionRange(int detectionRange){
         this.simpleDetectionRange = detectionRange;
+    }
+
+    private void updateStepsTaken(){
+        stepsTaken++;
     }
 
     public int getSimpleDetectionRange(){
@@ -106,6 +122,7 @@ public class VectorAgent {
 
     // rename to move?
     public void wander() {
+        updateStepsTaken();
         movementStrategy.calculateNextMove(this);
     }
 
