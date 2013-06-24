@@ -122,13 +122,16 @@ function flip(loc){
     return [loc[1],loc[0]];
 }
 
-function drawAgentLocation(data){
+function drawAgentLocation(data) {
     for(agentIndex in data){
         var tempLastPosition = getLastLocation(data[agentIndex].id);
         if(tempLastPosition){
+
             // draw line to this location
             var line = [new L.LatLng(tempLastPosition[1],tempLastPosition[0]), new L.LatLng(data[agentIndex].location[1], data[agentIndex].location[0])];
-            L.polyline(line,{color:'#0068CD'}).addTo(map)
+            var leafletLine = L.polyline(line,{color:'#0068CD'}).addTo(map);
+            pushLine(data[agentIndex].id,leafletLine);
+
         }else{
             L.circle(
                 flip(data[agentIndex].location), 
@@ -180,7 +183,7 @@ var resumeSim;
 
         window.clearTimeout(timeoutKey);
         setRunning(false);
-        
+
     }
 
     
@@ -201,20 +204,45 @@ var doViewshed
 })();
 
 
+
 var getLastLocation
 var setLastLocation
+var pushLine
 (function setupGetLastLocs(){
     
     lastLocs = {}
-    
+    lastLines = {}
+
+    pushLine = function(agentId, line){
+        if(!lastLines[agentId]){
+            lastLines[agentId] = [];
+        }
+        lastLines[agentId].push(line);
+        if(lastLines[agentId].length > 5){
+            for(var i = 0; i < lastLines[agentId].length - 20; i++){
+                map.removeLayer(lastLines[agentId][i]);
+            }
+            var howMuchGreater = lastLines[agentId] - 20; 
+            
+            var x=0;
+            while(x < howMuchGreater){
+                lastLines[agentId].splice(0,1);
+            }
+
+        }
+    }
+
+
     getLastLocation = function(agentId){
         return lastLocs[agentId]
     }
+
     
     setLastLocation = function(agentId,loc){
         lastLocs[agentId] = loc
     }
-    
+
+
 })();
 
 
