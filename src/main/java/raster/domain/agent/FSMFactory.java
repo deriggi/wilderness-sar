@@ -99,25 +99,25 @@ public class FSMFactory {
             SouthernDirectionUpdater south2 = new SouthernDirectionUpdater();
 
              // east to south
-            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 60);
+            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
             eastToSouthCondition.setNextState(south);
             east.setCondition(eastToSouthCondition);
             east.addExitObserver(new ClearStackExitObserver());
 
             // south to west
-            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 20);
+            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
             southToWestCondition.setNextState(west);
             south.setCondition(southToWestCondition);
             south.addExitObserver(new ClearStackExitObserver());
             
             // west to south
-            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 60);
+            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
             westToSouthCondition.setNextState(south2);
             west.setCondition(westToSouthCondition);
             west.addExitObserver(new ClearStackExitObserver());
             
             // close the loop south back to east
-            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 20);
+            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
             southToOriginalEastCondition.setNextState(east);
             south2.setCondition(southToOriginalEastCondition);
             south2.addExitObserver(new ClearStackExitObserver());
@@ -173,7 +173,7 @@ public class FSMFactory {
 
             // back to original east to close the loop
             StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 30);
-            backtrackUpdater2.setCondition(southToEastCondition);
+            southernUpdater.setCondition(southToEastCondition);
             southToEastCondition.setNextState(easternUpdater);
 
             
