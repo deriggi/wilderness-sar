@@ -40,20 +40,20 @@ var removeBBox;
 function getBoard(){
     
     $.post('/wisar/q/board', function(data){
-        nwlon = data.nwlon;
-        nwlat = data.nwlat;
+        var nwlon = data.nwlon;
+        var nwlat = data.nwlat;
         
-        selon = data.selon;
-        selat = data.selat;
+        var selon = data.selon;
+        var selat = data.selat;
 
         setGameBBox(nwlon, nwlat, selon, selat);
         
         
-        maxlat = data.maxlat;
-        maxlon = data.maxlon;
+        var maxlat = data.maxlat;
+        var maxlon = data.maxlon;
         
-        minlat = data.minlat;
-        minlon = data.minlon;
+        var minlat = data.minlat;
+        var minlon = data.minlon;
         
         L.marker([nwlat, nwlon], {
             draggable:false
@@ -77,7 +77,7 @@ function getBoard(){
 
 
 function makeLatLngs(coords){
-    linePoints = [];
+    var linePoints = [];
     for( coord in coords){
         linePoints.push(new L.LatLng(coords[coord][0],coords[coord][1])); 
     }
@@ -210,8 +210,8 @@ var setLastLocation
 var pushLine
 (function setupGetLastLocs(){
     
-    lastLocs = {}
-    lastLines = {}
+    var lastLocs = {}
+    var lastLines = {}
 
     pushLine = function(agentId, line){
         if(!lastLines[agentId]){
@@ -562,7 +562,7 @@ var getPageHandler;
 
 
     // page 1 handlers
-    page1 = [];
+    var page1 = [];
     page1.push(function() {
                         decrementPageNumber();
                         $('#agentdesigntitle').text('Agent Design');
@@ -586,7 +586,7 @@ var getPageHandler;
     );
 
     // page 2 handlers
-    page2 = [];
+    var page2 = [];
     page2.push(function() {
                         decrementPageNumber();
                         $('#agentdesigntitle').text('Select Behaviour');
