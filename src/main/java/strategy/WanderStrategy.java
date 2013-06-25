@@ -75,7 +75,7 @@ public class WanderStrategy implements Strategy {
         for (DirectionUpdater updater : updaters) {
             
             // apply update to agent velocity
-            updater.updateDirection(ownerAgent.getVelocityVector(), ownerAgent);
+            updater.updateDirectionCaller(ownerAgent.getVelocityVector(), ownerAgent);
             log.log(Level.INFO, "running {0}", updater.toString());
             
             // if there is a condition has been met

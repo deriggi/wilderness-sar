@@ -4,12 +4,8 @@
  */
 package strategy.updater;
 
-import java.util.ArrayList;
-import middletier.RasterConfig;
-import middletier.RasterLoader;
-import raster.domain.Raster2D;
-import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -28,6 +24,10 @@ public class DoNothingDirectionUpdater extends SkelatalDirectionUpdater{
         
         
         
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
     }
 
 

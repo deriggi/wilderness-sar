@@ -5,6 +5,7 @@
 package strategy.updater;
 
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -28,9 +29,12 @@ public class WesternDirectionUpdater extends SkelatalDirectionUpdater{
             dxDy[0] *= -1;
         }
         dxDy[0] -= ownerAgent.getSpeed();
-        ownerAgent.pushLoc();;
+        ownerAgent.pushLoc();
         
-        
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
     }
 
     

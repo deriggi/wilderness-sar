@@ -10,6 +10,7 @@ import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -28,11 +29,15 @@ public class LowerGroundDirectionUpdater extends SkelatalDirectionUpdater {
         
         float[] acceleration = raster.calculateForcesAgainst(loc, pointsOfInterest);
         
-        dxDy[0] += acceleration[0]*0.2;
-        dxDy[1] += acceleration[1]*0.2;
+        dxDy[0] += acceleration[0];
+        dxDy[1] += acceleration[1];
         
         
         
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
     }
     
 }

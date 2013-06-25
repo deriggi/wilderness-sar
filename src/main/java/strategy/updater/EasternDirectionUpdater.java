@@ -6,6 +6,7 @@ package strategy.updater;
 
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -45,5 +46,10 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
 
 //        VectorUtils.limit(dxDy, 4.0);
 
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
+        
     }
 }

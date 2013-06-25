@@ -6,6 +6,7 @@ package strategy.updater;
 
 import java.util.Stack;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -33,5 +34,9 @@ public class BacktrackDirectionUpdater extends SkelatalDirectionUpdater {
         }
         
         // implement a place for an observer in skeltaldu so things can react to state changes
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
     }
 }

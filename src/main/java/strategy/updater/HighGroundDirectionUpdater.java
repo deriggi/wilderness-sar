@@ -10,6 +10,7 @@ import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -32,12 +33,16 @@ public class HighGroundDirectionUpdater extends SkelatalDirectionUpdater{
         
         float[] attractionForce = raster.calculateForcesAgainst(loc, highFlats);
         // apply this force vector to the agent
-        dxDy[0] += attractionForce[0];//*0.2f;
-        dxDy[1] += attractionForce[1];///*0.2f;
+        dxDy[0] += attractionForce[0];
+        dxDy[1] += attractionForce[1];
         
         // apply this force vector to the agent
         
         
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
     }
 
 

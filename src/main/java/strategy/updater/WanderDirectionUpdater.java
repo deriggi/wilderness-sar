@@ -6,6 +6,7 @@ package strategy.updater;
 
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -45,5 +46,9 @@ public class WanderDirectionUpdater extends SkelatalDirectionUpdater {
 
     private double getALittle() {
         return Math.random() - Math.random();
+    }
+
+    @Override
+    public void notifyMe(UpdaterMessage message) {
     }
 }

@@ -93,39 +93,49 @@ public class FSMFactory {
     private static class ValleyRidgeMowerMaker implements FSMMaker {
         @Override
         public List<DirectionUpdater> makeMachine(){
-
+            //=============
+            // track 1
             EasternDirectionUpdater east = new EasternDirectionUpdater();
             SouthernDirectionUpdater south = new SouthernDirectionUpdater();
             WesternDirectionUpdater west = new WesternDirectionUpdater();
             SouthernDirectionUpdater south2 = new SouthernDirectionUpdater();
+            
+            //==============
+            // track 2
+            EastHighsWestLowsDirectionUpdater eastHighsWestLows =  new EastHighsWestLowsDirectionUpdater();
+            
+            // easthighswestlows must shut off when south starts and on when south ends so it listens for both
+            south.addUpdaterListener(eastHighsWestLows);
+            south2.addUpdaterListener(eastHighsWestLows);
+            
 
              // east to south
-            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
+            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
             eastToSouthCondition.setNextState(south);
             east.setCondition(eastToSouthCondition);
             east.addExitObserver(new ClearStackExitObserver());
 
             // south to west
-            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
+            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 90);
             southToWestCondition.setNextState(west);
             south.setCondition(southToWestCondition);
             south.addExitObserver(new ClearStackExitObserver());
             
             // west to south
-            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
+            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
             westToSouthCondition.setNextState(south2);
             west.setCondition(westToSouthCondition);
             west.addExitObserver(new ClearStackExitObserver());
             
             // close the loop south back to east
-            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 120);
+            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 90 );
             southToOriginalEastCondition.setNextState(east);
             south2.setCondition(southToOriginalEastCondition);
             south2.addExitObserver(new ClearStackExitObserver());
 
             List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
             updaterList.add(east);
-            updaterList.add(new EastHighsWestLowsDirectionUpdater());
+            updaterList.add(eastHighsWestLows);
             updaterList.add(new WanderDirectionUpdater());
 
             return updaterList;
@@ -197,7 +207,7 @@ public class FSMFactory {
 
 
             // ===============================
-            // concurrent state machine track!
+            // concurrent state machine track need this to disable seeking high on backtrack
             // ===============================
             StateCondition highToNothingCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
             highGroundUpdater.setCondition(highToNothingCondition);
