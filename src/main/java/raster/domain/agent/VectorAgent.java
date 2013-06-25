@@ -122,9 +122,10 @@ public class VectorAgent {
 
     // rename to move?
     public void wander() {
-        pushLoc();
+        
         movementStrategy.calculateNextMove(this);
         updateStepsTaken();
+        pushLoc();
     }
 
     // radians

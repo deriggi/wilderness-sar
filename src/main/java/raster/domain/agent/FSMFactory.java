@@ -159,7 +159,6 @@ public class FSMFactory {
 
             HighGroundDirectionUpdater highGroundUpdater2 = new HighGroundDirectionUpdater();
             DoNothingDirectionUpdater nothingUpdater2 = new DoNothingDirectionUpdater();
-
             HighGroundDirectionUpdater highGroundUpdater3 = new HighGroundDirectionUpdater();
 
 

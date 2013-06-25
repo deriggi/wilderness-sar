@@ -32,7 +32,7 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
             dxDy[0] *= -1;
         }
         dxDy[0] += ownerAgent.getSpeed();
-        
+        // owernAgent.pushLoc();
         
 
 //        double[] lonlat = RasterLoader.get(RasterConfig.BIG).getData().getLonLat(ownerAgent.getLocation()[0], ownerAgent.getLocation()[1]);
