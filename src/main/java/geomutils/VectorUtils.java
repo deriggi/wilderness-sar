@@ -12,11 +12,11 @@ package geomutils;
 public class VectorUtils {
     
     public static double distance(int[] start, int[] end){
-        return Math.sqrt(Math.pow(end[0] - end[1], 2) + Math.pow(start[0] - start[1], 2));
+        return Math.sqrt(Math.pow(end[1] - start[1], 2) + Math.pow(end[0] - start[0], 2));
     }
 
     public static double distance(float[] start, float[] end){
-        return Math.sqrt(Math.pow(end[0] - end[1], 2) + Math.pow(start[0] - start[1], 2));
+        return Math.sqrt(Math.pow(end[1] - start[1], 2) + Math.pow(end[0] - start[0], 2));
     }
     
     public static double magnitude(double[] vector){

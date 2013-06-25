@@ -258,29 +258,28 @@ public class FSMFactory {
             SouthernDirectionUpdater southern2Updater = new SouthernDirectionUpdater();
             
             // east to south
-            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 60);
+            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
             eastToSouthCondition.setNextState(southernUpdater);
             easternUpdater.setCondition(eastToSouthCondition);
             easternUpdater.addExitObserver(new ClearStackExitObserver());
 
             // south to west
-            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 20);
+            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 10);
             southToWestCondition.setNextState(westernUpdater);
             southernUpdater.setCondition(southToWestCondition);
             southernUpdater.addExitObserver(new ClearStackExitObserver());
             
             // west to south
-            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 60);
+            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
             westToSouthCondition.setNextState(southern2Updater);
             westernUpdater.setCondition(westToSouthCondition);
             westernUpdater.addExitObserver(new ClearStackExitObserver());
             
             // close the loop south back to east
-            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 20);
+            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 10);
             southToOriginalEastCondition.setNextState(easternUpdater);
             southern2Updater.setCondition(southToOriginalEastCondition);
             southern2Updater.addExitObserver(new ClearStackExitObserver());
-            
             
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(westernUpdater);

@@ -76,16 +76,18 @@ public class WanderStrategy implements Strategy {
             
             // apply update to agent velocity
             updater.updateDirectionCaller(ownerAgent.getVelocityVector(), ownerAgent);
-            log.log(Level.INFO, "running {0}", updater.toString());
             
-            // if there is a condition has been met
+            if(ownerAgent.foundOthers(ownerAgent.getSimpleDetectionRange())){
+                log.log(Level.INFO, "detection happened!");
+            }
+            
+            log.log(Level.FINE, "running {0}", updater.toString());
+            
+            // if a condition has been met
             if(updater.switchIfConditionMet(ownerAgent)){
                 switches.add(new Switch(updater, updater.getNextState()));
             }
             
-            // does update if needed
-//            DirectionUpdater newState = updater.getNextState();
-//            replaceIfNotNull(updater, newState);
         }
         
         // swap out accelerators if need be

@@ -14,19 +14,18 @@ import raster.domain.agent.AgentPropertyManager.AgentProperty;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.VectorAgent;
 import geomutils.VectorUtils;
+import java.util.logging.Level;
 import strategy.DirectionUpdater;
 import strategy.updater.HighGroundDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.WanderStrategy;
 import strategy.updater.BacktrackDirectionUpdater;
-import strategy.updater.WanderDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
 import strategy.updater.condition.Conditioner.Condish;
 import strategy.updater.condition.DoubleAgentStateCondition;
 import strategy.updater.condition.IntegerAgentStateCondition;
 import strategy.updater.condition.StateCondition;
 import strategy.updater.observer.ClearStackExitObserver;
-import strategy.updater.observer.DirectionUpdaterObserver;
 
 /**
  *
@@ -44,9 +43,7 @@ public class AgentService {
         return nextId++;
     }
     
-    public void printSomething(){
-        System.out.println("hiii");
-    }
+    
     
     public VectorAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
         VectorAgent a = new VectorAgent();
@@ -55,6 +52,7 @@ public class AgentService {
         a.setOrigin(new float[]{column,row});
         a.setId(getNextId());
         agents.put(a.getId(), a);
+        a.setSimpleDetectionRange(20);
         
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
@@ -131,6 +129,8 @@ public class AgentService {
                 continue;
             }
             double distance = VectorUtils.distance(loc, someAgent.getLocation());
+            
+            log.log(Level.INFO, "distance to others {0} ", distance);
             
             if(distance <= range){
                 distanceAgentMap.put(distance, someAgent);

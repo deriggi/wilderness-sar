@@ -89,7 +89,6 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
                 updater.notifyMe(finish);
             }
         }
-
     }
 
     public void addExitObserver(DirectionUpdaterObserver observer) {

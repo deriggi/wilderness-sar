@@ -24,7 +24,7 @@ var removeBBox;
         removeBBox();
         bounds = [[this.nwlat, this.nwlon], [this.selat, this.selon]];
         bbox = L.rectangle(bounds, {color:'#3498DB', weight:0}).addTo(theMap)
-        theMap.fitBounds(bounds);
+//        theMap.fitBounds(bounds);
     }
 
     removeBBox = function(){

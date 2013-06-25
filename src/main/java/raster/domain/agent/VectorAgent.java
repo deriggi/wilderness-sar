@@ -25,7 +25,6 @@ public class VectorAgent {
     private Stack<float[]> stackedPositions = new Stack<float[]>();
     private int simpleDetectionRange = 0;
     private int stepsTaken = 0;
-    private int dumbCounter = 0;
 
     
 

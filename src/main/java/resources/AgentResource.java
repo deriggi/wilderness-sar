@@ -23,6 +23,7 @@ import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.VectorAgent;
+import util.GsonGetter;
 
 
 /**
@@ -82,7 +83,7 @@ public class AgentResource {
         
         idLocs.add(aIdLoc);
         
-        return new Gson().toJson(idLocs);
+        return GsonGetter.get().toJson(idLocs);
     }
 
 
@@ -105,9 +106,7 @@ public class AgentResource {
 
         }
         
-        Gson gson = new Gson();
-        String json = gson.toJson(locs);
-        gson = null;
+        String json = GsonGetter.get().toJson(locs);
 
         return json;
 

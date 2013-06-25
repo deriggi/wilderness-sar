@@ -21,6 +21,7 @@ import raster.domain.ForceCalculator;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.VectorHolder;
+import util.GsonGetter;
 import webdomain.BoardFeatures;
 import webdomain.Neighborhood;
 import webdomain.RadialSearchResult;
@@ -60,7 +61,7 @@ public class GameBoardResource {
         
         double[][][] pois = raster.calculateViewShed(centerPoint[0], centerPoint[1], radius);
         
-        return new Gson().toJson(pois);
+        return GsonGetter.get().toJson(pois);
 
     }
 
@@ -133,7 +134,7 @@ public class GameBoardResource {
         Neighborhood radialSearch = new Neighborhood(bbox, null, lonLatSearchLine);
 
 
-        return new Gson().toJson(radialSearch);
+        return GsonGetter.get().toJson(radialSearch);
 //        }
     }
 
@@ -219,7 +220,7 @@ public class GameBoardResource {
 
         Neighborhood webnayb = new Neighborhood(bbox, pois, mostVector);
         webnayb.setNextMove(lonLatNextMove);
-        return new Gson().toJson(webnayb);
+        return GsonGetter.get().toJson(webnayb);
 
     }
 
@@ -241,8 +242,7 @@ public class GameBoardResource {
             hood.setBbox(null);
             hoods.add(hood);
         }
-        Gson gson = new Gson();
-        return gson.toJson(hoods);
+        return GsonGetter.get().toJson(hoods);
 
     }
 
@@ -299,8 +299,7 @@ public class GameBoardResource {
         Neighborhood hood = new Neighborhood(bbox, ridge, forceVector);
         hood.setNextMove(lonLatNextMove);
 
-        Gson gson = new Gson();
-        return gson.toJson(hood);
+        return GsonGetter.get().toJson(hood);
     }
 
     private Neighborhood iterateOnce(double lon, double lat, String direction) {
