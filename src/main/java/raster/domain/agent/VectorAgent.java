@@ -12,7 +12,6 @@ import middletier.RasterConfig;
 import middletier.RasterLoader;
 import strategy.Strategy;
 import raster.domain.AgentService;
-import raster.domain.agent.IdLoc;
 
 /**
  *
@@ -125,7 +124,7 @@ public class VectorAgent {
         
         movementStrategy.calculateNextMove(this);
         updateStepsTaken();
-        pushLoc();
+//        pushLoc();
     }
 
     // radians

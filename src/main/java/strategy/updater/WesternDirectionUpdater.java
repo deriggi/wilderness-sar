@@ -28,7 +28,7 @@ public class WesternDirectionUpdater extends SkelatalDirectionUpdater{
             dxDy[0] *= -1;
         }
         dxDy[0] -= ownerAgent.getSpeed();
-        
+        ownerAgent.pushLoc();;
         
         
     }

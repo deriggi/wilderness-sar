@@ -32,6 +32,6 @@ public class SouthernDirectionUpdater extends SkelatalDirectionUpdater {
         }
         
         dxDy[1] += ownerAgent.getSpeed();
-
+        ownerAgent.pushLoc();
     }
 }

@@ -16,7 +16,6 @@ import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
 import strategy.updater.condition.Conditioner.Condish;
-import strategy.updater.condition.DoubleAgentStateCondition;
 import strategy.updater.condition.StateCondition;
 import strategy.updater.HighGroundDirectionUpdater;
 import strategy.updater.LowerGroundDirectionUpdater;
@@ -183,7 +182,7 @@ public class FSMFactory {
             back2Condition.setNextState(southernUpdater);
 
             // back to original east to close the loop
-            StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 50);
+            StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 100);
             southernUpdater.setCondition(southToEastCondition);
             southToEastCondition.setNextState(easternUpdater);
 
@@ -216,7 +215,7 @@ public class FSMFactory {
             nothingUpdater2.setCondition(nothingToHighCondition2);
             nothingToHighCondition2.setNextState(highGroundUpdater3);
 
-            StateCondition highToHighCondition = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
+            StateCondition highToHighCondition = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 100);
             highGroundUpdater3.setCondition(highToHighCondition);
             highToHighCondition.setNextState(highGroundUpdater);
 
