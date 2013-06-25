@@ -33,7 +33,7 @@ public class NorthernDirectionUpdater extends SkelatalDirectionUpdater {
         }
         
         dxDy[1] -= ownerAgent.getSpeed();
-        ownerAgent.pushLoc();
+        
         
         
 //        float[] origin = ownerAgent.getOrigin();

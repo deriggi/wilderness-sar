@@ -3,7 +3,9 @@
 
 var map;
 
-
+//=====================
+// bbox 
+//=====================
 var setGameBBox;
 var displayBBox;
 var removeBBox;
@@ -33,10 +35,13 @@ var removeBBox;
         
     }
 
-
-
 })();
 
+
+
+//=====================
+// retrieve the gameboard metadata
+//=====================
 function getBoard(){
     
     $.post('/wisar/q/board', function(data){
@@ -73,9 +78,9 @@ function getBoard(){
 }
 
 
-
-
-
+//=====================
+// convert points into leaflet latlngs
+//=====================
 function makeLatLngs(coords){
     var linePoints = [];
     for( coord in coords){
@@ -84,12 +89,25 @@ function makeLatLngs(coords){
     return linePoints;
 }
 
+//=====================
+// axis ordering fuck!
+//=====================
 function flip(lonLat){
     return [lonLat[1],lonLat[0]];
 }
 
+//=====================
+// axis ordering again!
+//=====================
+// function flip(loc){
+//     return [loc[1],loc[0]];
+//}
 
 
+
+//=====================
+// display crazy viewshed polygons
+//=====================
 function showViewshed(viewshedPolygons){
     var tempPolygon;
     var multipolygon = [];
@@ -117,11 +135,9 @@ function showViewshed(viewshedPolygons){
 }
 
 
-// create agents will make  a js holder to keep track of previous point so that linees can be drawn
-function flip(loc){
-    return [loc[1],loc[0]];
-}
-
+//=====================
+// display agnet and box
+//=====================
 function drawAgentLocation(data) {
     for(agentIndex in data){
         var tempLastPosition = getLastLocation(data[agentIndex].id);
@@ -144,10 +160,11 @@ function drawAgentLocation(data) {
 
     
 
-
+//=====================
+// repeating call to move agent
+//=====================
 function wander(){
     
-    //        alert('sending ' + '/wisar/q/board/highflats/'+nexty[1] + '/' + nexty[0] + '/' + direction);
     $.post('/wisar/q/agent/wander/', function(data){
         
         drawAgentLocation(data);
@@ -157,10 +174,13 @@ function wander(){
     
 }
 
+
+//=====================
+// maintain running state
+//=====================
 var isRunning;
 var setRunning;
 var setTimeoutKey;
-
 var stopSim;
 var resumeSim;
 (function setupIsRunning(){
@@ -191,6 +211,9 @@ var resumeSim;
 })();
 
 
+//=====================
+// retireve the viewshed for a location
+//=====================
 var doViewshed
 (function setupViewshed(){
     
@@ -205,6 +228,9 @@ var doViewshed
 
 
 
+//=====================
+// remove tail of agent path
+//=====================
 var getLastLocation
 var setLastLocation
 var pushLine
@@ -245,7 +271,9 @@ var pushLine
 
 })();
 
-
+//=====================
+// handle behaviour selection
+//=====================
 var getSelectedBehaviourItem;
 var setSelectedBehaviourItem;
 (function setupSelectBehaviourItem(){
@@ -268,6 +296,9 @@ var setSelectedBehaviourItem;
 })();
 
 
+//=====================
+// handle agne type selection
+//=====================
 var getSelectedTypeItem;
 var setSelectedTypeItem;
 (function setupSelectBehaviourItem(){
@@ -291,6 +322,9 @@ var setSelectedTypeItem;
 })();
 
 
+//=====================
+// update style of selected behaviour
+//=====================
 var selectBehaviorLink
 (function setupBehaviorSelectionLink(){
     this.selectedLink = null;
@@ -303,6 +337,10 @@ var selectBehaviorLink
     }
 })();
 
+
+//=====================
+// get maptiles and setup event handlers
+//=====================
 function setupMap(){
     
     map = new L.Map('map', {
@@ -322,6 +360,10 @@ function setupMap(){
 
 }
 
+
+//=====================
+// fetch behaviours
+//=====================
 function getThemBehaviours(){
     var ul = makeList();
     
@@ -334,6 +376,9 @@ function getThemBehaviours(){
     });
 }
 
+//=====================
+// why am i doing this dynamically?
+//=====================
 function makeAgentTypes(){
     var ul = makeList();
 
@@ -343,6 +388,10 @@ function makeAgentTypes(){
     $('#page_1').append(ul);
 }
 
+
+//=====================
+// make the parent list ul item
+//=====================
 function makeList(theStyle){
     if(!theStyle){
         theStyle = 'behaviourlist'
@@ -353,6 +402,9 @@ function makeList(theStyle){
 }
 
 
+//=====================
+// make the item and handle clicks
+//=====================
 function makeListItem(data, theStyle, getter, setter){
     if(!theStyle){
         theStyle = 'behaviouritem'
@@ -364,6 +416,10 @@ function makeListItem(data, theStyle, getter, setter){
     return li;
 }
 
+
+//=====================
+// handle clicks of list items
+//=====================
 function giveItemClickyBehaviour(listItem, getter, setter){
     
     $(listItem).click(function(){
@@ -418,10 +474,10 @@ var setAction;
     doNothingAction = function(e) {}
     setLocationAction = function(e) {
 
-        ltlng = e.latlng;
-        lat = ltlng.lat;
-        lng = ltlng.lng;
-        someMarker = L.marker([lat, lng], {
+        var ltlng = e.latlng;
+        var lat = ltlng.lat;
+        var lng = ltlng.lng;
+        var someMarker = L.marker([lat, lng], {
             draggable:true
         } ).addTo(map);
 
@@ -507,6 +563,10 @@ function VectorAgent(behaviour, startLon, startLat, agentType){
 }
 
 
+
+//=====================
+// keep track of page number for agent dialog
+//=====================
 var getPageNumber;
 var resetPageNumber;
 var incrementPageNumber;
