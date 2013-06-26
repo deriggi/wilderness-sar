@@ -4,7 +4,6 @@
  */
 package resources;
 
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -66,7 +65,7 @@ public class AgentResource {
         if( (agentType != null) && agentType.toLowerCase().startsWith("uav")) {
             speed = 4;
         }else{
-            speed = 2;
+            speed = 0.25f;
         }
 
         

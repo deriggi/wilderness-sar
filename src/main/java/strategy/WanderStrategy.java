@@ -78,7 +78,7 @@ public class WanderStrategy implements Strategy {
             updater.updateDirectionCaller(ownerAgent.getVelocityVector(), ownerAgent);
             
             if(ownerAgent.foundOthers(ownerAgent.getSimpleDetectionRange())){
-                log.log(Level.INFO, "detection happened!");
+                log.log(Level.INFO, "detected something");
             }
             
             log.log(Level.FINE, "running {0}", updater.toString());

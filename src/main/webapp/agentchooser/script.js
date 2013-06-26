@@ -280,17 +280,17 @@ var setSelectedBehaviourItem;
     
     var selectedBehaviour;
     getSelectedBehaviourItem = function(){
-        return this.selectedBehaviour;
+        return selectedBehaviour;
     }
 
     setSelectedBehaviourItem = function(theBehaviour){
         if(theBehaviour == null){
-            this.selectedBehaviour = null;
+            selectedBehaviour = null;
             return;
         }
 
-        this.selectedBehaviour = theBehaviour;
-        setAgentBehaviour(this.selectedBehaviour.text())        
+        selectedBehaviour = theBehaviour;
+        setAgentBehaviour(selectedBehaviour.text())        
     }
 
 })();
@@ -327,13 +327,13 @@ var setSelectedTypeItem;
 //=====================
 var selectBehaviorLink
 (function setupBehaviorSelectionLink(){
-    this.selectedLink = null;
+    var selectedLink = null;
     selectBehaviorLink = function(someLink){
-        if(this.selectedLink != null){
-            $(this.selectedLink).css('text-decoration', 'none');
+        if(selectedLink != null){
+            $(selectedLink).css('text-decoration', 'none');
         }
-        this.selectedLink = someLink;
-        $(this.selectedLink).css('text-decoration', 'underline');
+        selectedLink = someLink;
+        $(selectedLink).css('text-decoration', 'underline');
     }
 })();
 
@@ -545,9 +545,9 @@ var isAgentComplete;
     }
 
     resetAgentCreator = function(){
-        this.behaviour = null;
-        this.agentMarker = null;
-        this.agentType = null;
+        behaviour = null;
+        agentMarker = null;
+        agentType = null;
     }
 
 })();
