@@ -37,7 +37,7 @@ public class FSMFactory {
 
         EAST_WEST_HIGHS("East west highs"), 
         EAST_WEST_LOWS("East west lows"),
-        EAST_WEST_LAWN_MOWER("East west lawnmore"),
+        EAST_WEST_LAWN_MOWER("East west lawnmower"),
         SIMPLE_WANDER("Wander"), 
         LOW_EAST_WANDER("East lows"), 
         LOW_WEST_WANDER("West lows"),
@@ -69,9 +69,7 @@ public class FSMFactory {
         MachineName machine = null;
 
         try{
-            
              machine = MachineName.valueOf(behaviour);
-            
 
         } catch (IllegalArgumentException iae){
             log.log(Level.SEVERE,"unknown machine name {0}", new Object[]{behaviour});
@@ -107,7 +105,6 @@ public class FSMFactory {
             // easthighswestlows must shut off when south starts and on when south ends so it listens for both
             south.addUpdaterListener(eastHighsWestLows);
             south2.addUpdaterListener(eastHighsWestLows);
-            
 
              // east to south
             StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);

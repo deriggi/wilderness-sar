@@ -305,17 +305,17 @@ var setSelectedTypeItem;
     
     var selectedTypeItem;
     getSelectedTypeItem = function(){
-        return this.selectedTypeItem;
+        return selectedTypeItem;
     }
 
     setSelectedTypeItem = function(theAgentType){
         if(theAgentType == null){
-            this.selectedTypeItem = null;
+            selectedTypeItem = null;
             return;
         }
 
-        this.selectedTypeItem = theAgentType;
-        setAgentType(this.selectedTypeItem.text())
+        selectedTypeItem = theAgentType;
+        setAgentType(selectedTypeItem.text())
         // if uav type set velocity to 4 otherwise 2
     }
 
@@ -467,8 +467,6 @@ var handleMapClick;
 var setAction;
 (function setupMapClickHandler(){
     
-    var isCreateAgentMode = false;
-    var isCreateAgentMode = false;
     var actionHolder = {};
 
     doNothingAction = function(e) {}
@@ -511,9 +509,9 @@ var isAgentComplete;
     isAgentComplete = function(){
         
         if(
-            this.behaviour != null && 
-            this.agentType != null &&
-            this.agentMarker != null
+            behaviour != null && 
+            agentType != null &&
+            agentMarker != null
             ){
             return true;
         }
@@ -522,28 +520,28 @@ var isAgentComplete;
     }
 
     setAgentBehaviour = function(b){
-        this.behaviour = b;
+        behaviour = b;
     }
 
     setAgentMarker = function(someMarker){
-        this.agentMarker = someMarker;
+        agentMarker = someMarker;
     }
 
     setAgentType = function(t){
-        this.agentType = t;
+        agentType = t;
     }
 
     getConstructedAgent = function(){
         var myLat, myLng;
 
-        if(this.agentMarker != null){
-            var latlng = this.agentMarker.getLatLng();
+        if(agentMarker != null){
+            var latlng = agentMarker.getLatLng();
             myLat = latlng.lat;
             myLng = latlng.lng;
             
 
         }
-        return new VectorAgent(this.behaviour, myLng, myLat, this.agentType);
+        return new VectorAgent(behaviour, myLng, myLat, agentType);
     }
 
     resetAgentCreator = function(){
