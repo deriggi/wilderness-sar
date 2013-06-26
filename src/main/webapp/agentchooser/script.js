@@ -136,7 +136,7 @@ function showViewshed(viewshedPolygons){
 
 
 //=====================
-// display agnet and box
+// display agent and box
 //=====================
 function drawAgentLocation(data) {
     for(agentIndex in data){
@@ -155,10 +155,21 @@ function drawAgentLocation(data) {
                 {weight:1}).addTo(map);
         }
         setLastLocation(data[agentIndex].id, data[agentIndex].location);
+        
+        if(data[agentIndex].nameTag == 'uav' && data[agentIndex].foundOthers == true){
+            showFindings( data[agentIndex] );
+        }
+        
     }
 }
 
+
+function showFindings(findingsData){
+    var timestep = findingsData.timestep;
     
+    $('#findings').show();
+    $('#timestepfound').text(timestep);
+}
 
 //=====================
 // repeating call to move agent
@@ -174,6 +185,20 @@ function wander(){
     
 }
 
+//=====================
+// run all agents until one is found
+//=====================
+function runsim(){
+    
+    $.post('/wisar/q/agent/runsim/', function(data){
+        
+        drawAgentLocation(data);
+        
+
+    });
+    
+}
+
 
 //=====================
 // maintain running state
@@ -184,7 +209,6 @@ var setTimeoutKey;
 var stopSim;
 var resumeSim;
 (function setupIsRunning(){
-    var keepRunning = true;
     var running = false;
     var timeoutKey;
     isRunning = function(){

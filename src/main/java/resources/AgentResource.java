@@ -17,7 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
-import raster.domain.AgentService;
+import middletier.AgentService;
 import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.FSMFactory;
@@ -62,16 +62,20 @@ public class AgentResource {
         FSMFactory.MachineName behave = FSMFactory.getMachineName(behaviour);
 
         float speed = 0;
+        String nameTag;
         if( (agentType != null) && agentType.toLowerCase().startsWith("uav")) {
+            
             speed = 4;
+            nameTag = "uav";
         }else{
             speed = 0.25f;
+            nameTag = "lost";
         }
 
-        
         AgentService service = AgentService.get();
         
         VectorAgent a = service.createAgent(position[0], position[1], speed, behave);
+        a.setNameTag(nameTag);
         
         double[] aLonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
         IdLoc aIdLoc = a.toIdLoc();
@@ -84,29 +88,29 @@ public class AgentResource {
         
         return GsonGetter.get().toJson(idLocs);
     }
-
+    
+    @POST
+    @Path("/runsim/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String runSim() {
+        
+        AgentService service = AgentService.get();
+        ArrayList<IdLoc> locs = service.runUntilFound();
+        
+        String json = GsonGetter.get().toJson(locs);
+        
+        return json;
+    }
 
     @POST
     @Path("/wander/")
     @Produces(MediaType.APPLICATION_JSON)
     public String wanderAllAgents() {
         
-        Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
-        Collection<VectorAgent> agents = AgentService.get().getAllAgents();
-        ArrayList<IdLoc> locs = new ArrayList<IdLoc>();
-        
-        for (VectorAgent a : agents) {
-
-            a.wander();
-            double[] lonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
-            IdLoc idLoc = a.toIdLoc();
-            idLoc.setLocation( lonLat );
-            locs.add( idLoc );
-
-        }
-        
+        AgentService service = AgentService.get();
+        ArrayList<IdLoc> locs = service.runAgents();
         String json = GsonGetter.get().toJson(locs);
-
+        
         return json;
 
         

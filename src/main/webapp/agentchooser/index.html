@@ -49,6 +49,10 @@
                     wander();
                     setRunning(true);
                 });
+                
+                $('#runsim').click(function(){
+                    runsim();
+                });
 
                 $('#nextpage').click(function(){
                     getPageHandler(getPageNumber())[1]();
@@ -123,10 +127,14 @@
                     
                     <p> Run the sim </p>
 
-                    <p> <a  id='wander' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Start </a> </p>
-
+                    <p> <a  id='wander' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Step </a> </p>
+                    <p> <a  id='runsim' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Run </a> </p>
                     <p> <a id='stopsim' href='#' class ='btn btn-large btn-info' style='cursor:pointer;'> Pause </a> </p>
                     
+                </div>
+                
+                <div class="clearfix section" style ='display:none' id ='findings'>
+                    <p>Detection at timestep: <span id='timestepfound'></span> </p>
                 </div>
 
             </div>

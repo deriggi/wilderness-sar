@@ -21,40 +21,14 @@ public class WanderStrategy implements Strategy {
 //    private VectorAgent ownerAgent = null;
     // throttles the amount wandering at each step
     private List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-    private final float DEFAULT_WANDER = 5.0f;
-    private float denom = DEFAULT_WANDER;
-    private final float PI_FLOAT = (float) Math.PI;
-    private float wanderingNess = (float) (PI_FLOAT / denom);
-    private float increment = 0.5f;
-
-    // increase the wandering by an increment 
-    public void increaseWander() {
-        increaseWander(1);
+    private int timesteps = 0;
+    
+    
+    @Override
+    public Integer getTimestep(){
+        return timesteps;
     }
-
-    public void resetWander() {
-        denom = DEFAULT_WANDER;
-    }
-
-    public void increaseWander(int scale) {
-        if (denom < increment) {
-            denom = increment;
-            return;
-        }
-        denom -= scale * increment;
-    }
-
-    public void decreaseWander() {
-        decreaseWander(1);
-    }
-
-    public void decreaseWander(int scale) {
-        if (denom > 2 * PI_FLOAT) {
-            denom = 2 * PI_FLOAT;
-            return;
-        }
-        denom += scale * increment;
-    }
+    
 
     private void replaceIfNotNull(DirectionUpdater oldUpdater, DirectionUpdater newUpdater) {
         if (newUpdater == null) {
@@ -64,6 +38,7 @@ public class WanderStrategy implements Strategy {
         updaters.remove(oldUpdater);
         updaters.add(index, newUpdater);
     }
+    
     
 
     @Override
@@ -96,11 +71,12 @@ public class WanderStrategy implements Strategy {
         }
         
         
-//        double amountToSteer = wanderingNess * getALittle();
-//        double[] desiredVector = ownerAgent.steer(amountToSteer);
-        
-        // probably just make an add thing
+        // make the move
         ownerAgent.steer(ownerAgent.getVelocityVector(), 1);
+        
+        // timesteps for this strategy
+        timesteps++;
+        
 
     }
 

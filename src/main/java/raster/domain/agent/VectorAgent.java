@@ -8,10 +8,11 @@ import geomutils.VectorUtils;
 import java.util.Stack;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import strategy.Strategy;
-import raster.domain.AgentService;
+import middletier.AgentService;
 
 /**
  *
@@ -19,13 +20,24 @@ import raster.domain.AgentService;
  */
 public class VectorAgent {
 
+    private static final Logger log = Logger.getLogger(VectorAgent.class.getName());
+    
     private Integer id = null;
     private float[] origin = new float[2];
     private Strategy movementStrategy = null;
     private Stack<float[]> stackedPositions = new Stack<float[]>();
-    private int simpleDetectionRange = 0;
+    private int simpleDetectionRange = 20;
     private int stepsTaken = 0;
+    private String nameTag;
 
+    public String getNameTag() {
+        return nameTag;
+    }
+
+    public void setNameTag(String nameTag) {
+        this.nameTag = nameTag;
+    }
+    
     
 
     public int getStepsTaken(){
@@ -48,6 +60,9 @@ public class VectorAgent {
         return simpleDetectionRange;
     }
 
+    public Strategy getMovementStrategy(){
+        return this.movementStrategy;
+    }
     public void setMovementStrategy(Strategy movementStrategy) {
         this.movementStrategy = movementStrategy;
     }
@@ -97,7 +112,7 @@ public class VectorAgent {
         IdLoc idLoc = new IdLoc();
         idLoc.setId(getId());
         idLoc.setFoundOthers(foundOthers(getSimpleDetectionRange()));
-
+        idLoc.setNameTag(getNameTag());
         return idLoc;
     }
 
@@ -107,7 +122,9 @@ public class VectorAgent {
 
 
     public boolean foundOthers(int range){
-        return detect(range).size() > 1;
+        int numberOfDetectedAgents = detect(range).size();
+        
+        return numberOfDetectedAgents > 0;
     }
 
 

@@ -859,10 +859,6 @@ public class Raster2D {
 
         //========================
 
-        long t1 = new Date().getTime();
-        log("subtracting {0} ", t1 + " " + t0);
-        long difference = t1 - t0;
-        log("neighbourood comp time: {0}", Float.toString(difference / 1000.0f));
 
         return slopeDataNeighborhood;
     }
@@ -923,7 +919,6 @@ public class Raster2D {
     }
 
     public ArrayList<ArrayList<SlopeDataCell>> getSlopeDataNeighborhood(int column, int row, int range) {
-        long t0 = new Date().getTime();
         ArrayList<ArrayList<SlopeDataCell>> slopeDataNeighborhood = new ArrayList<ArrayList<SlopeDataCell>>();
 
         for (int i = row - range; i < row + range + 1; i++) {
@@ -933,9 +928,8 @@ public class Raster2D {
             }
         }
 
-        long t1 = new Date().getTime();
-        long difference = t1 - t0;
-        log("neighbourood comp time: {0}", Float.toString(difference / 1000.0f));
+        
+        
 
         return slopeDataNeighborhood;
     }

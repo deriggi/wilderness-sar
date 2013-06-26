@@ -105,5 +105,10 @@ public class DirectionalWanderStrategy implements Strategy {
     public void addDirectionUpdater(DirectionUpdater updater) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public Integer getTimestep() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

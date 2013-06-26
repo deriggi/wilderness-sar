@@ -16,7 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
-import raster.domain.AgentService;
+import middletier.AgentService;
 import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.VectorAgent;

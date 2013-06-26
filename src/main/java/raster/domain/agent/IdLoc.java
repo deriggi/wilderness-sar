@@ -12,6 +12,25 @@ public class IdLoc {
     private int id;
     private double[] location;
     private Boolean foundOthers = null;
+    private Integer timestep = null;
+
+    public Integer getTimestep() {
+        return timestep;
+    }
+
+    public void setTimestep(Integer timestep) {
+        this.timestep = timestep;
+    }
+
+    public String getNameTag() {
+        return nameTag;
+    }
+
+    public void setNameTag(String nameTag) {
+        this.nameTag = nameTag;
+    }
+    private String nameTag = null;
+    
 
     public void setFoundOthers(boolean found){
         foundOthers = found;
