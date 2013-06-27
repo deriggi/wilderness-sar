@@ -8,11 +8,15 @@ import geomutils.VectorUtils;
 import java.util.Stack;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import strategy.Strategy;
 import middletier.AgentService;
+import raster.domain.Raster2D;
 
 /**
  *
@@ -24,11 +28,14 @@ public class VectorAgent {
     
     private Integer id = null;
     private float[] origin = new float[2];
-    private Strategy movementStrategy = null;
+//    private Strategy movementStrategy = null;
+    private List<Strategy> strategies = new ArrayList<Strategy>();
+    private int strategyIndex = 0;
     private Stack<float[]> stackedPositions = new Stack<float[]>();
     private int simpleDetectionRange = 20;
     private int stepsTaken = 0;
     private String nameTag;
+    
 
     public String getNameTag() {
         return nameTag;
@@ -61,12 +68,42 @@ public class VectorAgent {
     }
 
     public Strategy getMovementStrategy(){
-        return this.movementStrategy;
+        return strategies.get(strategyIndex);
     }
-    public void setMovementStrategy(Strategy movementStrategy) {
-        this.movementStrategy = movementStrategy;
+    
+    public void addMovementStrategy(Strategy movementStrategy) {
+        strategies.add(movementStrategy);
     }
-
+    
+    
+    
+    /**
+     * Do a smart strategy index update
+     */
+    public void incrementStrategyIndex(){
+        int numberOfStrategies = strategies.size();
+        if(strategyIndex+1 >= numberOfStrategies){
+            strategyIndex = 0;
+        }else{
+            strategyIndex++;
+        }
+    }
+    
+    public boolean isNextStepOutOfBounds(){
+        Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
+        float[] loc = getLocation();
+        
+        double[] v = getVelocityVector();
+        
+        double[] sum = VectorUtils.add(loc, VectorUtils.multiplyDonTouch(v, 4));
+        
+        
+        boolean isInBounds = raster.isInBounds(sum);
+        
+        return !isInBounds;
+        
+    }
+    
     public float[] getOrigin() {
         return origin;
     }
@@ -137,10 +174,17 @@ public class VectorAgent {
 
     // rename to move?
     public void wander() {
+        Strategy currentStrat = strategies.get(strategyIndex);
         
-        movementStrategy.calculateNextMove(this);
+        currentStrat.calculateNextMove(this);
         updateStepsTaken();
-//        pushLoc();
+        
+        // test strategy for condition for switching to next strategy
+        if(currentStrat.getIsTimeToSwitch(this)){
+            log.log(Level.INFO, "swithing from {0} ", new Object[]{currentStrat.getName()});
+            
+            incrementStrategyIndex();
+        }
     }
 
     // radians

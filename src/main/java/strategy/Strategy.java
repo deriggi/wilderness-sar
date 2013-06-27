@@ -14,8 +14,9 @@ public interface Strategy {
     
     public Integer getTimestep();
     public void calculateNextMove(VectorAgent ownerAgent);
-    
-    
+    public boolean getIsTimeToSwitch(VectorAgent ownerAgent);
+    public void setName(String name);
+    public String getName();
     public void addDirectionUpdater(DirectionUpdater updater);
     
     

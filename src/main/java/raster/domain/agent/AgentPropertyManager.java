@@ -53,6 +53,21 @@ public  class AgentPropertyManager {
             return "rick james";
         }
     }
+    
+    private static class NextStepWithinBoundsProeprtyGetter implements AgentPropertyGetter<Boolean> {
+
+        @Override
+        public Boolean getAgentProperty(VectorAgent agent) {
+            if (agent == null){
+                return false;
+            }
+            return agent.isNextStepOutOfBounds();
+        }
+
+        
+    }
+    
+    
 
     private static class LatitudePropertyGetter implements AgentPropertyGetter<Double> {
 
@@ -90,10 +105,12 @@ public  class AgentPropertyManager {
 
     public static enum AgentProperty {
 
-        LATITUDE, LONGITUDE, COLUMN, ROW, STACK_SIZE, STEPS_TAKEN;
+        LATITUDE, LONGITUDE, COLUMN, ROW, STACK_SIZE, STEPS_TAKEN, NEXT_STEP_OUT_OF_BOUNDS;
     }
 
     private static final EnumMap<AgentProperty, AgentPropertyGetter<? extends Number>> numberMap;
+    
+    private static final EnumMap<AgentProperty, AgentPropertyGetter<Boolean>> booleanMap;
 
     static {
         numberMap = new EnumMap<AgentProperty,  AgentPropertyGetter<? extends Number>>(AgentProperty.class);
@@ -101,6 +118,9 @@ public  class AgentPropertyManager {
         numberMap.put(AgentProperty.LATITUDE, new LatitudePropertyGetter());
         numberMap.put(AgentProperty.STACK_SIZE, new StackSizePropertyGetter());
         numberMap.put(AgentProperty.STEPS_TAKEN, new StepsTakenPropertyGetter());
+        
+        booleanMap = new EnumMap<AgentProperty,  AgentPropertyGetter<Boolean>>(AgentProperty.class);
+        booleanMap.put(AgentProperty.NEXT_STEP_OUT_OF_BOUNDS, new NextStepWithinBoundsProeprtyGetter());
     }
     
     public static Integer getIntegerAgentProperty(AgentProperty prop, VectorAgent agent){
@@ -109,5 +129,9 @@ public  class AgentPropertyManager {
     
     public static Double getDoubleAgentProperty(AgentProperty prop, VectorAgent agent){
         return numberMap.get(prop).getAgentProperty(agent).doubleValue();
+    }
+    
+    public static boolean getBooleanAgentProperty(AgentProperty prop, VectorAgent agent){
+        return booleanMap.get(prop).getAgentProperty(agent);
     }
 }

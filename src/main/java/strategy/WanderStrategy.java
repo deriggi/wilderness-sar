@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
+import strategy.updater.condition.ConditionChecker;
 
 /**
  *
@@ -17,12 +18,32 @@ import raster.domain.agent.VectorAgent;
  */
 public class WanderStrategy implements Strategy {
 
+    private String name;
     private static final Logger log = Logger.getLogger(WanderStrategy.class.getName());
 //    private VectorAgent ownerAgent = null;
     // throttles the amount wandering at each step
     private List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
     private int timesteps = 0;
     
+    private ConditionChecker conditionChecker = null;
+
+    public ConditionChecker getConditionChecker() {
+        return conditionChecker;
+    }
+
+    public void setConditionChecker(ConditionChecker conditionChecker) {
+        this.conditionChecker = conditionChecker;
+    }
+    
+    @Override
+    public boolean getIsTimeToSwitch(VectorAgent va){
+        
+        if(getConditionChecker() == null){
+            return false;
+        }
+        
+        return getConditionChecker().checkCondition(va);
+    }
     
     @Override
     public Integer getTimestep(){
@@ -89,5 +110,15 @@ public class WanderStrategy implements Strategy {
     
     public void addAllDirectinoUpdaters(List<DirectionUpdater> updadters){
         updaters.addAll(updadters);
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 }

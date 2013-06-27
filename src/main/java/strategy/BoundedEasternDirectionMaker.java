@@ -5,10 +5,8 @@
 package strategy;
 
 import geomutils.VectorUtils;
-import java.rmi.server.Skeleton;
 import raster.domain.agent.VectorAgent;
 import strategy.updater.SkelatalDirectionUpdater;
-import strategy.updater.condition.StateCondition;
 import strategy.updater.message.UpdaterMessage;
 
 /**
@@ -67,20 +65,12 @@ public class BoundedEasternDirectionMaker extends  SkelatalDirectionUpdater {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void setCondition(StateCondition sc) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public boolean switchIfConditionMet(VectorAgent vectorAgent) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void getCondition(StateCondition sc) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public void notifyMe(UpdaterMessage message) {

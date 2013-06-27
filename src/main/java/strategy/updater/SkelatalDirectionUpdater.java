@@ -4,14 +4,16 @@
  */
 package strategy.updater;
 
+import strategy.updater.notificationhandler.UpdaterNotificationHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
 import strategy.DirectionUpdater;
-import strategy.updater.condition.StateCondition;
+import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.message.FinishMessage;
 import strategy.updater.message.StartMessage;
+import strategy.updater.message.UpdaterMessage;
 import strategy.updater.observer.DirectionUpdaterObserver;
 
 /**
@@ -23,7 +25,23 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
     private static Logger log  =  Logger.getLogger(SkelatalDirectionUpdater.class.getName());
     
     private DirectionUpdater nextUpdater = null;
-    private StateCondition condition = null;
+    private UpdaterConditionChecker conditionChecker = null;
+    private List<UpdaterNotificationHandler> updaterNotificationHandlers  = new ArrayList<UpdaterNotificationHandler>();
+
+    @Override
+    public void addUpdaterNotificationHandler(UpdaterNotificationHandler handler){
+        updaterNotificationHandlers.add(handler);
+    }
+    
+    @Override
+    public UpdaterConditionChecker getConditionChecker() {
+        return conditionChecker;
+    }
+
+    @Override
+    public void setConditionChecker(UpdaterConditionChecker conditionChecker) {
+        this.conditionChecker = conditionChecker;
+    }
     private List<DirectionUpdaterObserver> observers = null;
     private List<DirectionUpdater> updaterObservers = null;
     private boolean started = false;
@@ -106,23 +124,7 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
         return nexty;
     }
 
-    /**
-     * 
-     * @param sc 
-     */
-    @Override
-    public void setCondition(StateCondition sc) {
-        this.condition = sc;
-    }
-
-    /**
-     * 
-     * @param sc 
-     */
-    @Override
-    public void getCondition(StateCondition sc) {
-        this.condition = sc;
-    }
+   
 
     /**
      * Checks if the condition is met then switches to the next tactic
@@ -131,12 +133,21 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
     @Override
     public boolean switchIfConditionMet(VectorAgent ownerAgent) {
         boolean isConditionMet = false;
-        if (this.condition != null && this.condition.checkState(ownerAgent)) {
-            this.nextUpdater = this.condition.getNextState();
+        if (getConditionChecker() != null && this.conditionChecker.checkCondition(ownerAgent)){
+            this.nextUpdater = getConditionChecker().getNextState();
             isConditionMet = true;
             notifyExitObservers(ownerAgent);
             started = false;
         }
         return isConditionMet;
+    }
+    
+     @Override
+    public void notifyMe(UpdaterMessage message) {
+         
+         for(UpdaterNotificationHandler handler : updaterNotificationHandlers){
+             handler.handleNotification(this, message);
+         }
+        
     }
 }

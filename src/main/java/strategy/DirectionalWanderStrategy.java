@@ -110,5 +110,20 @@ public class DirectionalWanderStrategy implements Strategy {
     public Integer getTimestep() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public boolean getIsTimeToSwitch(VectorAgent ownerAgent) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setName(String name) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

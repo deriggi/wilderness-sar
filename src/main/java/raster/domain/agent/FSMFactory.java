@@ -14,14 +14,18 @@ import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.DoNothingDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
+import strategy.updater.GoHomeDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
-import strategy.updater.condition.Conditioner.Condish;
-import strategy.updater.condition.StateCondition;
 import strategy.updater.HighGroundDirectionUpdater;
 import strategy.updater.LowerGroundDirectionUpdater;
 import strategy.updater.SouthernDirectionUpdater;
 import strategy.updater.WanderDirectionUpdater;
-import strategy.updater.condition.IntegerAgentStateCondition;
+import strategy.updater.conditionchecker.UpdaterConditionChecker;
+import strategy.updater.conditionchecker.StackSizeEqualToConditionChecker;
+import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
+import strategy.updater.conditionchecker.StepsTakenGreaterThanConditionChecker;
+import strategy.updater.notificationhandler.DisableOnBacktrackNotificationHandler;
+import strategy.updater.notificationhandler.DisableOnSouthNotificationHandler;
 import strategy.updater.observer.ClearStackExitObserver;
 import strategy.updater.observer.ClearStepsTakenExitObserver;
 
@@ -35,49 +39,44 @@ public class FSMFactory {
 
     public static enum MachineName {
 
-        EAST_WEST_HIGHS("East west highs"), 
+        EAST_WEST_HIGHS("East west highs"),
         EAST_WEST_LOWS("East west lows"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
-        SIMPLE_WANDER("Wander"), 
-        LOW_EAST_WANDER("East lows"), 
+        SIMPLE_WANDER("Wander"),
+        LOW_EAST_WANDER("East lows"),
         LOW_WEST_WANDER("West lows"),
         EAST_WEST_VALLEY_RIDGE("East highs west lows"),
+        GO_TO_ORIGIN("Wander home"),
         DO_NOTHING("Do nothing");
-
         private String displayName;
         private String description;
 
-        MachineName(String displayName){
+        MachineName(String displayName) {
             this.displayName = displayName;
         }
 
-        public String getDisplayName(){
+        public String getDisplayName() {
             return this.displayName;
         }
 
-        public String getDescription(){
+        public String getDescription() {
             return this.description;
         }
-        
-
     }
-
-
     private static final EnumMap<MachineName, FSMMaker> machineMap;
 
-    public static MachineName getMachineName(String behaviour){
+    public static MachineName getMachineName(String behaviour) {
         MachineName machine = null;
 
-        try{
-             machine = MachineName.valueOf(behaviour);
+        try {
+            machine = MachineName.valueOf(behaviour);
 
-        } catch (IllegalArgumentException iae){
-            log.log(Level.SEVERE,"unknown machine name {0}", new Object[]{behaviour});
+        } catch (IllegalArgumentException iae) {
+            log.log(Level.SEVERE, "unknown machine name {0}", new Object[]{behaviour});
         }
 
         return machine;
     }
-
 
     private static interface FSMMaker {
 
@@ -85,49 +84,51 @@ public class FSMFactory {
     }
 
     /**
-    *
-    *   East highs west lows in a lawn mower behavior 
-    */
+     *
+     *   East highs west lows in a lawn mower behavior 
+     */
     private static class ValleyRidgeMowerMaker implements FSMMaker {
+
         @Override
-        public List<DirectionUpdater> makeMachine(){
+        public List<DirectionUpdater> makeMachine() {
             //=============
             // track 1
             EasternDirectionUpdater east = new EasternDirectionUpdater();
             SouthernDirectionUpdater south = new SouthernDirectionUpdater();
             WesternDirectionUpdater west = new WesternDirectionUpdater();
             SouthernDirectionUpdater south2 = new SouthernDirectionUpdater();
-            
+
             //==============
             // track 2
-            EastHighsWestLowsDirectionUpdater eastHighsWestLows =  new EastHighsWestLowsDirectionUpdater();
+            EastHighsWestLowsDirectionUpdater eastHighsWestLows = new EastHighsWestLowsDirectionUpdater();
+            eastHighsWestLows.addUpdaterNotificationHandler(new DisableOnSouthNotificationHandler());
             
             // easthighswestlows must shut off when south starts and on when south ends so it listens for both
             south.addUpdaterListener(eastHighsWestLows);
             south2.addUpdaterListener(eastHighsWestLows);
 
-             // east to south
-            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
-            eastToSouthCondition.setNextState(south);
-            east.setCondition(eastToSouthCondition);
+            // east to south
+            UpdaterConditionChecker stackGreaterThan200 = new StackSizeGreaterThanConditionChecker(200);
+            stackGreaterThan200.setNextState(south);
+            east.setConditionChecker(stackGreaterThan200);
             east.addExitObserver(new ClearStackExitObserver());
 
             // south to west
-            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 90);
-            southToWestCondition.setNextState(west);
-            south.setCondition(southToWestCondition);
+            UpdaterConditionChecker stackGreaterThan90 = new StackSizeGreaterThanConditionChecker(90);
+            stackGreaterThan90.setNextState(west);
+            south.setConditionChecker(stackGreaterThan90);
             south.addExitObserver(new ClearStackExitObserver());
-            
+
             // west to south
-            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
-            westToSouthCondition.setNextState(south2);
-            west.setCondition(westToSouthCondition);
+            UpdaterConditionChecker stackGreaterThan200_B = new StackSizeGreaterThanConditionChecker(200);
+            stackGreaterThan200_B.setNextState(south2);
+            west.setConditionChecker(stackGreaterThan200_B);
             west.addExitObserver(new ClearStackExitObserver());
-            
+
             // close the loop south back to east
-            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 90 );
-            southToOriginalEastCondition.setNextState(east);
-            south2.setCondition(southToOriginalEastCondition);
+            UpdaterConditionChecker stackGreaterThan90_B = new StackSizeGreaterThanConditionChecker(90);
+            stackGreaterThan90_B.setNextState(east);
+            south2.setConditionChecker(stackGreaterThan90_B);
             south2.addExitObserver(new ClearStackExitObserver());
 
             List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
@@ -139,6 +140,7 @@ public class FSMFactory {
 
         }
     }
+
     /**
      * Swings east bactracks west, backtracks then goes south and repeats
      * Has no wander built into it
@@ -161,37 +163,32 @@ public class FSMFactory {
 
             // second track
             HighGroundDirectionUpdater highGroundUpdater = new HighGroundDirectionUpdater();
-            DoNothingDirectionUpdater nothingUpdater = new DoNothingDirectionUpdater();
-
-            HighGroundDirectionUpdater highGroundUpdater2 = new HighGroundDirectionUpdater();
-            DoNothingDirectionUpdater nothingUpdater2 = new DoNothingDirectionUpdater();
-            HighGroundDirectionUpdater highGroundUpdater3 = new HighGroundDirectionUpdater();
 
 
             // east to backtrack
-            StateCondition toBacktrackCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 50);
-            easternUpdater.setCondition(toBacktrackCondition);
-            toBacktrackCondition.setNextState(backtrackUpdater);
+            UpdaterConditionChecker stackGreaterThan50 = new StackSizeGreaterThanConditionChecker(50);
+            easternUpdater.setConditionChecker(stackGreaterThan50);
+            stackGreaterThan50.setNextState(backtrackUpdater);
 
             // backtrack to west
-            StateCondition toWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 0);
-            backtrackUpdater.setCondition(toWestCondition);
-            toWestCondition.setNextState(westernUpdater);
+            UpdaterConditionChecker stackEqualToChecker  = new StackSizeEqualToConditionChecker(0);
+            backtrackUpdater.setConditionChecker( stackEqualToChecker );
+            stackEqualToChecker.setNextState(westernUpdater);
 
             // west to backtrack -- owned by westernUpdate
-            StateCondition westToBacktrackCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 50);
-            westernUpdater.setCondition(westToBacktrackCondition);
-            westToBacktrackCondition.setNextState(backtrackUpdater2);
+            UpdaterConditionChecker stackGreaterThan50_b = new StackSizeGreaterThanConditionChecker(50);
+            westernUpdater.setConditionChecker(stackGreaterThan50_b);
+            stackGreaterThan50_b.setNextState(backtrackUpdater2);
 
             // back to south
-            StateCondition back2Condition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 0);
-            backtrackUpdater2.setCondition(back2Condition);
-            back2Condition.setNextState(southernUpdater);
+            UpdaterConditionChecker stackEqualToCheckerB  = new StackSizeEqualToConditionChecker(0);
+            backtrackUpdater2.setConditionChecker(stackEqualToCheckerB);
+            stackEqualToCheckerB.setNextState(southernUpdater);
 
             // back to original east to close the loop
-            StateCondition southToEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.EQ, 100);
-            southernUpdater.setCondition(southToEastCondition);
-            southToEastCondition.setNextState(easternUpdater);
+            UpdaterConditionChecker stackGreaterThan50_b2 = new StackSizeGreaterThanConditionChecker(50);
+            southernUpdater.setConditionChecker(stackGreaterThan50_b2);
+            stackGreaterThan50_b2.setNextState(easternUpdater);
 
             // // back to original east to close the loop
             // StateCondition southToNothingCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
@@ -202,34 +199,39 @@ public class FSMFactory {
             backtrackUpdater2.addExitObserver(new ClearStackExitObserver());
             southernUpdater.addExitObserver(new ClearStackExitObserver());
 
-
+            backtrackUpdater.addUpdaterListener(highGroundUpdater);
+            backtrackUpdater2.addUpdaterListener(highGroundUpdater);
+            southernUpdater.addUpdaterListener(highGroundUpdater);
+            highGroundUpdater.addUpdaterNotificationHandler(new DisableOnBacktrackNotificationHandler());
+            highGroundUpdater.addUpdaterNotificationHandler(new DisableOnSouthNotificationHandler());
+            
             // ===============================
             // concurrent state machine track need this to disable seeking high on backtrack
             // ===============================
-            StateCondition highToNothingCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
-            highGroundUpdater.setCondition(highToNothingCondition);
-            highToNothingCondition.setNextState(nothingUpdater);
-
-            StateCondition nothingToHighCondition = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 100);
-            nothingUpdater.setCondition(nothingToHighCondition);
-            nothingToHighCondition.setNextState(highGroundUpdater2);
-
-            StateCondition highToNothingCondition2 = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 50);
-            highGroundUpdater2.setCondition(highToNothingCondition2);
-            highToNothingCondition2.setNextState(nothingUpdater2);
-
-            StateCondition nothingToHighCondition2 = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 100);
-            nothingUpdater2.setCondition(nothingToHighCondition2);
-            nothingToHighCondition2.setNextState(highGroundUpdater3);
-
-            StateCondition highToHighCondition = new  IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STEPS_TAKEN, Condish.GT, 100);
-            highGroundUpdater3.setCondition(highToHighCondition);
-            highToHighCondition.setNextState(highGroundUpdater);
-
-
-            nothingUpdater.addExitObserver(new ClearStepsTakenExitObserver());
-            nothingUpdater2.addExitObserver(new ClearStepsTakenExitObserver());
-            highGroundUpdater3.addExitObserver(new ClearStepsTakenExitObserver());
+//            UpdaterConditionChecker stepsTakenGT50Checker = new StepsTakenGreaterThanConditionChecker(50);
+//            highGroundUpdater.setConditionChecker(stepsTakenGT50Checker);
+//            stepsTakenGT50Checker.setNextState(nothingUpdater);
+//
+//            UpdaterConditionChecker stepsTakenGT100Checker = new StepsTakenGreaterThanConditionChecker(100);
+//            nothingUpdater.setConditionChecker(stepsTakenGT100Checker);
+//            stepsTakenGT100Checker.setNextState(highGroundUpdater2);
+//
+//            UpdaterConditionChecker stepsTakenGT50bChecker = new StepsTakenGreaterThanConditionChecker(50);
+//            highGroundUpdater2.setConditionChecker(stepsTakenGT50bChecker);
+//            stepsTakenGT50bChecker.setNextState(nothingUpdater2);
+//
+//            UpdaterConditionChecker stepsTakenGT100bChecker = new StepsTakenGreaterThanConditionChecker(100);
+//            nothingUpdater2.setConditionChecker(stepsTakenGT100bChecker);
+//            stepsTakenGT100bChecker.setNextState(highGroundUpdater3);
+//
+//            UpdaterConditionChecker stepsTakenGT100cChecker = new StepsTakenGreaterThanConditionChecker(100);
+//            highGroundUpdater3.setConditionChecker(stepsTakenGT100cChecker);
+//            stepsTakenGT100cChecker.setNextState(highGroundUpdater);
+//
+//
+//            nothingUpdater.addExitObserver(new ClearStepsTakenExitObserver());
+//            nothingUpdater2.addExitObserver(new ClearStepsTakenExitObserver());
+            
 
 
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
@@ -242,9 +244,9 @@ public class FSMFactory {
     }
 
     /**
-    *   Creates a lawnmower motion with no wander
-    *
-    */
+     *   Creates a lawnmower motion with no wander
+     *
+     */
     private static class LawnMowerMaker implements FSMMaker {
 
         @Override
@@ -253,36 +255,49 @@ public class FSMFactory {
             SouthernDirectionUpdater southernUpdater = new SouthernDirectionUpdater();
             WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater();
             SouthernDirectionUpdater southern2Updater = new SouthernDirectionUpdater();
-            
+
             // east to south
-            StateCondition eastToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
-            eastToSouthCondition.setNextState(southernUpdater);
-            easternUpdater.setCondition(eastToSouthCondition);
+            UpdaterConditionChecker stackGreaterThan200 = new StackSizeGreaterThanConditionChecker(200);
+            stackGreaterThan200.setNextState(southernUpdater);
+            easternUpdater.setConditionChecker(stackGreaterThan200);
             easternUpdater.addExitObserver(new ClearStackExitObserver());
 
             // south to west
-            StateCondition southToWestCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 10);
-            southToWestCondition.setNextState(westernUpdater);
-            southernUpdater.setCondition(southToWestCondition);
+            UpdaterConditionChecker stackGreaterThan10 = new StackSizeGreaterThanConditionChecker(10);
+            stackGreaterThan10.setNextState(westernUpdater);
+            southernUpdater.setConditionChecker(stackGreaterThan10);
             southernUpdater.addExitObserver(new ClearStackExitObserver());
-            
+
             // west to south
-            StateCondition westToSouthCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 200);
-            westToSouthCondition.setNextState(southern2Updater);
-            westernUpdater.setCondition(westToSouthCondition);
+            UpdaterConditionChecker stackGreaterThan200b = new StackSizeGreaterThanConditionChecker(200);
+            stackGreaterThan200b.setNextState(southern2Updater);
+            westernUpdater.setConditionChecker(stackGreaterThan200b);
             westernUpdater.addExitObserver(new ClearStackExitObserver());
-            
+
             // close the loop south back to east
-            StateCondition southToOriginalEastCondition = new IntegerAgentStateCondition(AgentPropertyManager.AgentProperty.STACK_SIZE, Condish.GT, 10);
-            southToOriginalEastCondition.setNextState(easternUpdater);
-            southern2Updater.setCondition(southToOriginalEastCondition);
+            UpdaterConditionChecker stackGreaterThan10c = new StackSizeGreaterThanConditionChecker(10);
+            stackGreaterThan10c.setNextState(easternUpdater);
+            southern2Updater.setConditionChecker(stackGreaterThan10c);
             southern2Updater.addExitObserver(new ClearStackExitObserver());
-            
+
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(westernUpdater);
             return updaters;
-            
 
+
+        }
+    }
+
+    private static class GoHomeWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            updaters.add(new WanderDirectionUpdater());
+            updaters.add(new GoHomeDirectionUpdater());
+
+            return updaters;
         }
     }
 
@@ -295,13 +310,13 @@ public class FSMFactory {
             return updaters;
         }
     }
-    
-     private static class LowEastWanderMaker implements FSMMaker {
+
+    private static class LowEastWanderMaker implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            
+
             updaters.add(new LowerGroundDirectionUpdater());
             updaters.add(new EasternDirectionUpdater());
             updaters.add(new WanderDirectionUpdater());
@@ -314,7 +329,7 @@ public class FSMFactory {
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            
+
             updaters.add(new LowerGroundDirectionUpdater());
             updaters.add(new WesternDirectionUpdater());
             updaters.add(new WanderDirectionUpdater());
@@ -322,14 +337,13 @@ public class FSMFactory {
         }
     }
 
-    private static class DoNothingWanderMaker implements FSMMaker{
-        
+    private static class DoNothingWanderMaker implements FSMMaker {
+
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             return updaters;
         }
-
     }
 
     public static List<DirectionUpdater> getMachine(MachineName name) {
@@ -345,6 +359,7 @@ public class FSMFactory {
         machineMap.put(MachineName.LOW_WEST_WANDER, new LowWestWanderMaker());
         machineMap.put(MachineName.EAST_WEST_VALLEY_RIDGE, new ValleyRidgeMowerMaker());
         machineMap.put(MachineName.DO_NOTHING, new DoNothingWanderMaker());
+        machineMap.put(MachineName.GO_TO_ORIGIN, new GoHomeWanderMaker());
 
 
     }

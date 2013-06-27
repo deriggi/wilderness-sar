@@ -5,7 +5,6 @@
 package resources;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.ws.rs.GET;

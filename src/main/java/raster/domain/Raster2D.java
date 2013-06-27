@@ -95,10 +95,10 @@ public class Raster2D {
 
         int rows = getData().size();
         log.log(Level.INFO, "writing rows of {0}", rows);
-        
+
         int columns = getData().get(0).size();
         log.log(Level.INFO, "writing rows of {0}", columns);
-        
+
         writeInt(raf, columns);
         writeInt(raf, rows);
 
@@ -138,6 +138,26 @@ public class Raster2D {
         return floatFromBytes(raw, 0);
     }
 
+    public boolean isInBounds(double[] somePoint) {
+        if (somePoint == null || somePoint.length != 2) {
+            return false;
+        }
+
+        if (somePoint[0] < 0 || somePoint[1] < 0) {
+            return false;
+        }
+
+        if (somePoint[0] > getData().get(0).size() - 1) {
+            return false;
+        }
+
+        if (somePoint[1] > getData().size() - 1) {
+            return false;
+        }
+
+        return true;
+    }
+
     private static float floatFromBytes(byte[] raw, int startIndex) {
         int i = startIndex;
         int asInt = (raw[i + 3] & 0xFF)
@@ -146,8 +166,18 @@ public class Raster2D {
                 | ((raw[i] & 0xFF) << 24);
         return Float.intBitsToFloat(asInt);
     }
-    
-    public float[] calculateForcesAgainst(float[]origin, ArrayList<SlopeDataCell> pointsOfInterest){
+
+    public float[] calculateForcesAgainst(float[] origin, float[] attractivePoint) {
+        float dx = 0, dy = 0;
+
+        dx += attractivePoint[0] - origin[0];
+        dy += attractivePoint[1] - origin[1];
+
+        float[] forceVector = new float[]{dx, dy};
+        return forceVector;
+    }
+
+    public float[] calculateForcesAgainst(float[] origin, ArrayList<SlopeDataCell> pointsOfInterest) {
         float dx = 0, dy = 0;
         for (SlopeDataCell point : pointsOfInterest) {
             dx += point.getColumn() - origin[0];
@@ -162,31 +192,31 @@ public class Raster2D {
 
         RandomAccessFile raf = openBinaryFile(inputPath, "r");
         double nwx = raf.readDouble();
-        
-        
+
+
         double nwy = raf.readDouble();
-        
-        
+
+
         double cellySize = raf.readDouble();
-        
-        
+
+
         int columns = raf.readInt();
-        
+
         int rows = raf.readInt();
-        
-        log.log(Level.INFO, "the pointer after reading the header is {0}" , raf.getFilePointer());
+
+        log.log(Level.INFO, "the pointer after reading the header is {0}", raf.getFilePointer());
         ArrayList<ArrayList<Float>> theData = new ArrayList<ArrayList<Float>>();
 
-        
+
         byte[] rawInput = new byte[(int) raf.length() - (32)];
-        log.log(Level.INFO, "nwx from binary header: {0} ",  nwx);
-        log.log(Level.INFO, "nwy from binary header: {0} ",  nwy);
-        log.log(Level.INFO, "celly from binary header: {0} ",  cellySize);
-        log.log(Level.INFO, "rows from binary header: {0} ",  rows);
-        log.log(Level.INFO, "columns from binary header: {0} ",  columns);
-        log.log(Level.INFO, "the length of this thing {0} ",  raf.length());
-        log.log(Level.INFO, "made an array of size {0} ",  (int) raf.length() - (41));
-        
+        log.log(Level.INFO, "nwx from binary header: {0} ", nwx);
+        log.log(Level.INFO, "nwy from binary header: {0} ", nwy);
+        log.log(Level.INFO, "celly from binary header: {0} ", cellySize);
+        log.log(Level.INFO, "rows from binary header: {0} ", rows);
+        log.log(Level.INFO, "columns from binary header: {0} ", columns);
+        log.log(Level.INFO, "the length of this thing {0} ", raf.length());
+        log.log(Level.INFO, "made an array of size {0} ", (int) raf.length() - (41));
+
 //        raf.skipBytes(40);
         raf.readFully(rawInput);
 
@@ -194,7 +224,7 @@ public class Raster2D {
         int allIndex = 0;
         for (int i = 0; i < rows; i++) {
             ArrayList<Float> row = new ArrayList<Float>();
-            for (int j = 0; j < columns && allIndex<rawInput.length; j++) {
+            for (int j = 0; j < columns && allIndex < rawInput.length; j++) {
 //                row.add(raf.readFloat());
                 row.add(floatFromBytes(rawInput, allIndex));
                 allIndex += 4;
@@ -203,7 +233,7 @@ public class Raster2D {
         }
         closeBinaryFile(raf);
         raster = new Raster2D(theData, cellySize, nwy, nwx);
-        
+
         return raster;
     }
 
@@ -536,9 +566,9 @@ public class Raster2D {
         ArrayList<ArrayList<Float>> cells = getData();
 
         // last row
-        log.log(Level.INFO,"row count is {0}", cells.size());
+        log.log(Level.INFO, "row count is {0}", cells.size());
         int lastRow = (cells.size() - 1);
-        
+
         // last column
         int lastColumn = cells.get(lastRow).size() - 1;
 
@@ -765,7 +795,7 @@ public class Raster2D {
 
         return withinRange;
     }
-    
+
     public ArrayList<SlopeDataCell> getLows(ArrayList<ArrayList<SlopeDataCell>> theHood) {
         ArrayList<SlopeDataCell> dataList = new ArrayList<SlopeDataCell>();
         for (ArrayList<SlopeDataCell> row : theHood) {
@@ -787,8 +817,6 @@ public class Raster2D {
 
         return withinRange;
     }
-    
-    
 
     public ArrayList<SlopeDataCell> getHighestFlattest(ArrayList<ArrayList<SlopeDataCell>> theHood) {
         ArrayList<SlopeDataCell> slopeList = new ArrayList<SlopeDataCell>();
@@ -928,8 +956,8 @@ public class Raster2D {
             }
         }
 
-        
-        
+
+
 
         return slopeDataNeighborhood;
     }
@@ -945,7 +973,7 @@ public class Raster2D {
 
         return coord;
     }
-    
+
     public double[] getLonLat(float column, float row) {
 
         double lon = getNwX() + column * getCellSize();
@@ -972,7 +1000,7 @@ public class Raster2D {
 
         return position;
     }
-    
+
     public float[] getFloatPosition(double lon, double lat) {
 
         double columnDifference = lon - getNwX();

@@ -23,6 +23,23 @@ public class VectorUtils {
         return Math.sqrt(Math.pow(vector[0], 2) + Math.pow(vector[1], 2));
     }
     
+//    public static 
+    public static double[] add(double[] vectorA, double[] vectorB){
+        double[] sum = new double[2];
+        
+        sum[0] = vectorA[0] + vectorB[0];
+        sum[1] = vectorA[1] + vectorB[1];
+        return sum;
+    }
+    
+    public static double[] add(float [] vectorA, double[] vectorB){
+        double[] sum = new double[2];
+        
+        sum[0] = vectorA[0] + vectorB[0];
+        sum[1] = vectorA[1] + vectorB[1];
+        return sum;
+    }
+    
     public static double[] limit(double[] vector, double limit){
         double mag = magnitude(vector);
         if (mag > limit){
@@ -31,6 +48,14 @@ public class VectorUtils {
         }
         
         return vector;
+    }
+    
+    public static double[] multiplyDonTouch(double[] vector, float factor){
+        double[] newVelocity= new double[2];
+        newVelocity[0] = vector[0]*factor;
+        newVelocity[1] = vector[1]*factor;
+        return newVelocity;
+        
     }
     
     public static void divide(double[] vector, float divisor){
