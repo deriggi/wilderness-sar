@@ -34,6 +34,11 @@ public class VectorAgent {
     private Stack<float[]> stackedPositions = new Stack<float[]>();
     private int simpleDetectionRange = 20;
     private int stepsTaken = 0;
+    private int masterTimestepsTaken = 0;
+
+    public int getMasterTimestepsTaken() {
+        return masterTimestepsTaken;
+    }
     private String nameTag;
     
 
@@ -178,7 +183,7 @@ public class VectorAgent {
         
         currentStrat.calculateNextMove(this);
         updateStepsTaken();
-        
+        masterTimestepsTaken++;
         // test strategy for condition for switching to next strategy
         if(currentStrat.getIsTimeToSwitch(this)){
             log.log(Level.INFO, "swithing from {0} ", new Object[]{currentStrat.getName()});

@@ -257,12 +257,17 @@ var doViewshed
 //=====================
 var getLastLocation
 var setLastLocation
+var pushAgentMarker
 var pushLine
+var removeAllLines;
+var removeAgentMarkers;
+
 (function setupGetLastLocs(){
     
     var lastLocs = {}
     var lastLines = {}
-
+    var agentMarkers = [];
+    
     pushLine = function(agentId, line){
         if(!lastLines[agentId]){
             lastLines[agentId] = [];
@@ -282,16 +287,30 @@ var pushLine
         }
     }
 
+    pushAgentMarker = function(agentMarker){
+        agentMarkers.push(agentMarker);
+    }
+    removeAgentMarkers = function(){
+        for( var markerIndex in agentMarkers){
+            map.removeLayer(agentMarkers[markerIndex]);
+        }
+    }
+    
+    removeAllLines = function(){
+        for(agentId in lastLines){
+            for(var line in lastLines[agentId]){
+                map.removeLayer(lastLines[agentId][line]);
+            }
+        }
+    }
 
     getLastLocation = function(agentId){
         return lastLocs[agentId]
     }
 
-    
     setLastLocation = function(agentId,loc){
         lastLocs[agentId] = loc
     }
-
 
 })();
 
@@ -549,6 +568,7 @@ var isAgentComplete;
 
     setAgentMarker = function(someMarker){
         agentMarker = someMarker;
+        pushAgentMarker(someMarker);
     }
 
     setAgentType = function(t){
@@ -721,6 +741,13 @@ function createAgent(agent) {
     
     $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:agent.agentType, behaviour:agent.behaviour}, function(data){
         drawAgentLocation(data);
+        });
+}
+
+function clearAgents() {
+    
+    $.post('/wisar/q/agent/clearagents/' , function(data){
+        
         });
 }
 

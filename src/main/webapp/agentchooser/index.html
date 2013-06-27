@@ -72,6 +72,14 @@
                     stopSim();
 
                 });
+                
+                $('#clear').click(function() {
+                    
+                    removeAllLines();
+                    removeAgentMarkers();
+                    clearAgents();
+                    
+                });
 
 
                 $('#addagent').click(function(){
@@ -130,6 +138,7 @@
                     <p> <a  id='wander' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Step </a> </p>
                     <p> <a  id='runsim' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Run </a> </p>
                     <p> <a id='stopsim' href='#' class ='btn btn-large btn-info' style='cursor:pointer;'> Pause </a> </p>
+                    <p> <a id='clear' href='#' class ='btn btn-large btn-danger' style='cursor:pointer;'> Clear </a> </p>
                     
                 </div>
                 

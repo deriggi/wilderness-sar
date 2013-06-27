@@ -29,9 +29,18 @@ public class AgentService {
     private int nextId = 1;
     private static final Logger log = Logger.getLogger(AgentService.class.getName());
     
-
+    private boolean stopSim = false;
+    public void setStopSim(boolean stop){
+        this.stopSim = stop;
+    }
+    
     private int getNextId() {
         return nextId++;
+    }
+
+    public void clearAgents(){
+        
+        agents.clear();
     }
     
     
@@ -39,7 +48,7 @@ public class AgentService {
     public ArrayList<IdLoc> runUntilFound(){
         boolean found = false;
         ArrayList<IdLoc> states = null;
-        while(!found){
+        while(!found && !stopSim){
             states = runAgents();
             for(IdLoc state : states){
                 if(state.getFoundOthers()){
@@ -47,6 +56,7 @@ public class AgentService {
                 }
             }
         }
+        agents.clear();
         
         return states;
     }
@@ -64,7 +74,7 @@ public class AgentService {
             IdLoc idLoc = a.toIdLoc();
             idLoc.setLocation( lonLat );
             agentStates.add( idLoc );
-            idLoc.setTimestep(a.getMovementStrategy().getTimestep());
+            idLoc.setTimestep(a.getMasterTimestepsTaken());
 
         }
         
@@ -73,6 +83,8 @@ public class AgentService {
     }
     
     public VectorAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
+        stopSim = false;
+        
         VectorAgent a = new VectorAgent();
         a.setSpeed(speed);
         a.setLocation(new float[]{column,row});

@@ -100,6 +100,17 @@ public class AgentResource {
         
         return json;
     }
+    
+    @POST
+    @Path("/clearagents/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String clearAgents() {
+        
+        AgentService service = AgentService.get();
+        service.clearAgents();
+        
+        return "done";
+    }
 
     @POST
     @Path("/wander/")
