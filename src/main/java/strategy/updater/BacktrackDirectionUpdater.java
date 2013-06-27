@@ -24,6 +24,7 @@ public class BacktrackDirectionUpdater extends SkelatalDirectionUpdater {
         Stack<float[]> points = ownerAgent.getStackedPosition();
 
         if (points != null && points.size() > 0) {
+            
             float[] destination = points.pop();
 
             // set velocity equal to the one that would take me to this way point

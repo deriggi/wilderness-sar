@@ -117,7 +117,10 @@ public class VectorAgent {
         if (stackedPositions == null) {
             stackedPositions = new Stack<float[]>();
         }
-
+        if(stackedPositions.size() > 1000){
+            log.severe("stack is growing too large, ignoring");
+            return;
+        }
         stackedPositions.add(this.getLocation());
     }
 

@@ -83,7 +83,7 @@ function getBoard(){
 //=====================
 function makeLatLngs(coords){
     var linePoints = [];
-    for( coord in coords){
+    for( var coord in coords){
         linePoints.push(new L.LatLng(coords[coord][0],coords[coord][1])); 
     }
     return linePoints;
@@ -115,7 +115,7 @@ function showViewshed(viewshedPolygons){
         // the polygon
         tempPolygon = viewshedPolygons[polygonIndex]
         var ltlngs = [];
-        for(vertexIndex in tempPolygon){
+        for(var vertexIndex in tempPolygon){
             // create latLngs
             lon = tempPolygon[vertexIndex][0];
             lat = tempPolygon[vertexIndex][1];
@@ -139,7 +139,7 @@ function showViewshed(viewshedPolygons){
 // display agent and box
 //=====================
 function drawAgentLocation(data) {
-    for(agentIndex in data){
+    for(var agentIndex in data){
         var tempLastPosition = getLastLocation(data[agentIndex].id);
         if(tempLastPosition){
 
@@ -297,7 +297,7 @@ var removeAgentMarkers;
     }
     
     removeAllLines = function(){
-        for(agentId in lastLines){
+        for(var agentId in lastLines){
             for(var line in lastLines[agentId]){
                 map.removeLayer(lastLines[agentId][line]);
             }

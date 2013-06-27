@@ -582,12 +582,16 @@ public class Raster2D {
         log.log(Level.INFO, msgs, data);
     }
 
+    public float getCell(float column, float row) {
+        return getCell(new Float(column).intValue(), new Float(row).intValue());
+    }
+    
     public float getCell(int column, int row) {
         ArrayList<ArrayList<Float>> cells = getData();
         return cells.get(row).get(column);
     }
 
-    private SlopeDataCell getSlopeDataCell(int column, int row) {
+    public SlopeDataCell getSlopeDataCell(int column, int row) {
         SlopeDataCell slopeDataCell = new SlopeDataCell(calculateSlope(column, row), (double) getCell(column, row), column, row);
         return slopeDataCell;
     }

@@ -11,23 +11,22 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import strategy.DirectionUpdater;
 import strategy.updater.EastHighsWestLowsDirectionUpdater;
-import strategy.updater.DoNothingDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.GoHomeDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
 import strategy.updater.HighGroundDirectionUpdater;
 import strategy.updater.LowerGroundDirectionUpdater;
+import strategy.updater.SlowOnSteepDirectionUpdater;
 import strategy.updater.SouthernDirectionUpdater;
+import strategy.updater.WalkableGroundDirectionUpdater;
 import strategy.updater.WanderDirectionUpdater;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.conditionchecker.StackSizeEqualToConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
-import strategy.updater.conditionchecker.StepsTakenGreaterThanConditionChecker;
 import strategy.updater.notificationhandler.DisableOnBacktrackNotificationHandler;
 import strategy.updater.notificationhandler.DisableOnSouthNotificationHandler;
 import strategy.updater.observer.ClearStackExitObserver;
-import strategy.updater.observer.ClearStepsTakenExitObserver;
 
 /**
  *
@@ -45,9 +44,12 @@ public class FSMFactory {
         SIMPLE_WANDER("Wander"),
         LOW_EAST_WANDER("East lows"),
         LOW_WEST_WANDER("West lows"),
+        WALKABLE_GROUND("Walkable ground"),
         EAST_WEST_VALLEY_RIDGE("East highs west lows"),
         GO_TO_ORIGIN("Wander home"),
-        DO_NOTHING("Do nothing");
+        DO_NOTHING("Do nothing"),
+        SLOW_ON_STEEP_WANDER("slow on steep wander");
+        
         private String displayName;
         private String description;
 
@@ -83,6 +85,19 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine();
     }
 
+    private static class SlowOnSteepsWanderMaker implements FSMMaker{
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
+            updaterList.add(new WanderDirectionUpdater());
+            updaterList.add(new SlowOnSteepDirectionUpdater());
+            
+            return updaterList;
+        }
+        
+    }
+    
     /**
      *
      *   East highs west lows in a lawn mower behavior 
@@ -205,35 +220,6 @@ public class FSMFactory {
             highGroundUpdater.addUpdaterNotificationHandler(new DisableOnBacktrackNotificationHandler());
             highGroundUpdater.addUpdaterNotificationHandler(new DisableOnSouthNotificationHandler());
             
-            // ===============================
-            // concurrent state machine track need this to disable seeking high on backtrack
-            // ===============================
-//            UpdaterConditionChecker stepsTakenGT50Checker = new StepsTakenGreaterThanConditionChecker(50);
-//            highGroundUpdater.setConditionChecker(stepsTakenGT50Checker);
-//            stepsTakenGT50Checker.setNextState(nothingUpdater);
-//
-//            UpdaterConditionChecker stepsTakenGT100Checker = new StepsTakenGreaterThanConditionChecker(100);
-//            nothingUpdater.setConditionChecker(stepsTakenGT100Checker);
-//            stepsTakenGT100Checker.setNextState(highGroundUpdater2);
-//
-//            UpdaterConditionChecker stepsTakenGT50bChecker = new StepsTakenGreaterThanConditionChecker(50);
-//            highGroundUpdater2.setConditionChecker(stepsTakenGT50bChecker);
-//            stepsTakenGT50bChecker.setNextState(nothingUpdater2);
-//
-//            UpdaterConditionChecker stepsTakenGT100bChecker = new StepsTakenGreaterThanConditionChecker(100);
-//            nothingUpdater2.setConditionChecker(stepsTakenGT100bChecker);
-//            stepsTakenGT100bChecker.setNextState(highGroundUpdater3);
-//
-//            UpdaterConditionChecker stepsTakenGT100cChecker = new StepsTakenGreaterThanConditionChecker(100);
-//            highGroundUpdater3.setConditionChecker(stepsTakenGT100cChecker);
-//            stepsTakenGT100cChecker.setNextState(highGroundUpdater);
-//
-//
-//            nothingUpdater.addExitObserver(new ClearStepsTakenExitObserver());
-//            nothingUpdater2.addExitObserver(new ClearStepsTakenExitObserver());
-            
-
-
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(highGroundUpdater);
             updaters.add(easternUpdater);
@@ -310,6 +296,17 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    private static class WalkableGroundWanderMaker implements FSMMaker {
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            updaters.add(new WalkableGroundDirectionUpdater());
+            
+            return updaters;
+        }
+    }
 
     private static class LowEastWanderMaker implements FSMMaker {
 
@@ -319,7 +316,7 @@ public class FSMFactory {
 
             updaters.add(new LowerGroundDirectionUpdater());
             updaters.add(new EasternDirectionUpdater());
-            updaters.add(new WanderDirectionUpdater());
+//            updaters.add(new WanderDirectionUpdater());
             return updaters;
         }
     }
@@ -332,7 +329,7 @@ public class FSMFactory {
 
             updaters.add(new LowerGroundDirectionUpdater());
             updaters.add(new WesternDirectionUpdater());
-            updaters.add(new WanderDirectionUpdater());
+//            updaters.add(new WanderDirectionUpdater());
             return updaters;
         }
     }
@@ -360,7 +357,8 @@ public class FSMFactory {
         machineMap.put(MachineName.EAST_WEST_VALLEY_RIDGE, new ValleyRidgeMowerMaker());
         machineMap.put(MachineName.DO_NOTHING, new DoNothingWanderMaker());
         machineMap.put(MachineName.GO_TO_ORIGIN, new GoHomeWanderMaker());
-
+        machineMap.put(MachineName.WALKABLE_GROUND, new WalkableGroundWanderMaker());
+        machineMap.put(MachineName.SLOW_ON_STEEP_WANDER, new SlowOnSteepsWanderMaker());
 
     }
 //    private static HashMap<

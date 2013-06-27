@@ -5,11 +5,9 @@
 package strategy.updater;
 
 import geomutils.VectorUtils;
-import java.util.ArrayList;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
-import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
 import strategy.updater.message.UpdaterMessage;
 
@@ -29,8 +27,8 @@ public class GoHomeDirectionUpdater extends SkelatalDirectionUpdater {
         
         float[] acceleration = raster.calculateForcesAgainst(loc, origin);
         
-        dxDy[0] += acceleration[0];
-        dxDy[1] += acceleration[1];
+        dxDy[0] += acceleration[0] * 0.2;
+        dxDy[1] += acceleration[1] * 0.2;
         VectorUtils.limit(dxDy, ownerAgent.getSpeed());
         
         

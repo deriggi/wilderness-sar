@@ -11,31 +11,28 @@ import strategy.updater.message.UpdaterMessage;
  *
  * @author Johnny
  */
-public class WesternDirectionUpdater extends SkelatalDirectionUpdater{
+public class WesternDirectionUpdater extends SkelatalDirectionUpdater {
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Western";
     }
-    
-    
+
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
-        if (dxDy == null || dxDy.length != 2){
+        if (dxDy == null || dxDy.length != 2) {
             return;
         }
-        
-        if(dxDy[0] > 0){
-            dxDy[0] *= -1;
+
+        if (dxDy[0] > 0) {
+            dxDy[0] = -ownerAgent.getSpeed() / 2.0f;
         }
-        dxDy[0] -= ownerAgent.getSpeed();
-        ownerAgent.pushLoc();
         
+        ownerAgent.pushLoc();
+
     }
 
     @Override
     public void notifyMe(UpdaterMessage message) {
     }
-
-    
 }
