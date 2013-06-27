@@ -4,6 +4,7 @@
  */
 package strategy.updater;
 
+import geomutils.VectorUtils;
 import java.util.ArrayList;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
@@ -33,8 +34,10 @@ public class HighGroundDirectionUpdater extends SkelatalDirectionUpdater{
         
         float[] attractionForce = raster.calculateForcesAgainst(loc, highFlats);
         // apply this force vector to the agent
-        dxDy[0] += attractionForce[0];
-        dxDy[1] += attractionForce[1];
+        double mag = VectorUtils.magnitude(attractionForce);
+        
+        dxDy[0] += ownerAgent.getSpeed() * attractionForce[0]/mag;
+        dxDy[1] += ownerAgent.getSpeed() * attractionForce[1]/mag;
         
         // apply this force vector to the agent
         

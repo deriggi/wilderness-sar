@@ -23,6 +23,10 @@ public class VectorUtils {
         return Math.sqrt(Math.pow(vector[0], 2) + Math.pow(vector[1], 2));
     }
     
+    public static double magnitude(float[] vector){
+        return Math.sqrt(Math.pow(vector[0], 2) + Math.pow(vector[1], 2));
+    }
+    
 //    public static 
     public static double[] add(double[] vectorA, double[] vectorB){
         double[] sum = new double[2];

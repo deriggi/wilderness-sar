@@ -223,6 +223,7 @@ public class FSMFactory {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(highGroundUpdater);
             updaters.add(easternUpdater);
+            updaters.add(new SlowOnSteepDirectionUpdater());
 
             return updaters;
 

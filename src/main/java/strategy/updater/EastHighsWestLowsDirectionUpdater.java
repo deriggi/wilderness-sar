@@ -3,7 +3,6 @@ package strategy.updater;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
-import strategy.updater.message.UpdaterMessage;
 
 public class EastHighsWestLowsDirectionUpdater extends SkelatalDirectionUpdater {
 
