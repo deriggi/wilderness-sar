@@ -318,9 +318,7 @@ public class Raster2D {
 //        return oneDirectionViewshed(column, row, radius);
 
         float elevationOrigin = getCell(column, row) + 6;
-        System.out.println(" ==== viewshed ====");
 
-        System.out.println(" at origin " + column + " " + row + " elevation is " + elevationOrigin);
         int[][] perimeterPoints = getPerimiterCoordinates(column, row, radius);
         double[][] theLine = new double[2][2];
         ForceCalculator fc = new ForceCalculator();
@@ -753,6 +751,25 @@ public class Raster2D {
 
         return withinRange;
     }
+    
+    public ArrayList<SlopeDataCell> getSlopeLessThan(ArrayList<ArrayList<SlopeDataCell>> theHood, float maxSlope) {
+        ArrayList<SlopeDataCell> slopeList = new ArrayList<SlopeDataCell>();
+
+        for (ArrayList<SlopeDataCell> row : theHood) {
+            slopeList.addAll(row);
+        }
+        
+        
+        ArrayList<SlopeDataCell> withinRange = new ArrayList<SlopeDataCell>();
+        for(SlopeDataCell cell : slopeList){
+            if(cell.getSlope() < maxSlope){
+                withinRange.add(cell);
+            }
+        }
+
+
+        return withinRange;
+    }
 
     public ArrayList<SlopeDataCell> getFlats(ArrayList<ArrayList<SlopeDataCell>> theHood) {
         ArrayList<SlopeDataCell> slopeList = new ArrayList<SlopeDataCell>();
@@ -805,7 +822,7 @@ public class Raster2D {
         for (ArrayList<SlopeDataCell> row : theHood) {
             dataList.addAll(row);
         }
-
+        
         Collections.sort(dataList, new DataComparator());
         ArrayList<SlopeDataCell> withinRange = new ArrayList<SlopeDataCell>();
 

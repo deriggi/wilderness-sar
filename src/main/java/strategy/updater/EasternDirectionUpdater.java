@@ -28,10 +28,10 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
             return;
         }
 
-//        if (dxDy[0] < 0) {
-//            dxDy[0] *= -1;
-//            
-//        }
+        if (dxDy[0] < 0) {
+            dxDy[0] = 0;
+            
+        }
         
         dxDy[0] += ownerAgent.getSpeed();
         ownerAgent.pushLoc();

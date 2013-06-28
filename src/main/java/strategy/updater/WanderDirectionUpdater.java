@@ -38,7 +38,7 @@ public class WanderDirectionUpdater extends SkelatalDirectionUpdater {
         dxDy[0] += desiredVector[0];
         dxDy[1] += desiredVector[1];
         
-        ownerAgent.setVelocityVector(desiredVector);
+        //ownerAgent.setVelocityVector(desiredVector);
 
 
     }

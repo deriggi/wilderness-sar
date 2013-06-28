@@ -31,7 +31,8 @@ public class WalkableGroundDirectionUpdater extends SkelatalDirectionUpdater {
 //        ArrayList<SlopeDataCell> pointsOfInterest = raster.getCellsLessThan(hood, raster.getCell((int)loc[0], (int)loc[1]), 0.20f);
         float max = raster.getCell(loc[0], loc[1]);
         
-        ArrayList<SlopeDataCell> pointsOfInterest = raster.getCellsLessThan(hood, max, 0.25f);
+//        ArrayList<SlopeDataCell> pointsOfInterest = raster.getCellsLessThan(hood, max, 0.25f);
+        ArrayList<SlopeDataCell> pointsOfInterest = raster.getSlopeLessThan(hood, 0.40f);
         
         float[] acceleration = raster.calculateForcesAgainst(loc, pointsOfInterest);
         
