@@ -29,7 +29,7 @@ public class SouthernDirectionUpdater extends SkelatalDirectionUpdater {
             return;
         }
         if (dxDy[1] < 0) {
-            dxDy[1] *= -1;
+            dxDy[1] = 0;
         }
         
         dxDy[1] += ownerAgent.getSpeed();

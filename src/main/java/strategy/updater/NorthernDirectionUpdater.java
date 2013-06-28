@@ -6,7 +6,6 @@ package strategy.updater;
 
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
-import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -30,31 +29,15 @@ public class NorthernDirectionUpdater extends SkelatalDirectionUpdater {
         }
 
         if (dxDy[1] > 0) {
-            dxDy[1] *= -1;
+            dxDy[1]  = 0;
         }
         
         dxDy[1] -= ownerAgent.getSpeed();
         ownerAgent.pushLoc();
         
-        
-//        float[] origin = ownerAgent.getOrigin();
-//        double[] originLonLat = RasterLoader.get(RasterConfig.BIG).getData().getLonLat(origin[0], origin[1]);
-//        double[] nowLonLat = RasterLoader.get(RasterConfig.BIG).getData().getLonLat(ownerAgent.getLocation()[0], ownerAgent.getLocation()[1]);
-//        
-//        if(Math.abs(nowLonLat[1] - originLonLat[1]) < 40){
-//            
-//            this.switche = new Switch();
-//            this.switche.setTo(new EasternDirectionUpdater());
-//            
-//        }
-            
 
-//        VectorUtils.limit(dxDy, 4.0);
 
     }
 
-    @Override
-    public void notifyMe(UpdaterMessage message) {
-    }
 
 }

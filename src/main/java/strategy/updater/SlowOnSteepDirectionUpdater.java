@@ -5,7 +5,6 @@
 package strategy.updater;
 
 import geomutils.VectorUtils;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;

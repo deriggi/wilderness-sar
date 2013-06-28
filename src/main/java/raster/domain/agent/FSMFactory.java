@@ -21,11 +21,13 @@ import strategy.updater.SlowOnSteepDirectionUpdater;
 import strategy.updater.SouthernDirectionUpdater;
 import strategy.updater.WalkableGroundDirectionUpdater;
 import strategy.updater.WanderDirectionUpdater;
+import strategy.updater.conditionchecker.IsAgitatedConditionChecker;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.conditionchecker.StackSizeEqualToConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
 import strategy.updater.notificationhandler.DisableOnBacktrackNotificationHandler;
 import strategy.updater.notificationhandler.DisableOnSouthNotificationHandler;
+import strategy.updater.observer.ClearDotProductBufferExitObserver;
 import strategy.updater.observer.ClearStackExitObserver;
 
 /**
@@ -41,10 +43,11 @@ public class FSMFactory {
         EAST_WEST_HIGHS("East west highs"),
         EAST_WEST_LOWS("East west lows"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
+        EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
         LOW_EAST_WANDER("East lows"),
         LOW_WEST_WANDER("West lows"),
-        WALKABLE_GROUND("Walkable ground"),
+//        WALKABLE_GROUND("Walkable ground"),
         EAST_WEST_VALLEY_RIDGE("East highs west lows"),
         GO_TO_ORIGIN("Wander home"),
         DO_NOTHING("Do nothing"),
@@ -321,6 +324,36 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    private static class EastWestLowAgitationAwareWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine(){
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            EasternDirectionUpdater easternUpdater = new EasternDirectionUpdater();
+            WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater();
+            
+            // clear dp buffers on exit
+            westernUpdater.addExitObserver(new ClearDotProductBufferExitObserver());
+            easternUpdater.addExitObserver(new ClearDotProductBufferExitObserver());
+            
+            
+            UpdaterConditionChecker checkerForEastern = new IsAgitatedConditionChecker();
+            UpdaterConditionChecker checkerForWestern = new IsAgitatedConditionChecker();
+            
+            
+            checkerForEastern.setNextState(westernUpdater);
+            checkerForWestern.setNextState(easternUpdater);
+            
+            easternUpdater.setConditionChecker(checkerForEastern);
+            westernUpdater.setConditionChecker(checkerForWestern);
+            
+            updaters.add(new LowerGroundDirectionUpdater());
+            updaters.add(easternUpdater);
+            
+            return updaters;
+        }
+    }
 
     private static class LowWestWanderMaker implements FSMMaker {
 
@@ -354,11 +387,11 @@ public class FSMFactory {
         machineMap.put(MachineName.EAST_WEST_LAWN_MOWER, new LawnMowerMaker());
         machineMap.put(MachineName.SIMPLE_WANDER, new SimpleWanderMaker());
         machineMap.put(MachineName.LOW_EAST_WANDER, new LowEastWanderMaker());
+        machineMap.put(MachineName.EAST_WEST_LOW_AGITATION_AWARE, new EastWestLowAgitationAwareWanderMaker());
         machineMap.put(MachineName.LOW_WEST_WANDER, new LowWestWanderMaker());
         machineMap.put(MachineName.EAST_WEST_VALLEY_RIDGE, new ValleyRidgeMowerMaker());
         machineMap.put(MachineName.DO_NOTHING, new DoNothingWanderMaker());
         machineMap.put(MachineName.GO_TO_ORIGIN, new GoHomeWanderMaker());
-        machineMap.put(MachineName.WALKABLE_GROUND, new WalkableGroundWanderMaker());
         machineMap.put(MachineName.SLOW_ON_STEEP_WANDER, new SlowOnSteepsWanderMaker());
 
     }

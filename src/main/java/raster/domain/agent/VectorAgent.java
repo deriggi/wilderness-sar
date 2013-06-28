@@ -25,7 +25,6 @@ import raster.domain.Raster2D;
 public class VectorAgent {
 
     private static final Logger log = Logger.getLogger(VectorAgent.class.getName());
-    
     private Integer id = null;
     private float[] origin = new float[2];
 //    private Strategy movementStrategy = null;
@@ -40,7 +39,6 @@ public class VectorAgent {
         return masterTimestepsTaken;
     }
     private String nameTag;
-    
 
     public String getNameTag() {
         return nameTag;
@@ -49,66 +47,66 @@ public class VectorAgent {
     public void setNameTag(String nameTag) {
         this.nameTag = nameTag;
     }
-    
-    
 
-    public int getStepsTaken(){
+    public void clearLastVelocity() {
+        lastVelocity = null;
+    }
+
+    public int getStepsTaken() {
         return this.stepsTaken;
     }
 
-    public void setStepsTaken(int count){
+    public void setStepsTaken(int count) {
         this.stepsTaken = count;
     }
 
-    public void setSimpleDetectionRange(int detectionRange){
+    public void setSimpleDetectionRange(int detectionRange) {
         this.simpleDetectionRange = detectionRange;
     }
 
-    private void updateStepsTaken(){
+    private void updateStepsTaken() {
         stepsTaken++;
     }
 
-    public int getSimpleDetectionRange(){
+    public int getSimpleDetectionRange() {
         return simpleDetectionRange;
     }
 
-    public Strategy getMovementStrategy(){
+    public Strategy getMovementStrategy() {
         return strategies.get(strategyIndex);
     }
-    
+
     public void addMovementStrategy(Strategy movementStrategy) {
         strategies.add(movementStrategy);
     }
-    
-    
-    
+
     /**
      * Do a smart strategy index update
      */
-    public void incrementStrategyIndex(){
+    public void incrementStrategyIndex() {
         int numberOfStrategies = strategies.size();
-        if(strategyIndex+1 >= numberOfStrategies){
+        if (strategyIndex + 1 >= numberOfStrategies) {
             strategyIndex = 0;
-        }else{
+        } else {
             strategyIndex++;
         }
     }
-    
-    public boolean isNextStepOutOfBounds(){
+
+    public boolean isNextStepOutOfBounds() {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = getLocation();
-        
+
         double[] v = getVelocityVector();
-        
+
         double[] sum = VectorUtils.add(loc, VectorUtils.multiplyDonTouch(v, 4));
-        
-        
+
+
         boolean isInBounds = raster.isInBounds(sum);
-        
+
         return !isInBounds;
-        
+
     }
-    
+
     public float[] getOrigin() {
         return origin;
     }
@@ -117,7 +115,7 @@ public class VectorAgent {
         if (stackedPositions == null) {
             stackedPositions = new Stack<float[]>();
         }
-        if(stackedPositions.size() > 1000){
+        if (stackedPositions.size() > 500) {
             log.severe("stack is growing too large, ignoring");
             return;
         }
@@ -165,16 +163,14 @@ public class VectorAgent {
         this.id = id;
     }
 
-
-    public boolean foundOthers(int range){
+    public boolean foundOthers(int range) {
         int numberOfDetectedAgents = detect(range).size();
-        
+
         return numberOfDetectedAgents > 0;
     }
 
-
     public Collection<VectorAgent> detect(int range) {
-        
+
         HashMap<Double, VectorAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this);
         return distanceAgentMap.values();
 
@@ -183,20 +179,68 @@ public class VectorAgent {
     // rename to move?
     public void wander() {
         Strategy currentStrat = strategies.get(strategyIndex);
-        
+
         currentStrat.calculateNextMove(this);
         updateStepsTaken();
         masterTimestepsTaken++;
         // test strategy for condition for switching to next strategy
-        if(currentStrat.getIsTimeToSwitch(this)){
+        if (currentStrat.getIsTimeToSwitch(this)) {
             log.log(Level.INFO, "swithing from {0} ", new Object[]{currentStrat.getName()});
-            
+
             incrementStrategyIndex();
         }
+        addToDotProductBuffer();
+        setLastVelocity(getVelocityVector());
+
     }
 
+    /**
+     * -1 is highly agitated and 1 is not agitated
+     * @return 
+     */
+    public float getDotProductBufferAverage() {
+        if (dotProductBuffer == null || dotProductBuffer.isEmpty()) {
+            return 0;
+        }
+
+        Float sum = 0.0f;
+        for (Float f : dotProductBuffer) {
+            sum += f;
+        }
+
+        return sum / dotProductBuffer.size();
+    }
+
+    private void addToDotProductBuffer() {
+        if (getLastVelocity() != null) {
+            log.log(Level.INFO, "calculating dp for {0} {1} {2} {3}", new Object[]{getLastVelocity()[0], getLastVelocity()[1], getVelocityVector()[0], getVelocityVector()[1]});
+            
+            Float dotProduct = new Float(dotProduct(getLastVelocity(), getVelocityVector()));
+            if (dotProductBuffer.size() >= 20) {
+                dotProductBuffer.remove(0);   
+            }
+            dotProductBuffer.add(dotProduct);
+        }
+    }
+    
+    
     // radians
     private double[] velocity = new double[2];
+    private double[] lastVelocity = null;
+    private ArrayList<Float> dotProductBuffer = new ArrayList<Float>();
+
+    public ArrayList<Float> getDotProductBuffer() {
+        return dotProductBuffer;
+    }
+    private int dotProductBufferIndex = 0;
+
+    public double[] getLastVelocity() {
+        return lastVelocity;
+    }
+
+    public void setLastVelocity(double[] lastVelocity) {
+        this.lastVelocity = new double[]{lastVelocity[0], lastVelocity[1]};
+    }
     // cells per whatever
     private float speed = 4;
 
@@ -275,15 +319,30 @@ public class VectorAgent {
         double newBearing = getBearing() + radians;
         double dx = speed * Math.cos(newBearing);
         double dy = speed * Math.sin(newBearing);
-        // east
-//        if (dx < 0){
-//            dx = 1.5;
-//        }
 
         return new double[]{dx, dy};
 
-//        steer ( new double[]{ dx, dy } ) ;
 
+    }
+    
+    public static void main(String[] args){
+        VectorAgent va = new VectorAgent();
+        System.out.println(va.dotProduct(new double[]{-0.2, -4f}, new double[]{-0.26f, 4f}));
+        
+    }
+
+    public double dotProduct(double[] v1, double[] v2) {
+        double v1magnitude = Math.sqrt(Math.pow(v1[0], 2) + Math.pow(v1[1], 2));
+        double v2magnitude = Math.sqrt(Math.pow(v2[0], 2) + Math.pow(v2[1], 2));
+
+        double[] v1Unit = {v1[0] / v1magnitude, v1[1] / v1magnitude};
+        double[] v2Unit = {v2[0] / v2magnitude, v2[1] / v2magnitude};
+
+        double dotProduct = 0;
+        dotProduct += v1Unit[0] * v2Unit[0];
+        dotProduct += v1Unit[1] * v2Unit[1];
+
+        return dotProduct;
     }
 
     public double dotProduct(double[][] vectorOne, double[][] vectorTwo) {
@@ -302,29 +361,9 @@ public class VectorAgent {
         double v1[] = {xa2 - xa1, ya2 - ya1};
         double v2[] = {xb2 - xb1, yb2 - yb1};
 
-        double v1magnitude = Math.sqrt(Math.pow(v1[0], 2) + Math.pow(v1[1], 2));
-        double v2magnitude = Math.sqrt(Math.pow(v2[0], 2) + Math.pow(v2[1], 2));
-
-        double[] v1Unit = {v1[0] / v1magnitude, v1[1] / v1magnitude};
-        double[] v2Unit = {v2[0] / v2magnitude, v2[1] / v2magnitude};
-
-        double dotProduct = 0;
-        dotProduct += v1Unit[0] * v2Unit[0];
-        dotProduct += v1Unit[1] * v2Unit[1];
-
-        return dotProduct;
-
+        return dotProduct(v1, v2);
     }
 
-//    public void steerRando() {
-//        int[] currentPosition = getLocation();
-//        double[] south = new double[2];
-//        south[0] = currentPosition[0];
-//        south[1] = currentPosition[1] + (4 * Math.random() - 2);
-//
-//        steer(south);
-//
-//    }
     public double[] getVelocityVector() {
 
         return velocity;

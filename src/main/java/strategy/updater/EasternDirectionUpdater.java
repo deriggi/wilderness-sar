@@ -24,6 +24,7 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+        log.info("runnig east");
         if (dxDy == null || dxDy.length != 2) {
             return;
         }
