@@ -329,6 +329,7 @@ public class FSMFactory {
 //            updaters.add(new EasternDirectionUpdater());
             
             updaters.add(new EasternWalkableDirectionUpdater());
+            updaters.add(new WanderDirectionUpdater(3.0f));
             
             return updaters;
         }

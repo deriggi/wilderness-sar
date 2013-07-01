@@ -384,6 +384,17 @@ public class Raster2D {
         }
         return cells;
     }
+    
+    public ArrayList<SlopeDataCell> getWesternCells(ArrayList<SlopeDataCell> cells, int column, int row){
+        Iterator<SlopeDataCell> iterator = cells.iterator();
+        while (iterator.hasNext()){
+            SlopeDataCell cell = iterator.next();
+            if(cell.getColumn() > column){
+                iterator.remove();
+            }
+        }
+        return cells;
+    }
         
 
     public double[][][] calculateViewShed(int column, int row, int radius) {

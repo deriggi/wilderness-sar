@@ -26,7 +26,13 @@ public class WanderDirectionUpdater extends SkelatalDirectionUpdater {
         return "Wander";
     }
 
-
+    public WanderDirectionUpdater(float denom){
+        this.denom = denom;
+    }
+    
+    public WanderDirectionUpdater(){
+    }
+    
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         if (dxDy == null || dxDy.length != 2) {
@@ -48,7 +54,4 @@ public class WanderDirectionUpdater extends SkelatalDirectionUpdater {
         return Math.random() - Math.random();
     }
 
-    @Override
-    public void notifyMe(UpdaterMessage message) {
-    }
 }
