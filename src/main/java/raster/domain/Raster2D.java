@@ -378,18 +378,55 @@ public class Raster2D {
         Iterator<SlopeDataCell> iterator = cells.iterator();
         while (iterator.hasNext()){
             SlopeDataCell cell = iterator.next();
-            if(cell.getColumn() < column){
+            if(cell.getColumn() <= column - 1){
                 iterator.remove();
             }
         }
         return cells;
     }
     
+    public ArrayList<SlopeDataCell> getEasternCutoutCells(ArrayList<SlopeDataCell> cells, int column, int row, int heightOfCutout ){
+        
+        Iterator<SlopeDataCell> iterator = cells.iterator();
+        
+        while (iterator.hasNext()){
+            SlopeDataCell cell = iterator.next();
+            if(cell.getColumn() <= column - 1 && cell.getRow() > row - heightOfCutout && cell.getRow() < row + heightOfCutout){
+                iterator.remove();
+            }
+            else if(cell.getColumn() <= column - 5){
+                iterator.remove();
+            }
+        }
+        
+        return cells;
+        
+    }
+    
+    
+    public ArrayList<SlopeDataCell> getWesternCutoutCells(ArrayList<SlopeDataCell> cells, int column, int row, int heightOfCutout ){
+        
+        Iterator<SlopeDataCell> iterator = cells.iterator();
+        
+        while (iterator.hasNext()){
+            SlopeDataCell cell = iterator.next();
+            if(cell.getColumn() <= column + 1 && cell.getRow() > row - heightOfCutout && cell.getRow() < row + heightOfCutout){
+                iterator.remove();
+            }
+            else if(cell.getColumn() >= column - 5){
+                iterator.remove();
+            }
+        }
+        
+        return cells;
+        
+    }
+    
     public ArrayList<SlopeDataCell> getWesternCells(ArrayList<SlopeDataCell> cells, int column, int row){
         Iterator<SlopeDataCell> iterator = cells.iterator();
         while (iterator.hasNext()){
             SlopeDataCell cell = iterator.next();
-            if(cell.getColumn() > column){
+            if(cell.getColumn() >= column+1){
                 iterator.remove();
             }
         }

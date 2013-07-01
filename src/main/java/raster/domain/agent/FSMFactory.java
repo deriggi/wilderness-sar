@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import strategy.DirectionUpdater;
-import strategy.updater.EastHighsWestLowsDirectionUpdater;
+import strategy.updater.specialized.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.EasternWalkableDirectionUpdater;
@@ -329,7 +329,7 @@ public class FSMFactory {
 //            updaters.add(new EasternDirectionUpdater());
             
             updaters.add(new EasternWalkableDirectionUpdater());
-            updaters.add(new WanderDirectionUpdater(3.0f));
+            updaters.add(new WanderDirectionUpdater(2.0f));
             
             return updaters;
         }
