@@ -81,18 +81,7 @@ public  class AgentPropertyManager {
         }
     }
     
-    private static class StackSizePropertyGetter implements AgentPropertyGetter {
-
-        @Override
-        public Integer getAgentProperty(VectorAgent agent) {
-            
-            if (agent == null || agent.getStackedPosition() == null) {
-                return null;
-            }
-            return agent.getStackedPosition().size();
-
-        }
-    }
+   
 
     private static class StepsTakenPropertyGetter implements AgentPropertyGetter {
 
@@ -116,7 +105,6 @@ public  class AgentPropertyManager {
         numberMap = new EnumMap<AgentProperty,  AgentPropertyGetter<? extends Number>>(AgentProperty.class);
         numberMap.put(AgentProperty.LONGITUDE, new LongitudePropertyGetter());
         numberMap.put(AgentProperty.LATITUDE, new LatitudePropertyGetter());
-        numberMap.put(AgentProperty.STACK_SIZE, new StackSizePropertyGetter());
         numberMap.put(AgentProperty.STEPS_TAKEN, new StepsTakenPropertyGetter());
         
         booleanMap = new EnumMap<AgentProperty,  AgentPropertyGetter<Boolean>>(AgentProperty.class);

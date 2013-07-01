@@ -5,7 +5,6 @@
 package strategy.updater.conditionchecker;
 
 import raster.domain.agent.VectorAgent;
-import strategy.DirectionUpdater;
 
 /**
  *
@@ -28,7 +27,7 @@ public class StackSizeGreaterThanConditionChecker extends SkelatalUpdaterConditi
             return true;
         }
         
-        return (va.getStackedPosition().size() > compareTo);
+        return (va.getMasterStack().size() > compareTo);
         
     }
 

@@ -4,6 +4,7 @@
  */
 package strategy.updater;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
 
@@ -21,9 +22,22 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
         return "EAST";
     }
     
-
+    private String key = null;
+    
+    public EasternDirectionUpdater(String key){
+        this.key  = key;
+    }
+    
+    public EasternDirectionUpdater(){
+    }
+    
+    
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+        if(key != null && ownerAgent.getStackedPosition(key) == null){
+            ownerAgent.registerStack(key);
+        }
+        
         log.info("runnig east");
         if (dxDy == null || dxDy.length != 2) {
             return;
@@ -35,20 +49,6 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
         }
         
         dxDy[0] += ownerAgent.getSpeed();
-        ownerAgent.pushLoc();
-        
-
-//        double[] lonlat = RasterLoader.get(RasterConfig.BIG).getData().getLonLat(ownerAgent.getLocation()[0], ownerAgent.getLocation()[1]);
-//        // replace the below 
-//        if(lonlat[0] > -116.86157){
-//            Switch sw =  new Switch();
-//            sw.setTo(new SoutherDirectionUpdater());
-//            setSwitch(sw);
-//        }
-
-//        VectorUtils.limit(dxDy, 4.0);
-
+        ownerAgent.pushLoc(key);
     }
-
-   
 }

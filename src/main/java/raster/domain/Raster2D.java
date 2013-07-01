@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -177,7 +178,17 @@ public class Raster2D {
         return forceVector;
     }
 
-    public float[] calculateForcesAgainst(float[] origin, ArrayList<SlopeDataCell> pointsOfInterest) {
+//    public float[] calculateForcesAgainst(float[] origin, ArrayList<SlopeDataCell> pointsOfInterest) {
+//        float dx = 0, dy = 0;
+//        for (SlopeDataCell point : pointsOfInterest) {
+//            dx += point.getColumn() - origin[0];
+//            dy += point.getRow() - origin[1];
+//        }
+//        float[] forceVector = new float[]{dx, dy};
+//        return forceVector;
+//    }
+    
+    public float[] calculateForcesAgainst(int[] origin, ArrayList<SlopeDataCell> pointsOfInterest) {
         float dx = 0, dy = 0;
         for (SlopeDataCell point : pointsOfInterest) {
             dx += point.getColumn() - origin[0];
@@ -313,8 +324,8 @@ public class Raster2D {
         }
         return maxData;
     }
-
-    public double[][][] calculateViewShed(int column, int row, int radius) {
+    
+    public ArrayList<SlopeDataCell>  getVisibleCells(int column, int row, int radius) {
 //        return oneDirectionViewshed(column, row, radius);
 
         float elevationOrigin = getCell(column, row) + 6;
@@ -360,14 +371,27 @@ public class Raster2D {
                 // visible
             }
         }
+        return visibleCells;
+    }
+    
+    public ArrayList<SlopeDataCell> getEasternCells(ArrayList<SlopeDataCell> cells, int column, int row){
+        Iterator<SlopeDataCell> iterator = cells.iterator();
+        while (iterator.hasNext()){
+            SlopeDataCell cell = iterator.next();
+            if(cell.getColumn() < column){
+                iterator.remove();
+            }
+        }
+        return cells;
+    }
+        
 
-        long t0 = new Date().getTime();
-//        double[][][] visibleGons = GeomBuilder.geomToLeafletObject(collectGeometries(visibleCells));
+    public double[][][] calculateViewShed(int column, int row, int radius) {
+
+        ArrayList<SlopeDataCell> visibleCells = getVisibleCells(column, row, radius);
+
         double[][][] visibleGons = convertMapToCoords(myJoin(visibleCells));
-        long t1 = new Date().getTime();
-        float seconds = (t1 - t0) / 1000.0f;
 
-        System.out.println("took " + seconds + " to spatial union shit");
 
         return visibleGons;
     }
@@ -583,7 +607,7 @@ public class Raster2D {
     public float getCell(float column, float row) {
         return getCell(new Float(column).intValue(), new Float(row).intValue());
     }
-    
+
     public float getCell(int column, int row) {
         ArrayList<ArrayList<Float>> cells = getData();
         return cells.get(row).get(column);
@@ -751,18 +775,43 @@ public class Raster2D {
 
         return withinRange;
     }
-    
-    public ArrayList<SlopeDataCell> getSlopeLessThan(ArrayList<ArrayList<SlopeDataCell>> theHood, float maxSlope) {
+
+    public ArrayList<SlopeDataCell> as1DimensionalList(ArrayList<ArrayList<SlopeDataCell>> theHood) {
+        
         ArrayList<SlopeDataCell> slopeList = new ArrayList<SlopeDataCell>();
 
         for (ArrayList<SlopeDataCell> row : theHood) {
             slopeList.addAll(row);
         }
         
-        
+        return slopeList;
+    }
+    
+    public ArrayList<SlopeDataCell> getSlopeLessThan1D(ArrayList<SlopeDataCell> theHood, float maxSlope) {
+
+
         ArrayList<SlopeDataCell> withinRange = new ArrayList<SlopeDataCell>();
-        for(SlopeDataCell cell : slopeList){
-            if(cell.getSlope() < maxSlope){
+        for (SlopeDataCell cell : theHood) {
+            if (cell.getSlope() < maxSlope) {
+                withinRange.add(cell);
+            }
+        }
+
+
+        return withinRange;
+    }
+
+    public ArrayList<SlopeDataCell> getSlopeLessThan(ArrayList<ArrayList<SlopeDataCell>> theHood, float maxSlope) {
+        ArrayList<SlopeDataCell> slopeList = new ArrayList<SlopeDataCell>();
+
+        for (ArrayList<SlopeDataCell> row : theHood) {
+            slopeList.addAll(row);
+        }
+
+
+        ArrayList<SlopeDataCell> withinRange = new ArrayList<SlopeDataCell>();
+        for (SlopeDataCell cell : slopeList) {
+            if (cell.getSlope() < maxSlope) {
                 withinRange.add(cell);
             }
         }
@@ -822,7 +871,7 @@ public class Raster2D {
         for (ArrayList<SlopeDataCell> row : theHood) {
             dataList.addAll(row);
         }
-        
+
         Collections.sort(dataList, new DataComparator());
         ArrayList<SlopeDataCell> withinRange = new ArrayList<SlopeDataCell>();
 
@@ -851,10 +900,6 @@ public class Raster2D {
         Collections.sort(dataList, new DataComparator());
         Collections.sort(slopeList, new SlopeComparator());
 
-//        System.out.println("slope list, should be ordered: ");
-//        for(SlopeDataCell cell:slopeList){
-//            System.out.println(cell.getSlope());
-//        }
 
         ArrayList<SlopeDataCell> highFlats = new ArrayList<SlopeDataCell>();
 
@@ -873,12 +918,39 @@ public class Raster2D {
         }
 
 
-//        for (int dataIndex = (int)Math.floor((dataList.size()-1)*0.70); dataIndex < dataList.size(); dataIndex++){
-//            int slopeIndex = slopeList.indexOf(dataList.get(dataIndex));
-//            if(slopeIndex < (int)Math.floor((slopeList.size()-1)*0.70)){
-//                highFlats.add(dataList.get(dataIndex));
-//            }
-//        }
+        return highFlats;
+    }
+    
+     public ArrayList<SlopeDataCell> getLowFlats(ArrayList<ArrayList<SlopeDataCell>> theHood) {
+        ArrayList<SlopeDataCell> slopeList = new ArrayList<SlopeDataCell>();
+        ArrayList<SlopeDataCell> dataList = new ArrayList<SlopeDataCell>();
+
+        for (ArrayList<SlopeDataCell> row : theHood) {
+            slopeList.addAll(row);
+            dataList.addAll(row);
+
+        }
+        Collections.sort(dataList, new DataComparator());
+        Collections.sort(slopeList, new SlopeComparator());
+
+
+        ArrayList<SlopeDataCell> highFlats = new ArrayList<SlopeDataCell>();
+
+        // get items in bigger end of data list and smaller end of slope list
+        for (ArrayList<SlopeDataCell> row : theHood) {
+            int columnIndex = 0;
+            for (SlopeDataCell cell : row) {
+
+                int slopeIndex = slopeList.indexOf(cell);
+                int dataIndex = dataList.indexOf(cell);
+                if (slopeIndex <= (int) Math.floor((slopeList.size() - 1) * 0.60) && (dataIndex <= (int) Math.floor((dataList.size() - 1) * 0.60))) {
+                    highFlats.add(cell);
+                }
+                columnIndex++;
+            }
+        }
+
+
         return highFlats;
     }
 
@@ -969,11 +1041,13 @@ public class Raster2D {
 
     public ArrayList<ArrayList<SlopeDataCell>> getSlopeDataNeighborhood(int column, int row, int range) {
         ArrayList<ArrayList<SlopeDataCell>> slopeDataNeighborhood = new ArrayList<ArrayList<SlopeDataCell>>();
+        log.log(Level.INFO, "center cell is {0}, {1}", new Object[]{column, row});
 
-        for (int i = row - range; i < row + range + 1; i++) {
+        for (int i = row - range ; i < row + range +1; i++) {
             slopeDataNeighborhood.add(new ArrayList<SlopeDataCell>());
-            for (int j = column - range; j < column + range + 1; j++) {
+            for (int j = column - range ; j < column + range + 1; j++) {
                 slopeDataNeighborhood.get(slopeDataNeighborhood.size() - 1).add(getSlopeDataCell(j, i));
+
             }
         }
 

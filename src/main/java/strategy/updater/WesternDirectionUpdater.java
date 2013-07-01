@@ -6,7 +6,6 @@ package strategy.updater;
 
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
-import strategy.updater.message.UpdaterMessage;
 
 /**
  *
@@ -19,9 +18,23 @@ public class WesternDirectionUpdater extends SkelatalDirectionUpdater {
     public String toString() {
         return "Western";
     }
+    
+    private String key = null;
+    public WesternDirectionUpdater(String key){
+        this.key = key;
+    }
+    
+    public WesternDirectionUpdater(){
+    }
+    
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+        
+         if(key != null && ownerAgent.getStackedPosition(key) == null){
+            ownerAgent.registerStack(key);
+            
+         }
         log.info("runnig west");
         if (dxDy == null || dxDy.length != 2) {
             return;
@@ -32,11 +45,9 @@ public class WesternDirectionUpdater extends SkelatalDirectionUpdater {
         }
         dxDy[0] -= ownerAgent.getSpeed();
         
-        ownerAgent.pushLoc();
+        ownerAgent.pushLoc(key);
+//        ownerAgent.pushLoc();
 
     }
 
-    @Override
-    public void notifyMe(UpdaterMessage message) {
-    }
 }

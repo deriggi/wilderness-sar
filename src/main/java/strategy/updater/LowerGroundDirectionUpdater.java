@@ -24,10 +24,10 @@ public class LowerGroundDirectionUpdater extends SkelatalDirectionUpdater {
         float[] loc = ownerAgent.getLocation();
         
         ArrayList<ArrayList<SlopeDataCell>> hood = raster.getSlopeDataNeighborhood((int)loc[0], (int)loc[1], 6);
-//        ArrayList<SlopeDataCell> pointsOfInterest = raster.getCellsLessThan(hood, raster.getCell((int)loc[0], (int)loc[1]), 0.20f);
-        ArrayList<SlopeDataCell> pointsOfInterest = raster.getLows(hood);
+        ArrayList<SlopeDataCell> pointsOfInterest = raster.getCellsLessThan(hood, raster.getCell((int)loc[0], (int)loc[1]), 0.20f);
+//        ArrayList<SlopeDataCell> pointsOfInterest = raster.getLows(hood);
         
-        float[] acceleration = raster.calculateForcesAgainst(loc, pointsOfInterest);
+        float[] acceleration = raster.calculateForcesAgainst(new int[]{(int)loc[0],(int)loc[1]} , pointsOfInterest);
         
         dxDy[0] += acceleration[0];
         dxDy[1] += acceleration[1];

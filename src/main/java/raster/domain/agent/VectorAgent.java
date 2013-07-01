@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
@@ -30,11 +31,19 @@ public class VectorAgent {
 //    private Strategy movementStrategy = null;
     private List<Strategy> strategies = new ArrayList<Strategy>();
     private int strategyIndex = 0;
-    private Stack<float[]> stackedPositions = new Stack<float[]>();
     private int simpleDetectionRange = 20;
     private int stepsTaken = 0;
     private int masterTimestepsTaken = 0;
 
+    private Stack<float[]> masterStack = new Stack<float[]>();
+
+    public Stack<float[]> getMasterStack() {
+        return masterStack;
+    }
+    
+    private HashMap<String, Stack<float[]>> mapOfStacks = new HashMap<String, Stack<float[]>>();
+    
+    
     public int getMasterTimestepsTaken() {
         return masterTimestepsTaken;
     }
@@ -111,19 +120,37 @@ public class VectorAgent {
         return origin;
     }
 
-    public void pushLoc() {
-        if (stackedPositions == null) {
-            stackedPositions = new Stack<float[]>();
-        }
-        if (stackedPositions.size() > 500) {
-            log.severe("stack is growing too large, ignoring");
+    
+    public void pushLoc(String key){
+        if(key == null || !mapOfStacks.containsKey(key)){
             return;
         }
-        stackedPositions.add(this.getLocation());
+        
+        mapOfStacks.get(key).push(getLocation()); 
+                
     }
+    
+    
+    public void pushLoc() {
+        
+        masterStack.push(getLocation());
+        
+        
+    }
+    
 
-    public Stack<float[]> getStackedPosition() {
-        return stackedPositions;
+    public void registerStack(String key){
+        if(mapOfStacks.containsKey(key)){
+            log.log(Level.INFO,"already has key  {0} so not registering ",key );
+            return;
+        }
+        log.log(Level.INFO,"registering stack for key {0}",key );
+        mapOfStacks.put(key, new Stack<float[]>());
+        log.log(Level.INFO,"stacks count is now {0}",mapOfStacks.size() );
+    }
+    
+    public Stack<float[]> getStackedPosition(String key) {
+        return mapOfStacks.get(key);
     }
 
     public double getLongitude() {
@@ -191,6 +218,7 @@ public class VectorAgent {
         }
         addToDotProductBuffer();
         setLastVelocity(getVelocityVector());
+        pushLoc();
 
     }
 
@@ -213,10 +241,10 @@ public class VectorAgent {
 
     private void addToDotProductBuffer() {
         if (getLastVelocity() != null) {
-            log.log(Level.INFO, "calculating dp for {0} {1} {2} {3}", new Object[]{getLastVelocity()[0], getLastVelocity()[1], getVelocityVector()[0], getVelocityVector()[1]});
+//            log.log(Level.INFO, "calculating dp for {0} {1} {2} {3}", new Object[]{getLastVelocity()[0], getLastVelocity()[1], getVelocityVector()[0], getVelocityVector()[1]});
             
             Float dotProduct = new Float(dotProduct(getLastVelocity(), getVelocityVector()));
-            if (dotProductBuffer.size() >= 20) {
+            if (dotProductBuffer.size() >= 40) {
                 dotProductBuffer.remove(0);   
             }
             dotProductBuffer.add(dotProduct);
@@ -232,7 +260,6 @@ public class VectorAgent {
     public ArrayList<Float> getDotProductBuffer() {
         return dotProductBuffer;
     }
-    private int dotProductBufferIndex = 0;
 
     public double[] getLastVelocity() {
         return lastVelocity;

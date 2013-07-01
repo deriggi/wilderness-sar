@@ -13,6 +13,7 @@ import strategy.DirectionUpdater;
 import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
+import strategy.updater.EasternWalkableDirectionUpdater;
 import strategy.updater.GoHomeDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
 import strategy.updater.HighGroundDirectionUpdater;
@@ -22,12 +23,13 @@ import strategy.updater.SouthernDirectionUpdater;
 import strategy.updater.WalkableGroundDirectionUpdater;
 import strategy.updater.WanderDirectionUpdater;
 import strategy.updater.conditionchecker.IsAgitatedConditionChecker;
+import strategy.updater.conditionchecker.LocalStackSizeEqualToConditionChecker;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
-import strategy.updater.conditionchecker.StackSizeEqualToConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
 import strategy.updater.notificationhandler.DisableOnBacktrackNotificationHandler;
 import strategy.updater.notificationhandler.DisableOnSouthNotificationHandler;
 import strategy.updater.observer.ClearDotProductBufferExitObserver;
+import strategy.updater.observer.ClearLocalStackExitObserver;
 import strategy.updater.observer.ClearStackExitObserver;
 
 /**
@@ -173,38 +175,41 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine() {
 
             // the accelerators
-            EasternDirectionUpdater easternUpdater = new EasternDirectionUpdater();
-            SouthernDirectionUpdater southernUpdater = new SouthernDirectionUpdater();
-            WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater();
-            BacktrackDirectionUpdater backtrackUpdater = new BacktrackDirectionUpdater();
-            BacktrackDirectionUpdater backtrackUpdater2 = new BacktrackDirectionUpdater();
+            String eastKey = "east";
+            String westKey = "west";
+            String southKey = "south";
+            EasternDirectionUpdater easternUpdater = new EasternDirectionUpdater(eastKey);
+            SouthernDirectionUpdater southernUpdater = new SouthernDirectionUpdater(southKey);
+            WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater(westKey);
+            BacktrackDirectionUpdater backtrackUpdater = new BacktrackDirectionUpdater(eastKey);
+            BacktrackDirectionUpdater backtrackUpdater2 = new BacktrackDirectionUpdater(westKey);
 
             // second track
             HighGroundDirectionUpdater highGroundUpdater = new HighGroundDirectionUpdater();
 
 
             // east to backtrack
-            UpdaterConditionChecker stackGreaterThan50 = new StackSizeGreaterThanConditionChecker(50);
+            UpdaterConditionChecker stackGreaterThan50 = new LocalStackSizeEqualToConditionChecker(eastKey, 50);
             easternUpdater.setConditionChecker(stackGreaterThan50);
             stackGreaterThan50.setNextState(backtrackUpdater);
 
             // backtrack to west
-            UpdaterConditionChecker stackEqualToChecker  = new StackSizeEqualToConditionChecker(0);
+            UpdaterConditionChecker stackEqualToChecker  = new LocalStackSizeEqualToConditionChecker(eastKey, 0);
             backtrackUpdater.setConditionChecker( stackEqualToChecker );
             stackEqualToChecker.setNextState(westernUpdater);
 
             // west to backtrack -- owned by westernUpdate
-            UpdaterConditionChecker stackGreaterThan50_b = new StackSizeGreaterThanConditionChecker(50);
+            UpdaterConditionChecker stackGreaterThan50_b = new LocalStackSizeEqualToConditionChecker(westKey, 50);
             westernUpdater.setConditionChecker(stackGreaterThan50_b);
             stackGreaterThan50_b.setNextState(backtrackUpdater2);
 
             // back to south
-            UpdaterConditionChecker stackEqualToCheckerB  = new StackSizeEqualToConditionChecker(0);
+            UpdaterConditionChecker stackEqualToCheckerB  = new LocalStackSizeEqualToConditionChecker(westKey, 0);
             backtrackUpdater2.setConditionChecker(stackEqualToCheckerB);
             stackEqualToCheckerB.setNextState(southernUpdater);
 
             // back to original east to close the loop
-            UpdaterConditionChecker stackGreaterThan50_b2 = new StackSizeGreaterThanConditionChecker(50);
+            UpdaterConditionChecker stackGreaterThan50_b2 = new LocalStackSizeEqualToConditionChecker(southKey,50);
             southernUpdater.setConditionChecker(stackGreaterThan50_b2);
             stackGreaterThan50_b2.setNextState(easternUpdater);
 
@@ -213,9 +218,9 @@ public class FSMFactory {
             // sitAndDoNothingUpdater.setCondition(southToNothingCondition);
             // southToNothingCondition.setNextState(easternUpdater);
 
-            backtrackUpdater.addExitObserver(new ClearStackExitObserver());
-            backtrackUpdater2.addExitObserver(new ClearStackExitObserver());
-            southernUpdater.addExitObserver(new ClearStackExitObserver());
+            backtrackUpdater.addExitObserver(new ClearLocalStackExitObserver(eastKey));
+            backtrackUpdater2.addExitObserver(new ClearLocalStackExitObserver(westKey));
+            southernUpdater.addExitObserver(new ClearLocalStackExitObserver(southKey));
 
             backtrackUpdater.addUpdaterListener(highGroundUpdater);
             backtrackUpdater2.addUpdaterListener(highGroundUpdater);
@@ -290,6 +295,8 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    
 
     private static class SimpleWanderMaker implements FSMMaker {
 
@@ -318,9 +325,11 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
 
-            updaters.add(new LowerGroundDirectionUpdater());
-            updaters.add(new EasternDirectionUpdater());
-//            updaters.add(new WanderDirectionUpdater());
+//            updaters.add(new LowerGroundDirectionUpdater());
+//            updaters.add(new EasternDirectionUpdater());
+            
+            updaters.add(new EasternWalkableDirectionUpdater());
+            
             return updaters;
         }
     }
@@ -348,7 +357,8 @@ public class FSMFactory {
             easternUpdater.setConditionChecker(checkerForEastern);
             westernUpdater.setConditionChecker(checkerForWestern);
             
-            updaters.add(new LowerGroundDirectionUpdater());
+//            updaters.add(new LowerGroundDirectionUpdater());
+            updaters.add(new WalkableGroundDirectionUpdater());
             updaters.add(easternUpdater);
             
             return updaters;

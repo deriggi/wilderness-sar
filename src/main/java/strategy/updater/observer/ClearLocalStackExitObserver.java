@@ -11,14 +11,19 @@ import raster.domain.agent.VectorAgent;
  *
  * @author Johnny
  */
-public class ClearStackExitObserver implements DirectionUpdaterObserver{
+public class ClearLocalStackExitObserver implements DirectionUpdaterObserver {
+
+    private String key = null;
+
+    public ClearLocalStackExitObserver(String key) {
+        this.key = key;
+    }
 
     @Override
     public void notifyOfStateChange(VectorAgent va) {
-        Stack<float[]> stack = va.getMasterStack();
-        if(stack != null){
+        if (key != null && va.getStackedPosition(key) != null) {
+            Stack<float[]> stack = va.getStackedPosition(key);
             stack.clear();
         }
     }
-    
 }

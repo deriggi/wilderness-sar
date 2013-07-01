@@ -20,7 +20,7 @@ public class StackSizeCondition implements StateCondition{
     
     @Override
     public boolean checkState(VectorAgent va) {
-        if(va.getStackedPosition().size() >= maxSize){
+        if(va.getMasterStack().size() >= maxSize){
             return true;
         }
         return false;
