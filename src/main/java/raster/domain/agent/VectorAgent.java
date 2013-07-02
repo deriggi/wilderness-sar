@@ -34,16 +34,13 @@ public class VectorAgent {
     private int simpleDetectionRange = 20;
     private int stepsTaken = 0;
     private int masterTimestepsTaken = 0;
-
     private Stack<float[]> masterStack = new Stack<float[]>();
 
     public Stack<float[]> getMasterStack() {
         return masterStack;
     }
-    
     private HashMap<String, Stack<float[]>> mapOfStacks = new HashMap<String, Stack<float[]>>();
-    
-    
+
     public int getMasterTimestepsTaken() {
         return masterTimestepsTaken;
     }
@@ -120,35 +117,32 @@ public class VectorAgent {
         return origin;
     }
 
-    
-    public void pushLoc(String key){
-        if(key == null || !mapOfStacks.containsKey(key)){
+    public void pushLoc(String key) {
+        if (key == null || !mapOfStacks.containsKey(key)) {
             return;
         }
-        
-        mapOfStacks.get(key).push(getLocation()); 
-                
-    }
-    
-    
-    public void pushLoc() {
-        
-        masterStack.push(getLocation());
-        
-        
-    }
-    
 
-    public void registerStack(String key){
-        if(mapOfStacks.containsKey(key)){
-            log.log(Level.INFO,"already has key  {0} so not registering ",key );
+        mapOfStacks.get(key).push(getLocation());
+
+    }
+
+    public void pushLoc() {
+
+        masterStack.push(getLocation());
+
+
+    }
+
+    public void registerStack(String key) {
+        if (mapOfStacks.containsKey(key)) {
+            log.log(Level.INFO, "already has key  {0} so not registering ", key);
             return;
         }
-        log.log(Level.INFO,"registering stack for key {0}",key );
+        log.log(Level.INFO, "registering stack for key {0}", key);
         mapOfStacks.put(key, new Stack<float[]>());
-        log.log(Level.INFO,"stacks count is now {0}",mapOfStacks.size() );
+        log.log(Level.INFO, "stacks count is now {0}", mapOfStacks.size());
     }
-    
+
     public Stack<float[]> getStackedPosition(String key) {
         return mapOfStacks.get(key);
     }
@@ -175,6 +169,19 @@ public class VectorAgent {
 
     public VectorAgent() {
         velocity = new double[]{0.0, 0.0};
+
+    }
+
+    public boolean isAgitated() {
+        int size = getDotProductBuffer().size();
+        float dpAverage = getDotProductBufferAverage();
+        if (size >= 39 && dpAverage < -0.72f) {
+            log.info("owner is agitated!");
+
+            return true;
+        }
+
+        return false;
 
     }
 
@@ -242,16 +249,14 @@ public class VectorAgent {
     private void addToDotProductBuffer() {
         if (getLastVelocity() != null) {
 //            log.log(Level.INFO, "calculating dp for {0} {1} {2} {3}", new Object[]{getLastVelocity()[0], getLastVelocity()[1], getVelocityVector()[0], getVelocityVector()[1]});
-            
+
             Float dotProduct = new Float(dotProduct(getLastVelocity(), getVelocityVector()));
             if (dotProductBuffer.size() >= 40) {
-                dotProductBuffer.remove(0);   
+                dotProductBuffer.remove(0);
             }
             dotProductBuffer.add(dotProduct);
         }
     }
-    
-    
     // radians
     private double[] velocity = new double[2];
     private double[] lastVelocity = null;
@@ -351,11 +356,11 @@ public class VectorAgent {
 
 
     }
-    
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         VectorAgent va = new VectorAgent();
         System.out.println(va.dotProduct(new double[]{-0.2, -4f}, new double[]{-0.26f, 4f}));
-        
+
     }
 
     public double dotProduct(double[] v1, double[] v2) {

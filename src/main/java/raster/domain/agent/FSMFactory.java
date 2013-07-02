@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import strategy.DirectionUpdater;
-import strategy.updater.specialized.EastHighsWestLowsDirectionUpdater;
+import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
 import strategy.updater.EasternDirectionUpdater;
-import strategy.updater.EasternWalkableDirectionUpdater;
+import strategy.updater.specialized.EasternWalkableDirectionUpdater;
 import strategy.updater.GoHomeDirectionUpdater;
 import strategy.updater.WesternDirectionUpdater;
 import strategy.updater.HighGroundDirectionUpdater;
@@ -26,11 +26,14 @@ import strategy.updater.conditionchecker.IsAgitatedConditionChecker;
 import strategy.updater.conditionchecker.LocalStackSizeEqualToConditionChecker;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
+import strategy.updater.conditionchecker.VelocityZeroConditionChecker;
 import strategy.updater.notificationhandler.DisableOnBacktrackNotificationHandler;
 import strategy.updater.notificationhandler.DisableOnSouthNotificationHandler;
 import strategy.updater.observer.ClearDotProductBufferExitObserver;
 import strategy.updater.observer.ClearLocalStackExitObserver;
 import strategy.updater.observer.ClearStackExitObserver;
+import strategy.updater.specialized.WesternWalkableDirectionUpdater;
+import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
 
 /**
  *
@@ -43,7 +46,8 @@ public class FSMFactory {
     public static enum MachineName {
 
         EAST_WEST_HIGHS("East west highs"),
-        EAST_WEST_LOWS("East west lows"),
+//        EAST_WEST_LOWS("East west lows"),
+        PENSIVE_EAST_WEST("east or maybe west"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -53,7 +57,8 @@ public class FSMFactory {
         EAST_WEST_VALLEY_RIDGE("East highs west lows"),
         GO_TO_ORIGIN("Wander home"),
         DO_NOTHING("Do nothing"),
-        SLOW_ON_STEEP_WANDER("slow on steep wander");
+        SLOW_ON_STEEP_WANDER("slow on steep wander"),
+        EAST_WEST_WALKABLE_TOGGLE("east west walkable toggle");
         
         private String displayName;
         private String description;
@@ -319,7 +324,7 @@ public class FSMFactory {
         }
     }
 
-    private static class LowEastWanderMaker implements FSMMaker {
+    private static class EastWestWalkableToggle implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -327,8 +332,20 @@ public class FSMFactory {
 
 //            updaters.add(new LowerGroundDirectionUpdater());
 //            updaters.add(new EasternDirectionUpdater());
+
+            EasternWalkableDirectionUpdater eastWalk = new EasternWalkableDirectionUpdater();
+            WesternWalkableDirectionUpdater westWalk = new WesternWalkableDirectionUpdater();
             
-            updaters.add(new EasternWalkableDirectionUpdater());
+            // if velocity is zero switch to west walkable
+            VelocityZeroConditionChecker zeroVelocityCondition = new VelocityZeroConditionChecker();
+            eastWalk.setConditionChecker(zeroVelocityCondition);
+            zeroVelocityCondition.setNextState(westWalk);
+            
+            VelocityZeroConditionChecker zeroVelocityCondition_2 = new VelocityZeroConditionChecker();
+            westWalk.setConditionChecker(zeroVelocityCondition_2);
+            zeroVelocityCondition_2.setNextState(eastWalk);
+            
+            updaters.add(eastWalk);
             updaters.add(new WanderDirectionUpdater(2.0f));
             
             return updaters;
@@ -378,6 +395,21 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+     private static class LowEastWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            updaters.add(new LowerGroundDirectionUpdater());
+            updaters.add(new EasternDirectionUpdater());
+
+//            updaters.add(new WanderDirectionUpdater(2.0f));
+            
+            return updaters;
+        }
+    }
 
     private static class DoNothingWanderMaker implements FSMMaker {
 
@@ -386,6 +418,19 @@ public class FSMFactory {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             return updaters;
         }
+    }
+    
+    public static class PensiveEastWestWanderMaker implements FSMMaker {
+       
+        
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            updaters.add(new PensiveEasternWalkableDirectionUpdater());
+            return updaters;
+        }
+        
+       
     }
 
     public static List<DirectionUpdater> getMachine(MachineName name) {
@@ -404,7 +449,10 @@ public class FSMFactory {
         machineMap.put(MachineName.DO_NOTHING, new DoNothingWanderMaker());
         machineMap.put(MachineName.GO_TO_ORIGIN, new GoHomeWanderMaker());
         machineMap.put(MachineName.SLOW_ON_STEEP_WANDER, new SlowOnSteepsWanderMaker());
-
+        
+        // noobs
+        machineMap.put(MachineName.EAST_WEST_WALKABLE_TOGGLE, new EastWestWalkableToggle());
+        machineMap.put(MachineName.PENSIVE_EAST_WEST, new PensiveEastWestWanderMaker());
     }
 //    private static HashMap<
 }
