@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package strategy.updater.specialized.pensivewalker;
+package strategy.updater.specialized.adaptive;
 
 import geomutils.VectorUtils;
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
  *
  * @author Johnny
  */
-public class PensiveSouthernWalkableDirectionUpdater extends SkelatalDirectionUpdater {
+public class AdaptiveSouthernWalkableDirectionUpdater extends SkelatalDirectionUpdater {
 
-    private static final Logger log = Logger.getLogger(PensiveSouthernWalkableDirectionUpdater.class.getName());
+    private static final Logger log = Logger.getLogger(AdaptiveSouthernWalkableDirectionUpdater.class.getName());
 
     @Override
     public String toString() {
@@ -32,12 +32,12 @@ public class PensiveSouthernWalkableDirectionUpdater extends SkelatalDirectionUp
     }
     private Direction direction;
 
-    public PensiveSouthernWalkableDirectionUpdater(Direction direction) {
+    public AdaptiveSouthernWalkableDirectionUpdater(Direction direction) {
         this.direction = direction;
     }
     // 16 for a moderately healty walker
     private int iteration = 0;
-    private int visibiltyRadius = 10;
+    int visibileRange = 10;
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
@@ -57,38 +57,40 @@ public class PensiveSouthernWalkableDirectionUpdater extends SkelatalDirectionUp
 
         if (iteration++ > 20) {
 
-            if (this.direction.equals(Direction.WEST) && getWestVisibleCount(raster, loc, visibiltyRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            if (this.direction.equals(Direction.WEST) && getWestVisibleCount(raster, loc, visibileRange, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("south to west");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-                keepAHoeTrue.setNextState(new PensiveWesternWalkableDirectionUpdater());
+                keepAHoeTrue.setNextState(new AdaptiveWesternWalkableDirectionUpdater());
                 setConditionChecker(keepAHoeTrue);
 
-            } else if (this.direction.equals(Direction.EAST) && getEastVisibleCount(raster, loc, visibiltyRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            } else if (this.direction.equals(Direction.EAST) && getEastVisibleCount(raster, loc, visibileRange, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("south to east");
 
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-                keepAHoeTrue.setNextState(new PensiveEasternWalkableDirectionUpdater());
+                keepAHoeTrue.setNextState(new AdaptiveEasternWalkableDirectionUpdater());
                 setConditionChecker(keepAHoeTrue);
-                
             } else if (VectorUtils.magnitude(acceleration) == 0 || ownerAgent.isAgitated()) {
-                
                 log.info("south mag is zero trying to switch");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
                 keepAHoeTrue.setNextState(getDu(this.direction));
                 setConditionChecker(keepAHoeTrue);
                 ownerAgent.getDotProductBuffer().clear();
+
             }
         }
+
+
+
     }
 
     private DirectionUpdater getDu(Direction direction) {
         if (Direction.EAST.equals(direction)) {
             log.info("south to east");
-            return new PensiveEasternWalkableDirectionUpdater();
+            return new AdaptiveEasternWalkableDirectionUpdater();
         }
         log.info("south to west");
 
-        return new PensiveWesternWalkableDirectionUpdater();
+        return new AdaptiveWesternWalkableDirectionUpdater();
 
 
     }

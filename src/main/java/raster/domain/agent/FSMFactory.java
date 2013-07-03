@@ -33,6 +33,8 @@ import strategy.updater.observer.ClearDotProductBufferExitObserver;
 import strategy.updater.observer.ClearLocalStackExitObserver;
 import strategy.updater.observer.ClearStackExitObserver;
 import strategy.updater.specialized.WesternWalkableDirectionUpdater;
+import strategy.updater.specialized.adaptive.AdaptiveEasternWalkableDirectionUpdater;
+import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
 
 /**
@@ -48,6 +50,8 @@ public class FSMFactory {
         EAST_WEST_HIGHS("East west highs"),
 //        EAST_WEST_LOWS("East west lows"),
         PENSIVE_EAST_WEST("east or maybe west"),
+        DETERMINED_EAST_WEST("determined east or west"),
+        ADAPTIVE("where the wind blows"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -323,7 +327,30 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    private static class DeterminedWalkableWanderMaker implements FSMMaker {
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
 
+            updaters.add(new DeterminedEasternWalkableDirectionUpdater());
+            
+            return updaters;
+        }
+    }
+    
+    private static class AdaptiveWalkableWanderMaker implements FSMMaker {
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            updaters.add(new AdaptiveEasternWalkableDirectionUpdater());
+            
+            return updaters;
+        }
+    }
+
+    
     private static class EastWestWalkableToggle implements FSMMaker {
 
         @Override
@@ -453,6 +480,8 @@ public class FSMFactory {
         // noobs
         machineMap.put(MachineName.EAST_WEST_WALKABLE_TOGGLE, new EastWestWalkableToggle());
         machineMap.put(MachineName.PENSIVE_EAST_WEST, new PensiveEastWestWanderMaker());
+        machineMap.put(MachineName.DETERMINED_EAST_WEST, new DeterminedWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE, new AdaptiveWalkableWanderMaker());
     }
 //    private static HashMap<
 }

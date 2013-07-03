@@ -31,17 +31,17 @@ public class PensiveWesternWalkableDirectionUpdater extends SkelatalDirectionUpd
         return "west walkable";
     }
     // 16 for a moderately healty walker
-    private float minSlope = .16f;
+    private int visibilityRadius = 10;
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], 10);
+        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius);
 
 //        raster.getEasternCutoutCells(visibleCells, (int)loc[0], (int)loc[1], 8);
         raster.getWesternCells(visibleCells, (int) loc[0], (int) loc[1]);
-        visibleCells = raster.getSlopeLessThan1D(visibleCells, minSlope);
+        visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
 
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
 
@@ -67,9 +67,9 @@ public class PensiveWesternWalkableDirectionUpdater extends SkelatalDirectionUpd
         AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
         setConditionChecker(keepAHoeTrue);
 
-        int southernCellCount = getSouthVisibleCount(raster, loc);
-        int northernCellCount = getNorthVisibleCount(raster, loc);
-
+        int southernCellCount = getSouthVisibleCount(raster, loc, visibilityRadius,VectorAgent.WALKABLE_SLOPE);
+        int northernCellCount = getNorthVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        log.log(Level.INFO, "comparing south {0} to north {1}", new Object[]{southernCellCount, northernCellCount});
 
         if (southernCellCount > northernCellCount) {
             // goSouth
@@ -82,14 +82,18 @@ public class PensiveWesternWalkableDirectionUpdater extends SkelatalDirectionUpd
             log.info("west to north");
             keepAHoeTrue.setNextState(new PensiveNorthernWalkableDirectionUpdater(Direction.EAST));
 
+        } else if (northernCellCount == 0 && southernCellCount == 0) {
+            log.info("both zero so heading back east");
+            keepAHoeTrue.setNextState(new PensiveEasternWalkableDirectionUpdater());
+        } else if (northernCellCount == southernCellCount) {
+            // flip a coin
+            if (Math.random() > 0.5) {
+                keepAHoeTrue.setNextState(new PensiveNorthernWalkableDirectionUpdater(Direction.EAST));
+            } else {
+                keepAHoeTrue.setNextState(new PensiveSouthernWalkableDirectionUpdater(Direction.EAST));
+
+            }
         }
     }
 
-    private int getNorthVisibleCount(Raster2D raster, float[] loc) {
-        return raster.getSlopeLessThan1D(raster.getNorthernCells(raster.getVisibleCells((int) loc[0], (int) loc[1], 10), (int) loc[0], (int) loc[1]), minSlope).size();
-    }
-
-    private int getSouthVisibleCount(Raster2D raster, float[] loc) {
-        return raster.getSlopeLessThan1D(raster.getSouthernCells(raster.getVisibleCells((int) loc[0], (int) loc[1], 10), (int) loc[0], (int) loc[1]), minSlope).size();
-    }
 }

@@ -416,7 +416,7 @@ public class Raster2D {
             if(cell.getColumn() <= column - 1 && cell.getRow() > row - heightOfCutout && cell.getRow() < row + heightOfCutout){
                 iterator.remove();
             }
-            else if(cell.getColumn() <= column - 5){
+            else if(cell.getColumn() <= column - 1){
                 iterator.remove();
             }
         }
@@ -448,7 +448,7 @@ public class Raster2D {
         Iterator<SlopeDataCell> iterator = cells.iterator();
         while (iterator.hasNext()){
             SlopeDataCell cell = iterator.next();
-            if(cell.getColumn() >= column+1){
+            if(cell.getColumn() >= column + 1){
                 iterator.remove();
             }
         }

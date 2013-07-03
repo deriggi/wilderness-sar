@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package strategy.updater.specialized.pensivewalker;
+package strategy.updater.specialized.determinedwalker;
 
 import geomutils.VectorUtils;
 
@@ -22,9 +22,9 @@ import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
  *
  * @author Johnny
  */
-public class PensiveEasternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
+public class DeterminedEasternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
 
-    private static final Logger log = Logger.getLogger(PensiveEasternWalkableDirectionUpdater.class.getName());
+    private static final Logger log = Logger.getLogger(DeterminedEasternWalkableDirectionUpdater.class.getName());
 
     @Override
     public String toString() {
@@ -76,25 +76,26 @@ public class PensiveEasternWalkableDirectionUpdater extends SkelatalDirectionUpd
         if (southernCellCount > northernCellCount) {
             // goSouth
             log.info("east to south");
-            keepAHoeTrue.setNextState(new PensiveSouthernWalkableDirectionUpdater(Direction.WEST));
+            keepAHoeTrue.setNextState(new DeterminedSouthernWalkableDirectionUpdater(Direction.EAST));
 
         } else if (northernCellCount > southernCellCount) {
             // goNorth
             log.info("east to north");
-            keepAHoeTrue.setNextState(new PensiveNorthernWalkableDirectionUpdater(Direction.WEST));
+            keepAHoeTrue.setNextState(new DeterminedNorthernWalkableDirectionUpdater(Direction.EAST));
 
         } else if (northernCellCount == 0 && southernCellCount == 0) {
-            log.info("both zero so heading back east");
-            keepAHoeTrue.setNextState(new PensiveWesternWalkableDirectionUpdater());
+            log.info("both zero so heading back west");
+            keepAHoeTrue.setNextState(new DeterminedWesternWalkableDirectionUpdater());
         } else if (northernCellCount == southernCellCount) {
             // flip a coin
             if (Math.random() > 0.5) {
-                keepAHoeTrue.setNextState(new PensiveNorthernWalkableDirectionUpdater(Direction.EAST));
+                keepAHoeTrue.setNextState(new DeterminedNorthernWalkableDirectionUpdater(Direction.EAST));
             } else {
-                keepAHoeTrue.setNextState(new PensiveSouthernWalkableDirectionUpdater(Direction.EAST));
+                keepAHoeTrue.setNextState(new DeterminedSouthernWalkableDirectionUpdater(Direction.EAST));
 
             }
         }
     }
 
+    
 }

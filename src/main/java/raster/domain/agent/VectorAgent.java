@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
@@ -36,6 +35,8 @@ public class VectorAgent {
     private int masterTimestepsTaken = 0;
     private Stack<float[]> masterStack = new Stack<float[]>();
 
+    public static final float WALKABLE_SLOPE = 0.18f;
+    
     public Stack<float[]> getMasterStack() {
         return masterStack;
     }
