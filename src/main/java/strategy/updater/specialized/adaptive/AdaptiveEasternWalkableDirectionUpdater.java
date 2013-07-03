@@ -4,6 +4,7 @@
  */
 package strategy.updater.specialized.adaptive;
 
+import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +58,7 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
         }
 
         ArrayList<SlopeDataCell> southernCells = getSouthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        if (percentChanceTrue(0.20f) &&  !directionEquals(lastDirection, Direction.NORTH)
+        if (percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
             optimalDirection = Direction.SOUTH;
@@ -80,15 +81,26 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
             dxDy[0] = acceleration[0];
             dxDy[1] = acceleration[1];
         } else {
-
+            dxDy[0] = 0;
+            dxDy[1] = 0;
+            log.warning("velocity is zero");
             log.warning("LOL no good options");
 
         }
+        
+        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
+        if (averageDistance != null &&  averageDistance < ownerAgent.getSpeed()*2) {
+            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float)50, ownerAgent.averageDistanceLastXPoints(50)});
+
+        }
+//        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
+
+
 
     }
-    
-    private boolean percentChanceTrue(float chance){
-        if(Math.random() < chance){
+
+    private boolean percentChanceTrue(float chance) {
+        if (Math.random() < chance) {
             return true;
         }
         return false;
