@@ -14,6 +14,7 @@ import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
+import statsutils.GameUtils;
 import strategy.updater.Direction;
 import strategy.updater.SkelatalDirectionUpdater;
 import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
@@ -32,68 +33,72 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
     }
     // 16 for a moderately healty walker
     private int visibilityRadius = 10;
+    private Direction lastDirection = null;
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius);
 
-//        raster.getEasternCutoutCells(visibleCells, (int)loc[0], (int)loc[1], 8);
-        raster.getWesternCells(visibleCells, (int) loc[0], (int) loc[1]);
-        visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
+        int maxVisibleCellCount = 0;
+        Direction optimalDirection = null;
+        ArrayList<SlopeDataCell> bestCells = null;
 
-        float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
 
-        dxDy[0] = acceleration[0];
-        dxDy[1] = acceleration[1];
-        log.log(Level.INFO, "a is {0} {1} with a mag of {2} ", new Object[]{acceleration[0], acceleration[1], VectorUtils.magnitude(acceleration)});
-        // if velocity is zero compare north and south options
-
-        if (VectorUtils.magnitude(acceleration) == 0) {
-            goNorthOrSouth(raster, loc);
-        } else if (ownerAgent.isAgitated()) {
-            goNorthOrSouth(raster, loc);
-            ownerAgent.getDotProductBuffer().clear();
+        ArrayList<SlopeDataCell> westernCells = getWestVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if (!directionEquals(lastDirection, Direction.EAST)
+                && westernCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = westernCells.size();
+            optimalDirection = Direction.WEST;
+            bestCells = westernCells;
         }
 
-        // for n or s, once west provides a better option go west
-
-
-    }
-
-    private void goNorthOrSouth(Raster2D raster, float[] loc) {
-        log.info("checking north or south");
-        AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-        setConditionChecker(keepAHoeTrue);
-
-        int southernCellCount = getSouthVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        int northernCellCount = getNorthVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        log.log(Level.INFO, "comparing south {0} to north {1}", new Object[]{southernCellCount, northernCellCount});
-
-        if (southernCellCount > northernCellCount) {
-            // goSouth
-            log.info("west to south");
-            keepAHoeTrue.setNextState(new AdaptiveSouthernWalkableDirectionUpdater(Direction.WEST));
-
-
-        } else if (northernCellCount > southernCellCount) {
-            // goNorth
-            log.info("west to north");
-            keepAHoeTrue.setNextState(new AdaptiveNorthernWalkableDirectionUpdater(Direction.WEST));
-
-        } else if (northernCellCount == 0 && southernCellCount == 0) {
-            log.info("both zero so heading back east");
-            keepAHoeTrue.setNextState(new AdaptiveEasternWalkableDirectionUpdater());
-        } else if (northernCellCount == southernCellCount) {
-            // flip a coin
-            if (Math.random() > 0.5) {
-                keepAHoeTrue.setNextState(new AdaptiveNorthernWalkableDirectionUpdater(Direction.WEST));
-            } else {
-                keepAHoeTrue.setNextState(new AdaptiveSouthernWalkableDirectionUpdater(Direction.WEST));
-
-            }
+        ArrayList<SlopeDataCell> southernCells = getSouthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.NORTH)
+                && southernCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = southernCells.size();
+            optimalDirection = Direction.SOUTH;
+            bestCells = southernCells;
         }
-    }
 
+        ArrayList<SlopeDataCell> northernCells = getNorthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.SOUTH)
+                && northernCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = northernCells.size();
+            optimalDirection = Direction.NORTH;
+            bestCells = northernCells;
+        }
+
+        if (bestCells != null) {
+            log.log(Level.INFO, "adaptive going with {0}", optimalDirection.toString());
+            lastDirection = optimalDirection;
+            float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, bestCells);
+
+            dxDy[0] = acceleration[0];
+            dxDy[1] = acceleration[1];
+        } else {
+            dxDy[0] = 0;
+            dxDy[1] = 0;
+            log.warning("velocity is zero");
+            log.warning("LOL no good options");
+
+        }
+        
+        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
+        if (averageDistance != null &&  averageDistance < ownerAgent.getSpeed()*2) {
+            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float)50, ownerAgent.averageDistanceLastXPoints(50)});
+
+        }
+//        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
+    }
+    
+
+    
+
+    private boolean directionEquals(Direction lastDirection, Direction potentialDirection) {
+        if (lastDirection == null || potentialDirection == null) {
+            return false;
+        }
+        return lastDirection.equals(potentialDirection);
+    }
 }

@@ -7,6 +7,7 @@ package middletier;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +50,7 @@ public class RasterLoader {
             loader.log("nwx {0} ", loader.getData().getNwX());
             loader.log("nwy {0} ", loader.getData().getNwY());
             loader.log("cellsize {0} ", loader.getData().getCellSize());
+            
         }
         return loader;
     }
@@ -78,9 +80,21 @@ public class RasterLoader {
             log.log(Level.INFO, "time to load binary terrain {0}", TimerUtil.seconds(t1, t0));
             setData(raster);
             // =======================
+            
+            //=========================================
+//            int rows = raster.getData().size();
+//            int cols = raster.getData().get(0).size();
+//            ArrayList<ArrayList<Byte>> masterRaster = new ArrayList<ArrayList<Byte>>(rows);
+//            for(int i =0; i < rows; i++){
+//                masterRaster.add(new ArrayList<Byte>());
+//                for(int j = 0; j < cols; j++){
+//                    masterRaster.get(i).add(Byte.MAX_VALUE);
+//                }
+//            }
+//            log.info("max master raster loaded!");
+            //=========================================
 
 
-            //            log.info(ca.getRaster2D().getData().size());
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RasterLoader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

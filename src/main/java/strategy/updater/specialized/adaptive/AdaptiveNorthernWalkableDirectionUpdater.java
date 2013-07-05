@@ -13,6 +13,7 @@ import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
+import statsutils.GameUtils;
 import strategy.DirectionUpdater;
 import strategy.updater.Direction;
 import strategy.updater.SkelatalDirectionUpdater;
@@ -31,66 +32,73 @@ public class AdaptiveNorthernWalkableDirectionUpdater extends SkelatalDirectionU
         return "east walkable";
     }
     // 16 for a moderately healty walker
-    private Direction direction;
-    private int iteration = 0;
-    int visibilityRadius = 10;
-    
-    public AdaptiveNorthernWalkableDirectionUpdater(Direction direction) {
-        this.direction = direction;
-    }
+    private int visibilityRadius = 10;
+    private Direction lastDirection = null;
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], 10);
 
-        raster.getNorthernCells(visibleCells, (int) loc[0], (int) loc[1]);
-        visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
+        int maxVisibleCellCount = 0;
+        Direction optimalDirection = null;
+        ArrayList<SlopeDataCell> bestCells = null;
 
-        float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
-
-        dxDy[0] = acceleration[0];
-        dxDy[1] = acceleration[1];
-
-        log.log(Level.INFO, "a is {0} {1} with a mag of {2} ", new Object[]{acceleration[0], acceleration[1], VectorUtils.magnitude(acceleration)});
-
-
-        if (iteration++ > 20) {
-
-
-            if (this.direction.equals(Direction.WEST) && getWestVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
-                log.info("north to west");
-                AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-                keepAHoeTrue.setNextState(new AdaptiveWesternWalkableDirectionUpdater());
-                setConditionChecker(keepAHoeTrue);
-
-            } else if (this.direction.equals(Direction.EAST) && getEastVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
-                log.info("north to east");
-                AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-                keepAHoeTrue.setNextState(new AdaptiveEasternWalkableDirectionUpdater());
-                setConditionChecker(keepAHoeTrue);
-            } else if (VectorUtils.magnitude(acceleration) == 0 || ownerAgent.isAgitated()) {
-                log.info("mag is zero trying to switch");
-                AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-                keepAHoeTrue.setNextState(getDu(this.direction));
-                setConditionChecker(keepAHoeTrue);
-                ownerAgent.getDotProductBuffer().clear();
-            }
-
+        
+        ArrayList<SlopeDataCell> northernCells = getNorthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if ( !directionEquals(lastDirection, Direction.SOUTH)
+                && northernCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = northernCells.size();
+            optimalDirection = Direction.NORTH;
+            bestCells = northernCells;
+        }
+        
+        ArrayList<SlopeDataCell> easternCells = getEastVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.WEST)
+                && easternCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = easternCells.size();
+            optimalDirection = Direction.EAST;
+            bestCells = easternCells;
         }
 
-    }
-
-    private DirectionUpdater getDu(Direction direction) {
-        if (Direction.EAST.equals(direction)) {
-            log.info("south to east");
-            return new AdaptiveEasternWalkableDirectionUpdater();
+        ArrayList<SlopeDataCell> westernCells = getWestVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.EAST)
+                && westernCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = westernCells.size();
+            optimalDirection = Direction.WEST;
+            bestCells = westernCells;
         }
-        log.info("south to west");
-        return new AdaptiveWesternWalkableDirectionUpdater();
 
+        if (bestCells != null) {
+            log.log(Level.INFO, "adaptive going with {0}", optimalDirection.toString());
+            lastDirection = optimalDirection;
+            float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, bestCells);
 
+            dxDy[0] = acceleration[0];
+            dxDy[1] = acceleration[1];
+        } else {
+            dxDy[0] = 0;
+            dxDy[1] = 0;
+            log.warning("velocity is zero");
+            log.warning("LOL no good options");
+
+        }
+        
+        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
+        if (averageDistance != null &&  averageDistance < ownerAgent.getSpeed()*2) {
+            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float)50, ownerAgent.averageDistanceLastXPoints(50)});
+
+        }
+//        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
     }
+    
 
+    
+
+    private boolean directionEquals(Direction lastDirection, Direction potentialDirection) {
+        if (lastDirection == null || potentialDirection == null) {
+            return false;
+        }
+        return lastDirection.equals(potentialDirection);
+    }
 }

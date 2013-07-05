@@ -200,4 +200,6 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
     public ArrayList<SlopeDataCell> getEastVisibleCells(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
         return raster.getSlopeLessThan1D(raster.getEasternCells(raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
     }
+    
+    
 }

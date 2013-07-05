@@ -28,7 +28,6 @@ public class IsAgitatedConditionChecker extends  SkelatalUpdaterConditionChecker
        
        log.log(Level.INFO, "size and average {0}  {1} ", new Object[] {size, dpAverage } );
 //       printBuffer(buffer);
-       
        if(size >= 39  && dpAverage < -0.72f){
            return true;
        }
