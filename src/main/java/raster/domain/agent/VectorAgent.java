@@ -34,9 +34,9 @@ public class VectorAgent {
     private int stepsTaken = 0;
     private int masterTimestepsTaken = 0;
     private Stack<float[]> masterStack = new Stack<float[]>();
-
     public static final float WALKABLE_SLOPE = 0.18f;
-    
+    public static final int MAX_STACK_SIZE = 200;
+
     public Stack<float[]> getMasterStack() {
         return masterStack;
     }
@@ -123,11 +123,19 @@ public class VectorAgent {
             return;
         }
 
-        mapOfStacks.get(key).push(getLocation());
+        Stack<float[]> someStack = mapOfStacks.get(key);
+        if (someStack.size() > MAX_STACK_SIZE) {
+            someStack.remove(0);
+        }
+
+        someStack.push(getLocation());
 
     }
 
     public void pushLoc() {
+        if (masterStack.size() > MAX_STACK_SIZE) {
+            masterStack.remove(0);
+        }
 
         masterStack.push(getLocation());
 
@@ -243,12 +251,12 @@ public class VectorAgent {
         for (Float f : dotProductBuffer) {
             sum += f;
         }
-        log.log(Level.INFO, "dividing {0} by {1} ", new Float[]{sum, (float)dotProductBuffer.size()});
+        log.log(Level.INFO, "dividing {0} by {1} ", new Float[]{sum, (float) dotProductBuffer.size()});
         return sum / dotProductBuffer.size();
     }
 
     private void addToDotProductBuffer() {
-        if (getLastVelocity() != null && VectorUtils.magnitude(getLastVelocity())!=0 && VectorUtils.magnitude(getVelocityVector()) !=0) {
+        if (getLastVelocity() != null && VectorUtils.magnitude(getLastVelocity()) != 0 && VectorUtils.magnitude(getVelocityVector()) != 0) {
 //            log.log(Level.INFO, "calculating dp for {0} {1} {2} {3}", new Object[]{getLastVelocity()[0], getLastVelocity()[1], getVelocityVector()[0], getVelocityVector()[1]});
 
             Float dotProduct = new Float(dotProduct(getLastVelocity(), getVelocityVector()));
@@ -258,26 +266,26 @@ public class VectorAgent {
             dotProductBuffer.add(dotProduct);
         }
     }
-    
-    public Float averageDistanceLastXPoints(int x){
-      if(masterStack == null || masterStack.isEmpty() || x > masterStack.size()){
-          return null;
-      }
-      float[] positinToMeasureAgainst = masterStack.get(masterStack.size()-1);
-      
 
-      int positionToStart = masterStack.size() - x;
-      float sum = 0.0f;
-      int i=  0;
-      for(i = positionToStart; i < masterStack.size(); i++){
-          sum += VectorUtils.distance(masterStack.get(i), positinToMeasureAgainst);
-      }
-      
-      float average = sum/(i - positionToStart -1);
+    public Float averageDistanceLastXPoints(int x) {
+        if (masterStack == null || masterStack.isEmpty() || x > masterStack.size()) {
+            return null;
+        }
+        float[] positinToMeasureAgainst = masterStack.get(masterStack.size() - 1);
+
+
+        int positionToStart = masterStack.size() - x;
+        float sum = 0.0f;
+        int i = 0;
+        for (i = positionToStart; i < masterStack.size(); i++) {
+            sum += VectorUtils.distance(masterStack.get(i), positinToMeasureAgainst);
+        }
+
+        float average = sum / (i - positionToStart - 1);
 //      log.log(Level.INFO, "average distance last {0} points {1}", new float[]{(float)x, average});
-      
-      return average;
-      
+
+        return average;
+
     }
 //    // radians
     private double[] velocity = new double[2];
@@ -386,11 +394,11 @@ public class VectorAgent {
         stringStack.push("a");
         stringStack.push("b");
         stringStack.push("c");
-        
+
         System.out.println(stringStack.get(0));
         System.out.println(stringStack.get(1));
         System.out.println(stringStack.get(2));
-        
+
     }
 
     public double dotProduct(double[] v1, double[] v2) {
