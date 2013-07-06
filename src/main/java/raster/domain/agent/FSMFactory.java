@@ -23,6 +23,7 @@ import strategy.updater.SouthernDirectionUpdater;
 import strategy.updater.WalkableGroundDirectionUpdater;
 import strategy.updater.WanderDirectionUpdater;
 import strategy.updater.conditionchecker.IsAgitatedConditionChecker;
+import strategy.updater.conditionchecker.IsStuckConditionChecker;
 import strategy.updater.conditionchecker.LocalStackSizeEqualToConditionChecker;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
@@ -34,6 +35,7 @@ import strategy.updater.observer.ClearLocalStackExitObserver;
 import strategy.updater.observer.ClearStackExitObserver;
 import strategy.updater.specialized.WesternWalkableDirectionUpdater;
 import strategy.updater.specialized.adaptive.AdaptiveEasternWalkableDirectionUpdater;
+import strategy.updater.specialized.adaptive.AdaptiveWesternWalkableDirectionUpdater;
 import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
 
@@ -339,12 +341,24 @@ public class FSMFactory {
         }
     }
     
-    private static class AdaptiveWalkableWanderMaker implements FSMMaker {
+    private static class AdaptiveEastWestWalkableWanderMaker implements FSMMaker {
         @Override
         public List<DirectionUpdater> makeMachine() {
+            
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-
-            updaters.add(new AdaptiveEasternWalkableDirectionUpdater());
+            
+            AdaptiveEasternWalkableDirectionUpdater adaptEast=  new AdaptiveEasternWalkableDirectionUpdater();
+            AdaptiveWesternWalkableDirectionUpdater adaptWest =  new AdaptiveWesternWalkableDirectionUpdater();
+            
+            IsStuckConditionChecker amyItheStuckEast = new IsStuckConditionChecker();
+            adaptEast.setConditionChecker(amyItheStuckEast);
+            amyItheStuckEast.setNextState(adaptWest);
+            
+            IsStuckConditionChecker amyItheStuckWest = new IsStuckConditionChecker();
+            adaptWest.setConditionChecker(amyItheStuckWest);
+            amyItheStuckWest.setNextState(adaptEast);
+            
+            updaters.add(adaptWest);
             
             return updaters;
         }
@@ -481,7 +495,7 @@ public class FSMFactory {
         machineMap.put(MachineName.EAST_WEST_WALKABLE_TOGGLE, new EastWestWalkableToggle());
         machineMap.put(MachineName.PENSIVE_EAST_WEST, new PensiveEastWestWanderMaker());
         machineMap.put(MachineName.DETERMINED_EAST_WEST, new DeterminedWalkableWanderMaker());
-        machineMap.put(MachineName.ADAPTIVE, new AdaptiveWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE, new AdaptiveEastWestWalkableWanderMaker());
     }
 //    private static HashMap<
 }

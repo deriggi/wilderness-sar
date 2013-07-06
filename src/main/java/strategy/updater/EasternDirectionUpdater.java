@@ -4,7 +4,6 @@
  */
 package strategy.updater;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.agent.VectorAgent;
 

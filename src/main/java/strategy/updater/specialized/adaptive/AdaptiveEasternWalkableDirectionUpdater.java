@@ -15,7 +15,6 @@ import raster.domain.agent.VectorAgent;
 import statsutils.GameUtils;
 import strategy.updater.Direction;
 import strategy.updater.SkelatalDirectionUpdater;
-import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
 
 /**
  *
@@ -43,12 +42,11 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
         ArrayList<SlopeDataCell> bestCells = null;
 
 
-        ArrayList<SlopeDataCell> westernCells = getWestVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        if (!directionEquals(lastDirection, Direction.EAST)
-                && westernCells.size() > maxVisibleCellCount) {
-            maxVisibleCellCount = westernCells.size();
-            optimalDirection = Direction.WEST;
-            bestCells = westernCells;
+        ArrayList<SlopeDataCell> easternCells = getEastVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        if (easternCells.size() > maxVisibleCellCount) {
+            maxVisibleCellCount = easternCells.size();
+            optimalDirection = Direction.EAST;
+            bestCells = easternCells;
         }
 
         ArrayList<SlopeDataCell> southernCells = getSouthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
@@ -82,21 +80,15 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
 
         }
 
-        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
-        if (averageDistance != null && averageDistance < ownerAgent.getSpeed() * 2) {
-            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float) 50, ownerAgent.averageDistanceLastXPoints(50)});
-
-        }
-//        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
+//        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
+//        if (averageDistance != null && averageDistance < ownerAgent.getSpeed() * 2) {
+//            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float) 50, ownerAgent.averageDistanceLastXPoints(50)});
+//        }
     }
 
-    private void changeUp() {
-        AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
-        setConditionChecker(keepAHoeTrue);
-        // make a condiction checker for this mother fucker to go west if stuck
-        // make condish checker to go to best opportunity if it sees a great opportunity
-    }
-
+    // make a condiction checker for this mother fucker to go west if stuck
+    // make condish checker to go to best opportunity if it sees a great opportunity
+    
     private boolean directionEquals(Direction lastDirection, Direction potentialDirection) {
         if (lastDirection == null || potentialDirection == null) {
             return false;

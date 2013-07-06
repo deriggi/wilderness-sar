@@ -34,6 +34,7 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
     // 16 for a moderately healty walker
     private int visibilityRadius = 10;
     private Direction lastDirection = null;
+    
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
@@ -46,8 +47,7 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
 
 
         ArrayList<SlopeDataCell> westernCells = getWestVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        if (!directionEquals(lastDirection, Direction.EAST)
-                && westernCells.size() > maxVisibleCellCount) {
+        if (westernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = westernCells.size();
             optimalDirection = Direction.WEST;
             bestCells = westernCells;
@@ -84,11 +84,7 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
 
         }
         
-        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
-        if (averageDistance != null &&  averageDistance < ownerAgent.getSpeed()*2) {
-            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float)50, ownerAgent.averageDistanceLastXPoints(50)});
-
-        }
+       
 //        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
     }
     
