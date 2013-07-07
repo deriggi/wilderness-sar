@@ -34,10 +34,9 @@ public class RightAnglesWhenStuckConditionChecker extends SkelatalUpdaterConditi
     private RightAnglesAdaptiveSouthernDirectionUpdater south;
     
     
+    
     public RightAnglesWhenStuckConditionChecker(Direction lastDirecion) {
         this.lastDirection = lastDirecion;
-        east = new RightAnglesAdaptiveEasternDirectionUpdater();
-        // do the same with nort south etc..
     }
 
     @Override
@@ -48,36 +47,69 @@ public class RightAnglesWhenStuckConditionChecker extends SkelatalUpdaterConditi
 
         // wait fifty steps before we check if stuck, thus to clear the agent buffer
         if (!doneStartingOut && iterations++ < POINTS_TO_CHECK) {
+            
             return false;
+            
         } else {
+            
             iterations = 0;
             doneStartingOut = true;
+            
         }
-
+        
         Float average = va.averageDistanceLastXPoints(POINTS_TO_CHECK);
         log.log(Level.INFO, "average of last fifty is {0} comparing to {1} ", new Float[]{average, va.getSpeed() * 2});
 
         if (average != null && average < va.getSpeed() * 2) {
+            
+            // handle stuck
+            
             Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
 
             if (lastDirection.equals(Direction.NORTH) || lastDirection.equals(Direction.SOUTH)) {
+                
                 int eastWalkableCount = raster.getEastVisibleCount(va.getLocation(), VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
                 int westWalkableCount = raster.getWestVisibleCount(va.getLocation(), VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+                
                 if(eastWalkableCount > westWalkableCount){
-                    // set next to right angle east with a new one of these condition checkers
+                    
+                    // east is the big winner
+                    east = new RightAnglesAdaptiveEasternDirectionUpdater();
                     east.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
                     setNextState(east);
+                    
+                }else{
+                    
+                    // westerly
+                    west = new RightAnglesAdaptiveWesternDirectionUpdater();
+                    west.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.WEST));
+                    setNextState(west);
+                    
                 }
             }
             else if (lastDirection.equals(Direction.EAST) || lastDirection.equals(Direction.WEST)){
+                
                 int northWalkableCount = raster.getNorthVisibleCount(va.getLocation(), VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
                 int southWalkableCount = raster.getSouthVisibleCount(va.getLocation(), VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+                
+                if(northWalkableCount > southWalkableCount){
+                    
+                    // north
+                    north = new RightAnglesAdaptiveNorthernDirectionUpdater();
+                    north.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.NORTH));
+                    setNextState(north);
+                    
+                }else {
+                    
+                    // south
+                    south = new RightAnglesAdaptiveSouthernDirectionUpdater();
+                    south.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.SOUTH));
+                    setNextState(south);
+                    
+                }
             }
             return true;
         }
-
         return false;
-
-
     }
 }

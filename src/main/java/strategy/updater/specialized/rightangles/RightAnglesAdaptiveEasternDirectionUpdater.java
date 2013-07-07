@@ -80,14 +80,7 @@ public class RightAnglesAdaptiveEasternDirectionUpdater extends SkelatalDirectio
 
         }
 
-//        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
-//        if (averageDistance != null && averageDistance < ownerAgent.getSpeed() * 2) {
-//            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float) 50, ownerAgent.averageDistanceLastXPoints(50)});
-//        }
     }
-
-    // make a condiction checker for this mother fucker to go west if stuck
-    // make condish checker to go to best opportunity if it sees a great opportunity
     
     private boolean directionEquals(Direction lastDirection, Direction potentialDirection) {
         if (lastDirection == null || potentialDirection == null) {

@@ -60,6 +60,7 @@ public class FSMFactory {
         DETERMINED_EAST_WEST("determined east or west"),
         ADAPTIVE_EAST_WEST("mostly east and west"),
         ADAPTIVE_NORTH_SOUTH("mostly north and south"),
+        ADAPTIVE_RIGHT_ANGLES("mostly north and south"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -395,7 +396,11 @@ public class FSMFactory {
         }
     }
     
-    private static class AdaptiveNorthRightAnglesWalkableWanderMaker implements FSMMaker {
+    
+    /**
+     * When stuck it chooses the considers the best right angle direction
+     */
+    private static class AdaptiveRightAnglesWalkableWanderMaker implements FSMMaker {
         
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -544,6 +549,7 @@ public class FSMFactory {
         machineMap.put(MachineName.DETERMINED_EAST_WEST, new DeterminedWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_EAST_WEST, new AdaptiveEastWestWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES, new AdaptiveRightAnglesWalkableWanderMaker());
         
     }
 //    private static HashMap<
