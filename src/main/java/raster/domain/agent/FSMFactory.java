@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import strategy.DirectionUpdater;
 import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
+import strategy.updater.Direction;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.specialized.EasternWalkableDirectionUpdater;
 import strategy.updater.GoHomeDirectionUpdater;
@@ -25,6 +26,7 @@ import strategy.updater.WanderDirectionUpdater;
 import strategy.updater.conditionchecker.IsAgitatedConditionChecker;
 import strategy.updater.conditionchecker.IsStuckConditionChecker;
 import strategy.updater.conditionchecker.LocalStackSizeEqualToConditionChecker;
+import strategy.updater.conditionchecker.RightAnglesWhenStuckConditionChecker;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
 import strategy.updater.conditionchecker.VelocityZeroConditionChecker;
@@ -40,6 +42,7 @@ import strategy.updater.specialized.adaptive.AdaptiveSouthernWalkableDirectionUp
 import strategy.updater.specialized.adaptive.AdaptiveWesternWalkableDirectionUpdater;
 import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveEasternDirectionUpdater;
 
 /**
  *
@@ -398,19 +401,11 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine() {
             
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            RightAnglesAdaptiveEasternDirectionUpdater rightEast = new RightAnglesAdaptiveEasternDirectionUpdater();
+            rightEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
             
-            AdaptiveNorthernWalkableDirectionUpdater adaptNorth = new AdaptiveNorthernWalkableDirectionUpdater();
-            AdaptiveSouthernWalkableDirectionUpdater adaptSouth = new AdaptiveSouthernWalkableDirectionUpdater();
             
-            IsStuckConditionChecker amyItheStuckNorth = new IsStuckConditionChecker();
-            adaptNorth.setConditionChecker(amyItheStuckNorth);
-            amyItheStuckNorth.setNextState(adaptSouth);
-            
-            IsStuckConditionChecker amyItheStuckSouth = new IsStuckConditionChecker();
-            adaptSouth.setConditionChecker(amyItheStuckSouth);
-            amyItheStuckSouth.setNextState(adaptNorth);
-            
-            updaters.add(adaptNorth);
+            updaters.add(rightEast);
             
             return updaters;
         }

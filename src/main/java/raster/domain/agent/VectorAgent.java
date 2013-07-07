@@ -35,8 +35,11 @@ public class VectorAgent {
     private int stepsTaken = 0;
     private int masterTimestepsTaken = 0;
     private Stack<float[]> masterStack = new Stack<float[]>();
+    
+    // constants, 'hey man you should use enums'
     public static final float WALKABLE_SLOPE = 0.18f;
     public static final int MAX_STACK_SIZE = 200;
+    public static final int SHORT_VIS_RANGE = 10;
 
     public Stack<float[]> getMasterStack() {
         return masterStack;
