@@ -67,8 +67,8 @@ public class DeterminedWesternWalkableDirectionUpdater extends SkelatalDirection
         AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
         setConditionChecker(keepAHoeTrue);
 
-        int southernCellCount = getSouthVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        int northernCellCount = getNorthVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        int southernCellCount = raster.getSouthVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        int northernCellCount = raster.getNorthVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         log.log(Level.INFO, "comparing south {0} to north {1}", new Object[]{southernCellCount, northernCellCount});
 
         if (southernCellCount > northernCellCount) {

@@ -35,6 +35,8 @@ import strategy.updater.observer.ClearLocalStackExitObserver;
 import strategy.updater.observer.ClearStackExitObserver;
 import strategy.updater.specialized.WesternWalkableDirectionUpdater;
 import strategy.updater.specialized.adaptive.AdaptiveEasternWalkableDirectionUpdater;
+import strategy.updater.specialized.adaptive.AdaptiveNorthernWalkableDirectionUpdater;
+import strategy.updater.specialized.adaptive.AdaptiveSouthernWalkableDirectionUpdater;
 import strategy.updater.specialized.adaptive.AdaptiveWesternWalkableDirectionUpdater;
 import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
@@ -53,7 +55,8 @@ public class FSMFactory {
 //        EAST_WEST_LOWS("East west lows"),
         PENSIVE_EAST_WEST("east or maybe west"),
         DETERMINED_EAST_WEST("determined east or west"),
-        ADAPTIVE("where the wind blows"),
+        ADAPTIVE_EAST_WEST("mostly east and west"),
+        ADAPTIVE_NORTH_SOUTH("mostly north and south"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -342,13 +345,14 @@ public class FSMFactory {
     }
     
     private static class AdaptiveEastWestWalkableWanderMaker implements FSMMaker {
+        
         @Override
         public List<DirectionUpdater> makeMachine() {
             
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             
-            AdaptiveEasternWalkableDirectionUpdater adaptEast=  new AdaptiveEasternWalkableDirectionUpdater();
-            AdaptiveWesternWalkableDirectionUpdater adaptWest =  new AdaptiveWesternWalkableDirectionUpdater();
+            AdaptiveEasternWalkableDirectionUpdater adaptEast = new AdaptiveEasternWalkableDirectionUpdater();
+            AdaptiveWesternWalkableDirectionUpdater adaptWest = new AdaptiveWesternWalkableDirectionUpdater();
             
             IsStuckConditionChecker amyItheStuckEast = new IsStuckConditionChecker();
             adaptEast.setConditionChecker(amyItheStuckEast);
@@ -359,6 +363,54 @@ public class FSMFactory {
             amyItheStuckWest.setNextState(adaptEast);
             
             updaters.add(adaptWest);
+            
+            return updaters;
+        }
+    }
+    
+    private static class AdaptiveNorthSouthWalkableWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            
+            AdaptiveNorthernWalkableDirectionUpdater adaptNorth = new AdaptiveNorthernWalkableDirectionUpdater();
+            AdaptiveSouthernWalkableDirectionUpdater adaptSouth = new AdaptiveSouthernWalkableDirectionUpdater();
+            
+            IsStuckConditionChecker amyItheStuckNorth = new IsStuckConditionChecker();
+            adaptNorth.setConditionChecker(amyItheStuckNorth);
+            amyItheStuckNorth.setNextState(adaptSouth);
+            
+            IsStuckConditionChecker amyItheStuckSouth = new IsStuckConditionChecker();
+            adaptSouth.setConditionChecker(amyItheStuckSouth);
+            amyItheStuckSouth.setNextState(adaptNorth);
+            
+            updaters.add(adaptNorth);
+            
+            return updaters;
+        }
+    }
+    
+    private static class AdaptiveNorthRightAnglesWalkableWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            
+            AdaptiveNorthernWalkableDirectionUpdater adaptNorth = new AdaptiveNorthernWalkableDirectionUpdater();
+            AdaptiveSouthernWalkableDirectionUpdater adaptSouth = new AdaptiveSouthernWalkableDirectionUpdater();
+            
+            IsStuckConditionChecker amyItheStuckNorth = new IsStuckConditionChecker();
+            adaptNorth.setConditionChecker(amyItheStuckNorth);
+            amyItheStuckNorth.setNextState(adaptSouth);
+            
+            IsStuckConditionChecker amyItheStuckSouth = new IsStuckConditionChecker();
+            adaptSouth.setConditionChecker(amyItheStuckSouth);
+            amyItheStuckSouth.setNextState(adaptNorth);
+            
+            updaters.add(adaptNorth);
             
             return updaters;
         }
@@ -495,7 +547,9 @@ public class FSMFactory {
         machineMap.put(MachineName.EAST_WEST_WALKABLE_TOGGLE, new EastWestWalkableToggle());
         machineMap.put(MachineName.PENSIVE_EAST_WEST, new PensiveEastWestWanderMaker());
         machineMap.put(MachineName.DETERMINED_EAST_WEST, new DeterminedWalkableWanderMaker());
-        machineMap.put(MachineName.ADAPTIVE, new AdaptiveEastWestWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_EAST_WEST, new AdaptiveEastWestWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
+        
     }
 //    private static HashMap<
 }

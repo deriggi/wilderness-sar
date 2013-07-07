@@ -17,6 +17,7 @@ import middletier.RasterLoader;
 import strategy.Strategy;
 import middletier.AgentService;
 import raster.domain.Raster2D;
+import raster.domain.SlopeDataCell;
 
 /**
  *
@@ -450,4 +451,6 @@ public class VectorAgent {
     public void setSpeed(float speed) {
         this.speed = Math.abs(speed);
     }
+    
+  
 }

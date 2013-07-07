@@ -148,58 +148,7 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
 
     }
 
-    //======
-    // north
-    // ======
-    public int getNorthVisibleCount(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        int northCount = getNorthVisibleCells(raster, loc, visibilityRadius, minSlope).size();
-        log.log(Level.INFO, "north count is {0}", new Object[]{northCount});
-
-        return northCount;
-    }
-
-    public ArrayList<SlopeDataCell> getNorthVisibleCells(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        return raster.getSlopeLessThan1D(raster.getNorthernCells(raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
-    }
-
-    //=====
-    // south
-    //======
-    public int getSouthVisibleCount(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        int southCount = getSouthVisibleCells(raster, loc, visibilityRadius, minSlope).size();
-        log.log(Level.INFO, "south count is {0} ", new Object[]{southCount});
-        return southCount;
-    }
-
-    public ArrayList<SlopeDataCell> getSouthVisibleCells(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        return raster.getSlopeLessThan1D(raster.getSouthernCells(raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
-    }
-
-    // =======
-    // west
-    // =======
-    public int getWestVisibleCount(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        int westCount = getWestVisibleCells(raster, loc, visibilityRadius, minSlope).size();
-        log.log(Level.INFO, "east count is {0} ", new Object[]{westCount});
-        return westCount;
-    }
-
-    public ArrayList<SlopeDataCell> getWestVisibleCells(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        return raster.getSlopeLessThan1D(raster.getWesternCells(raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
-    }
-
-    //=======
-    // east
-    //======
-    public int getEastVisibleCount(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        int eastCount = getEastVisibleCells(raster, loc, visibilityRadius, minSlope).size();
-        log.log(Level.INFO, "east count is {0} ", new Object[]{eastCount});
-        return eastCount;
-    }
-
-    public ArrayList<SlopeDataCell> getEastVisibleCells(Raster2D raster, float[] loc, int visibilityRadius, float minSlope) {
-        return raster.getSlopeLessThan1D(raster.getEasternCells(raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
-    }
+    
     
     
 }

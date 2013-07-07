@@ -46,14 +46,14 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
         ArrayList<SlopeDataCell> bestCells = null;
 
 
-        ArrayList<SlopeDataCell> westernCells = getWestVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> westernCells = raster.getWestVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         if (westernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = westernCells.size();
             optimalDirection = Direction.WEST;
             bestCells = westernCells;
         }
 
-        ArrayList<SlopeDataCell> southernCells = getSouthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
@@ -61,7 +61,7 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
             bestCells = southernCells;
         }
 
-        ArrayList<SlopeDataCell> northernCells = getNorthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.SOUTH)
                 && northernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = northernCells.size();

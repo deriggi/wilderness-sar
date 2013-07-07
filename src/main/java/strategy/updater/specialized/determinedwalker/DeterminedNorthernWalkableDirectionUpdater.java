@@ -59,13 +59,13 @@ public class DeterminedNorthernWalkableDirectionUpdater extends SkelatalDirectio
         if (iteration++ > 20) {
 
 
-            if (this.direction.equals(Direction.WEST) && getWestVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            if (this.direction.equals(Direction.WEST) && raster.getWestVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("north to west");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
                 keepAHoeTrue.setNextState(new DeterminedWesternWalkableDirectionUpdater());
                 setConditionChecker(keepAHoeTrue);
 
-            } else if (this.direction.equals(Direction.EAST) && getEastVisibleCount(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            } else if (this.direction.equals(Direction.EAST) && raster.getEastVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("north to east");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
                 keepAHoeTrue.setNextState(new DeterminedEasternWalkableDirectionUpdater());

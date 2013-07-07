@@ -4,7 +4,6 @@
  */
 package strategy.updater.specialized.adaptive;
 
-import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,10 +13,8 @@ import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
 import statsutils.GameUtils;
-import strategy.DirectionUpdater;
 import strategy.updater.Direction;
 import strategy.updater.SkelatalDirectionUpdater;
-import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
 
 /**
  *
@@ -44,7 +41,7 @@ public class AdaptiveSouthernWalkableDirectionUpdater extends SkelatalDirectionU
         Direction optimalDirection = null;
         ArrayList<SlopeDataCell> bestCells = null;
 
-        ArrayList<SlopeDataCell> southernCells = getSouthVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         if (!directionEquals(lastDirection, Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
@@ -52,7 +49,7 @@ public class AdaptiveSouthernWalkableDirectionUpdater extends SkelatalDirectionU
             bestCells = southernCells;
         }
 
-        ArrayList<SlopeDataCell> easternCells = getEastVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.WEST)
                 && easternCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = easternCells.size();
@@ -60,7 +57,7 @@ public class AdaptiveSouthernWalkableDirectionUpdater extends SkelatalDirectionU
             bestCells = easternCells;
         }
 
-        ArrayList<SlopeDataCell> westernCells = getWestVisibleCells(raster, loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> westernCells = raster.getWestVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.EAST)
                 && westernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = westernCells.size();

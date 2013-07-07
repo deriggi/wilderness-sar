@@ -12,9 +12,9 @@ import raster.domain.agent.VectorAgent;
  *
  * @author Johnny
  */
-public class IsStuckConditionChecker extends SkelatalUpdaterConditionChecker {
+public class EastOrWestWhenStuckConditionChecker extends SkelatalUpdaterConditionChecker {
 
-    private final static Logger log = Logger.getLogger(IsStuckConditionChecker.class.getName());
+    private final static Logger log = Logger.getLogger(EastOrWestWhenStuckConditionChecker.class.getName());
     private final int POINTS_TO_CHECK = 50;
     private int iterations = 0;
     private boolean doneStartingOut = false;

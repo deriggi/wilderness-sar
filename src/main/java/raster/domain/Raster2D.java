@@ -1228,4 +1228,57 @@ public class Raster2D {
 
         return max;
     }
+    
+      //======
+    // north
+    // ======
+    public int getNorthVisibleCount(float[] loc, int visibilityRadius, float minSlope) {
+        int northCount = getNorthVisibleCells( loc, visibilityRadius, minSlope).size();
+        log.log(Level.INFO, "north count is {0}", new Object[]{northCount});
+
+        return northCount;
+    }
+
+    public ArrayList<SlopeDataCell> getNorthVisibleCells(float[] loc, int visibilityRadius, float minSlope) {
+        return getSlopeLessThan1D(getNorthernCells(getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
+    }
+
+    //=====
+    // south
+    //======
+    public int getSouthVisibleCount( float[] loc, int visibilityRadius, float minSlope) {
+        int southCount = getSouthVisibleCells( loc, visibilityRadius, minSlope).size();
+        log.log(Level.INFO, "south count is {0} ", new Object[]{southCount});
+        return southCount;
+    }
+
+    public ArrayList<SlopeDataCell> getSouthVisibleCells(float[] loc, int visibilityRadius, float minSlope) {
+        return getSlopeLessThan1D(getSouthernCells(getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
+    }
+
+    // =======
+    // west
+    // =======
+    public int getWestVisibleCount( float[] loc, int visibilityRadius, float minSlope) {
+        int westCount = getWestVisibleCells(loc, visibilityRadius, minSlope).size();
+        log.log(Level.INFO, "east count is {0} ", new Object[]{westCount});
+        return westCount;
+    }
+
+    public ArrayList<SlopeDataCell> getWestVisibleCells(float[] loc, int visibilityRadius, float minSlope) {
+        return getSlopeLessThan1D(getWesternCells(getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
+    }
+
+    //=======
+    // east
+    //======
+    public int getEastVisibleCount( float[] loc, int visibilityRadius, float minSlope) {
+        int eastCount = getEastVisibleCells(loc, visibilityRadius, minSlope).size();
+        log.log(Level.INFO, "east count is {0} ", new Object[]{eastCount});
+        return eastCount;
+    }
+
+    public ArrayList<SlopeDataCell> getEastVisibleCells(float[] loc, int visibilityRadius, float minSlope) {
+        return getSlopeLessThan1D(getEasternCells(getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius), (int) loc[0], (int) loc[1]), minSlope);
+    }
 }
