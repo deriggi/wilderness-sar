@@ -40,6 +40,7 @@ public class VectorAgent {
     public static final float WALKABLE_SLOPE = 0.18f;
     public static final int MAX_STACK_SIZE = 200;
     public static final int SHORT_VIS_RANGE = 10;
+    public static final int LONG_VIS_RANGE = 70;
 
     public Stack<float[]> getMasterStack() {
         return masterStack;

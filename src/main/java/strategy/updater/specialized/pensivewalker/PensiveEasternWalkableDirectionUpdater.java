@@ -30,15 +30,13 @@ public class PensiveEasternWalkableDirectionUpdater extends SkelatalDirectionUpd
     public String toString() {
         return "east walkable";
     }
-    // 16 for a moderately healty walker
-    private int visibilityRadius = 10;
     
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], visibilityRadius);
+        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
 
 //        raster.getEasternCutoutCells(visibleCells, (int)loc[0], (int)loc[1], 8);
         raster.getEasternCells(visibleCells, (int) loc[0], (int) loc[1]);
@@ -69,8 +67,8 @@ public class PensiveEasternWalkableDirectionUpdater extends SkelatalDirectionUpd
         AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
         setConditionChecker(keepAHoeTrue);
 
-        int southernCellCount = raster.getSouthVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
-        int northernCellCount = raster.getNorthVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        int southernCellCount = raster.getSouthVisibleCount( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+        int northernCellCount = raster.getNorthVisibleCount( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
 
 
         if (southernCellCount > northernCellCount) {

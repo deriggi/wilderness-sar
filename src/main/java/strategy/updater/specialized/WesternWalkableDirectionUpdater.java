@@ -33,7 +33,7 @@ public class WesternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
 
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], 10);
+        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
 //        raster.getWesternCutoutCells(visibleCells, (int)loc[0], (int)loc[1], 8);
         raster.getWesternCells(visibleCells, (int) loc[0], (int) loc[1]);
         visibleCells = raster.getSlopeLessThan1D(visibleCells, minSlope);

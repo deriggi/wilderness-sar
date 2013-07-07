@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package strategy.updater.specialized.adaptive;
+package strategy.updater.specialized.opportunistic;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -14,22 +14,19 @@ import raster.domain.SlopeDataCell;
 import raster.domain.agent.VectorAgent;
 import statsutils.GameUtils;
 import strategy.updater.Direction;
-import strategy.updater.SkelatalDirectionUpdater;
 
 /**
  *
  * @author Johnny
  */
-public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
+public class OppoturnisticRightAnglesEasternDirectionUpdater extends SkelatalOppoturnisticRightAnglesDirectionUpdater {
 
-    private static final Logger log = Logger.getLogger(AdaptiveEasternWalkableDirectionUpdater.class.getName());
+    private static final Logger log = Logger.getLogger(OppoturnisticRightAnglesEasternDirectionUpdater.class.getName());
 
     @Override
     public String toString() {
         return "adaptive east";
     }
-    // 16 for a moderately healty walker
-    private Direction lastDirection = null;
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
@@ -49,7 +46,7 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
         }
 
         ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
-        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.NORTH)
+        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(getLastDirection(), Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
             optimalDirection = Direction.SOUTH;
@@ -57,16 +54,18 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
         }
 
         ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
-        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.SOUTH)
+        if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(getLastDirection(), Direction.SOUTH)
                 && northernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = northernCells.size();
             optimalDirection = Direction.NORTH;
             bestCells = northernCells;
         }
+        
+        
 
         if (bestCells != null) {
             log.log(Level.INFO, "adaptive going with {0}", optimalDirection.toString());
-            lastDirection = optimalDirection;
+            setLastDirection(optimalDirection);
             float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, bestCells);
 
             dxDy[0] = acceleration[0];
@@ -78,20 +77,11 @@ public class AdaptiveEasternWalkableDirectionUpdater extends SkelatalDirectionUp
             log.warning("LOL no good options");
 
         }
-
-//        Float averageDistance = ownerAgent.averageDistanceLastXPoints(50);
-//        if (averageDistance != null && averageDistance < ownerAgent.getSpeed() * 2) {
-//            log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float) 50, ownerAgent.averageDistanceLastXPoints(50)});
-//        }
+        
+        
+        considerNorthSouthField(CONSIDER_A_FIELD_CHANCE, raster, loc);
+        
+        
     }
-
-    // make a condiction checker for this mother fucker to go west if stuck
-    // make condish checker to go to best opportunity if it sees a great opportunity
     
-    private boolean directionEquals(Direction lastDirection, Direction potentialDirection) {
-        if (lastDirection == null || potentialDirection == null) {
-            return false;
-        }
-        return lastDirection.equals(potentialDirection);
-    }
 }

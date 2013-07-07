@@ -37,13 +37,12 @@ public class DeterminedSouthernWalkableDirectionUpdater extends SkelatalDirectio
     }
     // 16 for a moderately healty walker
     private int iteration = 0;
-    int visibileRange = 10;
 
     @Override
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], 10);
+        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
 
         raster.getSouthernCells(visibleCells, (int) loc[0], (int) loc[1]);
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
@@ -57,13 +56,13 @@ public class DeterminedSouthernWalkableDirectionUpdater extends SkelatalDirectio
 
         if (iteration++ > 20) {
 
-            if (this.direction.equals(Direction.WEST) && raster.getWestVisibleCount( loc, visibileRange, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            if (this.direction.equals(Direction.WEST) && raster.getWestVisibleCount( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("south to west");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
                 keepAHoeTrue.setNextState(new DeterminedWesternWalkableDirectionUpdater());
                 setConditionChecker(keepAHoeTrue);
 
-            } else if (this.direction.equals(Direction.EAST) && raster.getEastVisibleCount( loc, visibileRange, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            } else if (this.direction.equals(Direction.EAST) && raster.getEastVisibleCount( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("south to east");
 
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();

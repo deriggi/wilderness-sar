@@ -385,6 +385,7 @@ public class Raster2D {
         return cells;
     }
     
+    
     public ArrayList<SlopeDataCell> getNorthernCells(ArrayList<SlopeDataCell> cells, int column, int row){
         Iterator<SlopeDataCell> iterator = cells.iterator();
         while (iterator.hasNext()){

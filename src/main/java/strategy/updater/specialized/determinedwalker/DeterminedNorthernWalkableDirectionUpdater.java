@@ -33,7 +33,6 @@ public class DeterminedNorthernWalkableDirectionUpdater extends SkelatalDirectio
     // 16 for a moderately healty walker
     private Direction direction;
     private int iteration = 0;
-    int visibilityRadius = 10;
     
     public DeterminedNorthernWalkableDirectionUpdater(Direction direction) {
         this.direction = direction;
@@ -43,7 +42,7 @@ public class DeterminedNorthernWalkableDirectionUpdater extends SkelatalDirectio
     public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], 10);
+        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
 
         raster.getNorthernCells(visibleCells, (int) loc[0], (int) loc[1]);
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
@@ -59,13 +58,13 @@ public class DeterminedNorthernWalkableDirectionUpdater extends SkelatalDirectio
         if (iteration++ > 20) {
 
 
-            if (this.direction.equals(Direction.WEST) && raster.getWestVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            if (this.direction.equals(Direction.WEST) && raster.getWestVisibleCount( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("north to west");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
                 keepAHoeTrue.setNextState(new DeterminedWesternWalkableDirectionUpdater());
                 setConditionChecker(keepAHoeTrue);
 
-            } else if (this.direction.equals(Direction.EAST) && raster.getEastVisibleCount( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
+            } else if (this.direction.equals(Direction.EAST) && raster.getEastVisibleCount( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE) > visibleCells.size()) {
                 log.info("north to east");
                 AlwaysTrueConditionChecker keepAHoeTrue = new AlwaysTrueConditionChecker();
                 keepAHoeTrue.setNextState(new DeterminedEasternWalkableDirectionUpdater());
