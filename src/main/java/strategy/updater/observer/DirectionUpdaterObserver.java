@@ -4,12 +4,12 @@
  */
 package strategy.updater.observer;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
  * @author Johnny
  */
 public interface DirectionUpdaterObserver {
-    public void notifyOfStateChange(VectorAgent va);
+    public void notifyOfStateChange(SkelatalAgent va);
 }

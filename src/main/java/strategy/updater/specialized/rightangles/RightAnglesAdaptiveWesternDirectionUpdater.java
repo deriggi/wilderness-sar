@@ -4,7 +4,6 @@
  */
 package strategy.updater.specialized.rightangles;
 
-import geomutils.VectorUtils;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -13,11 +12,11 @@ import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import statsutils.GameUtils;
 import strategy.updater.Direction;
 import strategy.updater.SkelatalDirectionUpdater;
-import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
 
 /**
  *
@@ -37,7 +36,7 @@ public class RightAnglesAdaptiveWesternDirectionUpdater extends SkelatalDirectio
     
 
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
 

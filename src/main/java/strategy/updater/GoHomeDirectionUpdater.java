@@ -8,7 +8,7 @@ import geomutils.VectorUtils;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 import strategy.updater.message.UpdaterMessage;
 
 /**
@@ -18,7 +18,7 @@ import strategy.updater.message.UpdaterMessage;
 public class GoHomeDirectionUpdater extends SkelatalDirectionUpdater {
 
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
         float[] origin = ownerAgent.getOrigin();

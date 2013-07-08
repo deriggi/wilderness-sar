@@ -6,7 +6,7 @@ package strategy.updater.conditionchecker;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -20,7 +20,7 @@ public class IsStuckConditionChecker extends SkelatalUpdaterConditionChecker {
     private boolean doneStartingOut = false;
     
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
         
         // over the last fifty points, is this agent's straight line distance less 
         // than twice it's velocity

@@ -4,7 +4,7 @@
  */
 package strategy;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -13,8 +13,8 @@ import raster.domain.agent.VectorAgent;
 public interface Strategy {
     
     public Integer getTimestep();
-    public void calculateNextMove(VectorAgent ownerAgent);
-    public boolean getIsTimeToSwitch(VectorAgent ownerAgent);
+    public void calculateNextMove(SkelatalAgent ownerAgent);
+    public boolean getIsTimeToSwitch(SkelatalAgent ownerAgent);
     public void setName(String name);
     public String getName();
     public void addDirectionUpdater(DirectionUpdater updater);

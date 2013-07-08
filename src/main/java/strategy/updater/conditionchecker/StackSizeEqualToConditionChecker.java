@@ -4,7 +4,7 @@
  */
 package strategy.updater.conditionchecker;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -24,7 +24,7 @@ public class StackSizeEqualToConditionChecker extends SkelatalUpdaterConditionCh
     }
     
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
         if(va == null || va.getStackedPosition(key) == null){
             return false;
         }

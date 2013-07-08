@@ -7,7 +7,7 @@ package strategy.updater.conditionchecker;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -31,7 +31,7 @@ public class LocalStackSizeEqualToConditionChecker extends SkelatalUpdaterCondit
     private static final Logger log = Logger.getLogger(LocalStackSizeEqualToConditionChecker.class.getName());
     
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
         if(va.getStackedPosition(mapKey) == null){
             log.log(Level.INFO, "local stack is null for key {0} ", mapKey);
             return false;

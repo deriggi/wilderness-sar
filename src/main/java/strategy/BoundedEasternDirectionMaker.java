@@ -5,6 +5,7 @@
 package strategy;
 
 import geomutils.VectorUtils;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import strategy.updater.SkelatalDirectionUpdater;
 import strategy.updater.message.UpdaterMessage;
@@ -56,7 +57,7 @@ public class BoundedEasternDirectionMaker extends  SkelatalDirectionUpdater {
     }
 
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -67,7 +68,7 @@ public class BoundedEasternDirectionMaker extends  SkelatalDirectionUpdater {
 
 
     @Override
-    public boolean switchIfConditionMet(VectorAgent vectorAgent) {
+    public boolean switchIfConditionMet(SkelatalAgent vectorAgent) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -78,7 +79,7 @@ public class BoundedEasternDirectionMaker extends  SkelatalDirectionUpdater {
     }
 
     @Override
-    public void updateDirectionCaller(double[] velocity, VectorAgent va) {
+    public void updateDirectionCaller(double[] velocity, SkelatalAgent va) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

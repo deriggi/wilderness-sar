@@ -4,6 +4,7 @@
  */
 package strategy.updater.conditionchecker;
 
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 
 /**
@@ -22,7 +23,7 @@ public class StepsTakenGreaterThanConditionChecker extends SkelatalUpdaterCondit
     }
     
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
         if(va == null){
             return true;
         }

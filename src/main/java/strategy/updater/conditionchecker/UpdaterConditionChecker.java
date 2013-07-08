@@ -4,7 +4,7 @@
  */
 package strategy.updater.conditionchecker;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 import strategy.DirectionUpdater;
 
 /**
@@ -12,7 +12,7 @@ import strategy.DirectionUpdater;
  * @author Johnny
  */
 public interface UpdaterConditionChecker {
-    public boolean checkCondition(VectorAgent va);
+    public boolean checkCondition(SkelatalAgent va);
     public DirectionUpdater getNextState();
     public void setNextState(DirectionUpdater du);
 }

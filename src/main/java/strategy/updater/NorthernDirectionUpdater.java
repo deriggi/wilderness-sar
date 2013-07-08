@@ -5,7 +5,7 @@
 package strategy.updater;
 
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -23,7 +23,7 @@ public class NorthernDirectionUpdater extends SkelatalDirectionUpdater {
    
     
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         if (dxDy == null || dxDy.length != 2) {
             return;
         }

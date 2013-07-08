@@ -4,6 +4,7 @@
  */
 package strategy;
 
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 
 /**
@@ -97,7 +98,7 @@ public class DirectionalWanderStrategy implements Strategy {
     }
 
     @Override
-    public void calculateNextMove(VectorAgent ownerAgent) {
+    public void calculateNextMove(SkelatalAgent ownerAgent) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -112,7 +113,7 @@ public class DirectionalWanderStrategy implements Strategy {
     }
 
     @Override
-    public boolean getIsTimeToSwitch(VectorAgent ownerAgent) {
+    public boolean getIsTimeToSwitch(SkelatalAgent ownerAgent) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

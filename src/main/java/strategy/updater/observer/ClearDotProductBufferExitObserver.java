@@ -4,7 +4,7 @@
  */
 package strategy.updater.observer;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -13,7 +13,7 @@ import raster.domain.agent.VectorAgent;
 public class ClearDotProductBufferExitObserver implements DirectionUpdaterObserver{
 
     @Override
-    public void notifyOfStateChange(VectorAgent va) {
+    public void notifyOfStateChange(SkelatalAgent va) {
         va.getDotProductBuffer().clear();
         va.clearLastVelocity();
     }

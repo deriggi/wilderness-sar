@@ -2,10 +2,7 @@ package strategy.updater;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
-import strategy.updater.HighGroundDirectionUpdater;
-import strategy.updater.LowerGroundDirectionUpdater;
-import strategy.updater.SkelatalDirectionUpdater;
+import raster.domain.agent.SkelatalAgent;
 
 public class EastHighsWestLowsDirectionUpdater extends SkelatalDirectionUpdater {
 
@@ -20,7 +17,7 @@ public class EastHighsWestLowsDirectionUpdater extends SkelatalDirectionUpdater 
     
 
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         if (isDisabled()) {
             log.info("disabled so not updating direction");
             return;

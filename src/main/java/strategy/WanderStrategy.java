@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 import strategy.updater.condition.ConditionChecker;
 
 /**
@@ -36,7 +36,7 @@ public class WanderStrategy implements Strategy {
     }
     
     @Override
-    public boolean getIsTimeToSwitch(VectorAgent va){
+    public boolean getIsTimeToSwitch(SkelatalAgent va){
         
         if(getConditionChecker() == null){
             return false;
@@ -63,7 +63,7 @@ public class WanderStrategy implements Strategy {
     
 
     @Override
-    public void calculateNextMove(VectorAgent ownerAgent) {
+    public void calculateNextMove(SkelatalAgent ownerAgent) {
 
         List<Switch> switches = new ArrayList<Switch>();
         
@@ -73,7 +73,7 @@ public class WanderStrategy implements Strategy {
             // apply update to agent velocity
             updater.updateDirectionCaller(ownerAgent.getVelocityVector(), ownerAgent);
             
-            if(ownerAgent.foundOthers(ownerAgent.getSimpleDetectionRange())){
+            if(ownerAgent.foundOthers(ownerAgent.getDetectionRange())){
                 log.log(Level.INFO, "detected something");
             }
             
@@ -102,7 +102,6 @@ public class WanderStrategy implements Strategy {
     }
 
    
-
     @Override
     public void addDirectionUpdater(DirectionUpdater updater) {
         this.updaters.add(updater);

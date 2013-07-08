@@ -4,7 +4,7 @@
  */
 package strategy.updater;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 import strategy.updater.message.UpdaterMessage;
 
 /**
@@ -19,7 +19,7 @@ public class DoNothingDirectionUpdater extends SkelatalDirectionUpdater{
     }
     
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         
         
         

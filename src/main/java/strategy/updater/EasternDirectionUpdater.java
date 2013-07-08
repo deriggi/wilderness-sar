@@ -5,6 +5,7 @@
 package strategy.updater;
 
 import java.util.logging.Logger;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 
 /**
@@ -32,7 +33,7 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
     
     
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         if(key != null && ownerAgent.getStackedPosition(key) == null){
             ownerAgent.registerStack(key);
         }

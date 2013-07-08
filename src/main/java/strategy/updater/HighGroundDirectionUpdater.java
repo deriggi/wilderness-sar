@@ -12,7 +12,7 @@ import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -28,7 +28,7 @@ public class HighGroundDirectionUpdater extends SkelatalDirectionUpdater{
     }
     
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         log.log(Level.INFO, "running high");
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();

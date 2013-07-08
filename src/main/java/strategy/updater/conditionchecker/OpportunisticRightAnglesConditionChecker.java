@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import strategy.updater.Direction;
 import strategy.updater.specialized.rightangles.RightAnglesAdaptiveEasternDirectionUpdater;
@@ -40,7 +41,7 @@ public class OpportunisticRightAnglesConditionChecker extends SkelatalUpdaterCon
     }
 
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
 
         // over the last fifty points, is this agent's straight line distance less 
         // than twice it's velocity

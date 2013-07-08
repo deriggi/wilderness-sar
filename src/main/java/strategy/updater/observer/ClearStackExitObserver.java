@@ -5,7 +5,7 @@
 package strategy.updater.observer;
 
 import java.util.Stack;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -14,7 +14,7 @@ import raster.domain.agent.VectorAgent;
 public class ClearStackExitObserver implements DirectionUpdaterObserver{
 
     @Override
-    public void notifyOfStateChange(VectorAgent va) {
+    public void notifyOfStateChange(SkelatalAgent va) {
         Stack<float[]> stack = va.getMasterStack();
         if(stack != null){
             stack.clear();

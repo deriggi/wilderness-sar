@@ -14,6 +14,7 @@ import raster.domain.agent.VectorAgent;
 import geomutils.VectorUtils;
 import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
+import raster.domain.agent.SkelatalAgent;
 import strategy.WanderStrategy;
 import strategy.updater.condition.AlmostOutOfBoundsConditionChecker;
 import strategy.updater.condition.NearOriginConditionChecker;
@@ -82,7 +83,7 @@ public class AgentService {
         
     }
     
-    public VectorAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
+    public SkelatalAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
         stopSim = false;
         
         VectorAgent a = new VectorAgent();
@@ -91,7 +92,6 @@ public class AgentService {
         a.setOrigin(new float[]{column,row});
         a.setId(getNextId());
         agents.put(a.getId(), a);
-        a.setSimpleDetectionRange(20);
         
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
@@ -129,7 +129,7 @@ public class AgentService {
     }
     
 
-    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range, VectorAgent except){
+    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except){
         Set<Integer> keys = agents.keySet();
         HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
         

@@ -4,12 +4,12 @@
  */
 package strategy.updater.condition;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
  * @author Johnny
  */
 public interface ConditionChecker {
-    public boolean checkCondition(VectorAgent va);
+    public boolean checkCondition(SkelatalAgent va);
 }

@@ -4,7 +4,7 @@
  */
 package strategy.updater.condition;
 
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -13,7 +13,7 @@ import raster.domain.agent.VectorAgent;
 public class AlmostOutOfBoundsConditionChecker implements ConditionChecker {
 
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
         return va.isNextStepOutOfBounds();
     }
     

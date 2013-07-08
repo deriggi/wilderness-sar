@@ -12,6 +12,7 @@ import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import statsutils.GameUtils;
 import strategy.updater.Direction;
@@ -34,7 +35,7 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
     
 
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
 

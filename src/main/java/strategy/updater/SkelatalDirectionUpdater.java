@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import strategy.DirectionUpdater;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
@@ -71,7 +72,7 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
     }
 
     @Override
-    public void updateDirectionCaller(double velocity[], VectorAgent agent) {
+    public void updateDirectionCaller(double velocity[], SkelatalAgent agent) {
         if (!started) {
             notifyStartObservers();
             started = true;
@@ -91,7 +92,7 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
         }
     }
 
-    private void notifyExitObservers(VectorAgent ownerAgent) {
+    private void notifyExitObservers(SkelatalAgent ownerAgent) {
         if (observers != null) {
             for (DirectionUpdaterObserver obs : observers) {
                 obs.notifyOfStateChange(ownerAgent);
@@ -128,7 +129,7 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
      * @param ownerAgent 
      */
     @Override
-    public boolean switchIfConditionMet(VectorAgent ownerAgent) {
+    public boolean switchIfConditionMet(SkelatalAgent ownerAgent) {
         boolean isConditionMet = false;
         if (getConditionChecker() != null && this.conditionChecker.checkCondition(ownerAgent)) {
             this.nextUpdater = getConditionChecker().getNextState();

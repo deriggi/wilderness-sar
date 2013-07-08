@@ -20,7 +20,7 @@ import middletier.AgentService;
 import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.FSMFactory;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 import util.GsonGetter;
 
 
@@ -73,7 +73,7 @@ public class AgentResource {
 
         AgentService service = AgentService.get();
         
-        VectorAgent a = service.createAgent(position[0], position[1], speed, behave);
+        SkelatalAgent a = service.createAgent(position[0], position[1], speed, behave);
         a.setNameTag(nameTag);
         
         double[] aLonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);

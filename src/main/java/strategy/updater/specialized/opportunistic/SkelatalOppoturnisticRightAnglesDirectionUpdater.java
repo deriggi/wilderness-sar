@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
+import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import statsutils.GameUtils;
 import strategy.DirectionUpdater;
@@ -51,7 +52,7 @@ public abstract class SkelatalOppoturnisticRightAnglesDirectionUpdater extends S
      * @param raster
      * @param loc 
      */
-    public void considerNorthSouthField(Raster2D raster, float[] loc, VectorAgent va) {
+    public void considerNorthSouthField(Raster2D raster, float[] loc, SkelatalAgent va) {
 
         // 15 percent considering the big field to our right or left
         log.info("considering an east west field");
@@ -102,7 +103,7 @@ public abstract class SkelatalOppoturnisticRightAnglesDirectionUpdater extends S
      * @param raster
      * @param loc 
      */
-    public void considerEastWestField(Raster2D raster, float[] loc, VectorAgent va) {
+    public void considerEastWestField(Raster2D raster, float[] loc, SkelatalAgent va) {
 
         // 15 percent considering the big field to our right or left
         if (GameUtils.percentChanceTrue(va.getConsiderAFieldChance())) {

@@ -7,7 +7,7 @@ package strategy.updater;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -32,7 +32,7 @@ public class BacktrackDirectionUpdater extends SkelatalDirectionUpdater {
     }
 
     @Override
-    public void updateDirection(double[] dxDy, VectorAgent ownerAgent) {
+    public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
         log.info("runnignn backtrack");
         // initialize
         if (myPoints == null){

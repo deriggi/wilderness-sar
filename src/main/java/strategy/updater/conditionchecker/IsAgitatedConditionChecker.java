@@ -7,7 +7,7 @@ package strategy.updater.conditionchecker;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import raster.domain.agent.VectorAgent;
+import raster.domain.agent.SkelatalAgent;
 
 /**
  *
@@ -18,7 +18,7 @@ public class IsAgitatedConditionChecker extends  SkelatalUpdaterConditionChecker
     private static final Logger log = Logger.getLogger(IsAgitatedConditionChecker.class.getName());
     
     @Override
-    public boolean checkCondition(VectorAgent va) {
+    public boolean checkCondition(SkelatalAgent va) {
        float dpAverage = va.getDotProductBufferAverage();
        ArrayList<Float> buffer = va.getDotProductBuffer();
        int size = 0;
