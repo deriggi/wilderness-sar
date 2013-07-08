@@ -38,14 +38,14 @@ public class OppoturnisticRightAnglesEasternDirectionUpdater extends SkelatalOpp
         ArrayList<SlopeDataCell> bestCells = null;
 
 
-        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells(loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (easternCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = easternCells.size();
             optimalDirection = Direction.EAST;
             bestCells = easternCells;
         }
 
-        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells(loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(getLastDirection(), Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
@@ -53,15 +53,15 @@ public class OppoturnisticRightAnglesEasternDirectionUpdater extends SkelatalOpp
             bestCells = southernCells;
         }
 
-        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells(loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(getLastDirection(), Direction.SOUTH)
                 && northernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = northernCells.size();
             optimalDirection = Direction.NORTH;
             bestCells = northernCells;
         }
-        
-        
+
+
 
         if (bestCells != null) {
             log.log(Level.INFO, "adaptive going with {0}", optimalDirection.toString());
@@ -77,11 +77,11 @@ public class OppoturnisticRightAnglesEasternDirectionUpdater extends SkelatalOpp
             log.warning("LOL no good options");
 
         }
-        
-        
-        considerNorthSouthField(CONSIDER_A_FIELD_CHANCE, raster, loc);
-        
-        
+
+        if (GameUtils.percentChanceTrue(ownerAgent.getConsiderAFieldChance())) {
+            considerNorthSouthField(raster, loc, ownerAgent);
+        }
+
+
     }
-    
 }

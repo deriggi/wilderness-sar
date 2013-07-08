@@ -85,10 +85,7 @@ public class AdaptiveNorthernWalkableDirectionUpdater extends SkelatalDirectionU
             log.log(Level.INFO, "Stuck Alert! {0} points is {1}", new Float[]{(float)50, ownerAgent.averageDistanceLastXPoints(50)});
 
         }
-//        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
     }
-    
-
     
 
     private boolean directionEquals(Direction lastDirection, Direction potentialDirection) {

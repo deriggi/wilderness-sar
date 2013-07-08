@@ -77,11 +77,12 @@ public class OpportunisticRightAnglesNorthernDirectionUpdater extends SkelatalOp
             log.warning("LOL no good options");
 
         }
-        
-        considerEastWestField(CONSIDER_A_FIELD_CHANCE, raster, loc);
+
+        if (GameUtils.percentChanceTrue(ownerAgent.getConsiderAFieldChance())) {
+            considerEastWestField(raster, loc, ownerAgent);
+        }
 
 
 //        log.log(Level.INFO, "dot product average {0}", new Float[]{ownerAgent.getDotProductBufferAverage()});
     }
-
 }

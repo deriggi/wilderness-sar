@@ -17,7 +17,6 @@ import middletier.RasterLoader;
 import strategy.Strategy;
 import middletier.AgentService;
 import raster.domain.Raster2D;
-import raster.domain.SlopeDataCell;
 
 /**
  *
@@ -35,6 +34,15 @@ public class VectorAgent {
     private int stepsTaken = 0;
     private int masterTimestepsTaken = 0;
     private Stack<float[]> masterStack = new Stack<float[]>();
+    private float considerAFieldChance = 0.15f;
+
+    public float getConsiderAFieldChance() {
+        return considerAFieldChance;
+    }
+
+    public void setConsiderAFieldChance(float considerAFieldChance) {
+        this.considerAFieldChance = considerAFieldChance;
+    }
     
     // constants, 'hey man you should use enums'
     public static final float WALKABLE_SLOPE = 0.18f;

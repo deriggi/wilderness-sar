@@ -63,7 +63,7 @@ public class OpportunisticRightAnglesWesternDirectionUpdater extends SkelatalOpp
         }
 
 
-       
+
 
 
         if (bestCells != null) {
@@ -80,8 +80,9 @@ public class OpportunisticRightAnglesWesternDirectionUpdater extends SkelatalOpp
             log.warning("LOL no good options");
 
         }
-        
-        considerNorthSouthField(CONSIDER_A_FIELD_CHANCE, raster, loc);
-    }
 
+        if (GameUtils.percentChanceTrue(ownerAgent.getConsiderAFieldChance())) {
+            considerNorthSouthField(raster, loc, ownerAgent);
+        }
+    }
 }

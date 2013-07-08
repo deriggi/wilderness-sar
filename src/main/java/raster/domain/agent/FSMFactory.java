@@ -41,6 +41,7 @@ import strategy.updater.specialized.adaptive.AdaptiveNorthernWalkableDirectionUp
 import strategy.updater.specialized.adaptive.AdaptiveSouthernWalkableDirectionUpdater;
 import strategy.updater.specialized.adaptive.AdaptiveWesternWalkableDirectionUpdater;
 import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDirectionUpdater;
+import strategy.updater.specialized.opportunistic.OppoturnisticRightAnglesEasternDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.rightangles.RightAnglesAdaptiveEasternDirectionUpdater;
 
@@ -61,6 +62,7 @@ public class FSMFactory {
         ADAPTIVE_EAST_WEST("mostly east and west"),
         ADAPTIVE_NORTH_SOUTH("mostly north and south"),
         ADAPTIVE_RIGHT_ANGLES("mostly north and south"),
+        OPPORTUNISTIC_RIGHT_ANGLES("seeks for the far field"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -415,6 +417,23 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    /**
+     * When stuck it chooses the considers the best right angle direction
+     */
+    private static class OpportunisticRightAnglesWalkableWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+            
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            OppoturnisticRightAnglesEasternDirectionUpdater oppEast=  new OppoturnisticRightAnglesEasternDirectionUpdater();
+            oppEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
+            updaters.add(oppEast);
+            
+            return updaters;
+        }
+    }
 
     
     private static class EastWestWalkableToggle implements FSMMaker {
@@ -550,6 +569,7 @@ public class FSMFactory {
         machineMap.put(MachineName.ADAPTIVE_EAST_WEST, new AdaptiveEastWestWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES, new AdaptiveRightAnglesWalkableWanderMaker());
+        machineMap.put(MachineName.OPPORTUNISTIC_RIGHT_ANGLES, new OpportunisticRightAnglesWalkableWanderMaker());
         
     }
 //    private static HashMap<
