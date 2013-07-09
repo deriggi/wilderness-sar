@@ -96,16 +96,16 @@ public class AgentService {
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
         wanderStrat.setName(behaviour.toString());
-        wanderStrat.setConditionChecker(new AlmostOutOfBoundsConditionChecker());
+//        wanderStrat.setConditionChecker(new AlmostOutOfBoundsConditionChecker());
         wanderStrat.addAllDirectinoUpdaters( FSMFactory.getMachine(behaviour) );
         
-        WanderStrategy goHomeStrategy = new WanderStrategy();
-        goHomeStrategy.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.GO_TO_ORIGIN));
-        goHomeStrategy.setConditionChecker(new NearOriginConditionChecker());
-        goHomeStrategy.setName("GO_TO_ORIGIN");
+//        WanderStrategy goHomeStrategy = new WanderStrategy();
+//        goHomeStrategy.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.GO_TO_ORIGIN));
+//        goHomeStrategy.setConditionChecker(new NearOriginConditionChecker());
+//        goHomeStrategy.setName("GO_TO_ORIGIN");
         
         a.addMovementStrategy(wanderStrat);
-        a.addMovementStrategy(goHomeStrategy);
+//        a.addMovementStrategy(goHomeStrategy);
         
         return a;
     }
