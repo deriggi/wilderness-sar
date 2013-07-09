@@ -30,7 +30,8 @@ public class SouthernDirectionUpdater extends SkelatalDirectionUpdater {
 
     @Override
     public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
-
+        log.info("running south");
+        
         if (key != null && ownerAgent.getStackedPosition(key) == null) {
             ownerAgent.registerStack(key);
         }

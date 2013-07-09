@@ -36,7 +36,7 @@ public class NorthernDirectionUpdater extends SkelatalDirectionUpdater {
         if (key != null && ownerAgent.getStackedPosition(key) == null) {
             ownerAgent.registerStack(key);
         }
-
+        log.info("running north");
         if (dxDy == null || dxDy.length != 2) {
             return;
         }

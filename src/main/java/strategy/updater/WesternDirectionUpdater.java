@@ -35,7 +35,7 @@ public class WesternDirectionUpdater extends SkelatalDirectionUpdater {
             ownerAgent.registerStack(key);
             
          }
-        log.info("runnig west");
+        log.fine("runnig west");
         if (dxDy == null || dxDy.length != 2) {
             return;
         }

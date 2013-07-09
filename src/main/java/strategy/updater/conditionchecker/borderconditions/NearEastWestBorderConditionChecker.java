@@ -29,9 +29,9 @@ public class NearEastWestBorderConditionChecker extends BorderConditionChecker {
     public boolean checkCondition(SkelatalAgent va) {
 
         float[] loc = va.getLocation();
-
+        
         // at west end and if MOTION IS WESTERLY then swtich
-        if (Math.abs(loc[0] - getWestEnd()) < getThreshold()) {
+        if (va.getGeneralDirection().equals(Direction.WEST) && Math.abs(loc[0] - getWestEnd()) < getThreshold()) {
 
             // at western edge!
 
@@ -56,7 +56,7 @@ public class NearEastWestBorderConditionChecker extends BorderConditionChecker {
         }
         
         // if at east end and MOTION IS EASTERLY then switch
-        if (Math.abs(loc[0] - getEastEnd()) < getThreshold()) {
+        if (va.getGeneralDirection().equals(Direction.EAST) && Math.abs(loc[0] - getEastEnd()) < getThreshold()) {
 
             // at eastern edge!
             DirectionUpdater northSouthUpdater = null;

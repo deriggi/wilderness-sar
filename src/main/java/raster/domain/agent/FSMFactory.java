@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import strategy.DirectionUpdater;
 import strategy.updater.EastHighsWestLowsDirectionUpdater;
 import strategy.updater.BacktrackDirectionUpdater;
+import strategy.updater.BoundaryBounceDirectionUpdater;
 import strategy.updater.Direction;
 import strategy.updater.EasternDirectionUpdater;
 import strategy.updater.specialized.EasternWalkableDirectionUpdater;
@@ -299,7 +300,10 @@ public class FSMFactory {
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            
             updaters.add(new WanderDirectionUpdater());
+            updaters.add(new BoundaryBounceDirectionUpdater());
+            
             return updaters;
         }
     }

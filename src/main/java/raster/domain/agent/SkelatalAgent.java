@@ -312,6 +312,29 @@ public abstract class SkelatalAgent {
     public void setVelocityVector(double[] aVelocityVector) {
         this.velocity = aVelocityVector;
     }
+    
+    public Direction getGeneralDirection(){
+        
+        
+        if( velocity[1] < 0 && Math.abs(velocity[1]) >  Math.abs(velocity[0])  ){
+            return Direction.NORTH;
+        }
+        
+        if( velocity[1] > 0 && Math.abs(velocity[1]) > Math.abs(velocity[0]) ){
+            return Direction.SOUTH;
+        }
+        
+        if( velocity[0] < 0 && Math.abs(velocity[0]) > Math.abs(velocity[1]) ){
+            return Direction.WEST;
+        }
+        
+        if( velocity[0] > 0 && Math.abs(velocity[0]) > Math.abs(velocity[1]) ){
+            return Direction.EAST;
+        }
+        
+        log.log(Level.INFO, "oddly, there is no defined direction for {0}, {1}", velocity);
+        return null;
+    }
 
     public float getSpeed() {
         return speed;

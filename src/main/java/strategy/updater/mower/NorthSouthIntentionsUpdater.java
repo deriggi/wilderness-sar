@@ -41,7 +41,6 @@ public class NorthSouthIntentionsUpdater extends SkelatalDirectionUpdater {
         int southEnd = raster.countRows() - 1;
         int threshold = 30;
         
-        log.log(Level.INFO, " south end is {0} and agent row is {1} ", new Object[]{southEnd, loc[1]});
         
         if (ownerAgent.getNorthSouthIntention() == null) {
             int toNorth = (int) loc[1];

@@ -37,7 +37,7 @@ public class EasternDirectionUpdater extends SkelatalDirectionUpdater {
             ownerAgent.registerStack(key);
         }
         
-        log.info("runnig east");
+        log.fine("runnig east");
         if (dxDy == null || dxDy.length != 2) {
             return;
         }
