@@ -106,45 +106,43 @@ public abstract class SkelatalOppoturnisticRightAnglesDirectionUpdater extends S
     public void considerEastWestField(Raster2D raster, float[] loc, SkelatalAgent va) {
 
         // 15 percent considering the big field to our right or left
-        if (GameUtils.percentChanceTrue(va.getConsiderAFieldChance())) {
-            log.info("considering an east west field");
-            float maxCellCount = VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE;
-            ArrayList<SlopeDataCell> eastFarCells = raster.getEastVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
-            ArrayList<SlopeDataCell> westFarCells = raster.getWestVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+        log.info("considering an east west field");
+        float maxCellCount = VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE;
+        ArrayList<SlopeDataCell> eastFarCells = raster.getEastVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> westFarCells = raster.getWestVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
 
-            float eastPortion = ((float) eastFarCells.size()) / maxCellCount;
+        float eastPortion = ((float) eastFarCells.size()) / maxCellCount;
 
-            float westPortion = ((float) westFarCells.size()) / maxCellCount;
+        float westPortion = ((float) westFarCells.size()) / maxCellCount;
 
-            log.log(Level.INFO, "field consideration data is {0} {1}", new Float[]{eastPortion, westPortion});
+        log.log(Level.INFO, "field consideration data is {0} {1}", new Float[]{eastPortion, westPortion});
 
-            if (eastPortion > WALKABLE_PORTION_THRESHOLD || westPortion > WALKABLE_PORTION_THRESHOLD) {
+        if (eastPortion > WALKABLE_PORTION_THRESHOLD || westPortion > WALKABLE_PORTION_THRESHOLD) {
 
-                log.info("settling on a far field");
-                va.setConsiderAFieldChance(va.getConsiderAFieldChance() / 2.0f);
-                log.log(Level.INFO, "percent chance is now  {0} ", va.getConsiderAFieldChance());
+            log.info("settling on a far field");
+            va.setConsiderAFieldChance(va.getConsiderAFieldChance() / 2.0f);
+            log.log(Level.INFO, "percent chance is now  {0} ", va.getConsiderAFieldChance());
 
-                DirectionUpdater du = null;
+            DirectionUpdater du = null;
 
-                // have a winner so go with biggest
-                AlwaysTrueConditionChecker trueChecker = new AlwaysTrueConditionChecker();
+            // have a winner so go with biggest
+            AlwaysTrueConditionChecker trueChecker = new AlwaysTrueConditionChecker();
 
-                if (eastPortion > westPortion) {
+            if (eastPortion > westPortion) {
 
-                    du = new OppoturnisticRightAnglesEasternDirectionUpdater();
-                    du.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
+                du = new OppoturnisticRightAnglesEasternDirectionUpdater();
+                du.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
 
-                } else {
+            } else {
 
-                    du = new OpportunisticRightAnglesWesternDirectionUpdater();
-                    du.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.WEST));
-
-                }
-
-                setConditionChecker(trueChecker);
-                trueChecker.setNextState(du);
+                du = new OpportunisticRightAnglesWesternDirectionUpdater();
+                du.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.WEST));
 
             }
+
+            setConditionChecker(trueChecker);
+            trueChecker.setNextState(du);
+
         }
     }
 }

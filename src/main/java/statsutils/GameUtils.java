@@ -4,17 +4,28 @@
  */
 package statsutils;
 
+import java.util.logging.Logger;
+
 /**
  *
  * @author Johnny
  */
 public class GameUtils {
     
+    
     public static boolean percentChanceTrue(float chance) {
-        if (Math.random() < chance) {
+        
+        double r = Math.random();
+        
+        
+        if (r < chance) {
+            
             return true;
+            
         }
+        
         return false;
+        
     }
     
 }

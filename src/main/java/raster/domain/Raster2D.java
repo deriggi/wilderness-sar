@@ -139,6 +139,13 @@ public class Raster2D {
         return floatFromBytes(raw, 0);
     }
 
+    public int countColumns(){
+        return getData().get(0).size();
+    }
+    public int countRows(){
+        return getData().size();
+    }
+    
     public boolean isInBounds(double[] somePoint) {
         if (somePoint == null || somePoint.length != 2) {
             return false;
