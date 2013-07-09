@@ -109,6 +109,7 @@ public abstract class SkelatalDirectionUpdater implements DirectionUpdater {
         }
     }
 
+    @Override
     public void addExitObserver(DirectionUpdaterObserver observer) {
         if (observers == null) {
             observers = new ArrayList<DirectionUpdaterObserver>();

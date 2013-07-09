@@ -6,7 +6,6 @@ package strategy.updater;
 
 import java.util.logging.Logger;
 import raster.domain.agent.SkelatalAgent;
-import raster.domain.agent.VectorAgent;
 
 /**
  *

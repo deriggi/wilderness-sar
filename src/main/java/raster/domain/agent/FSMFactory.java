@@ -30,6 +30,8 @@ import strategy.updater.conditionchecker.RightAnglesWhenStuckConditionChecker;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.conditionchecker.StackSizeGreaterThanConditionChecker;
 import strategy.updater.conditionchecker.VelocityZeroConditionChecker;
+import strategy.updater.conditionchecker.borderconditions.NearEastWestBorderConditionChecker;
+import strategy.updater.mower.NorthSouthIntentionsUpdater;
 import strategy.updater.notificationhandler.DisableOnBacktrackNotificationHandler;
 import strategy.updater.notificationhandler.DisableOnSouthNotificationHandler;
 import strategy.updater.observer.ClearDotProductBufferExitObserver;
@@ -56,7 +58,7 @@ public class FSMFactory {
     public static enum MachineName {
 
         EAST_WEST_HIGHS("East west highs"),
-//        EAST_WEST_LOWS("East west lows"),
+        //        EAST_WEST_LOWS("East west lows"),
         PENSIVE_EAST_WEST("east or maybe west"),
         DETERMINED_EAST_WEST("determined east or west"),
         ADAPTIVE_EAST_WEST("mostly east and west"),
@@ -68,13 +70,12 @@ public class FSMFactory {
         SIMPLE_WANDER("Wander"),
         LOW_EAST_WANDER("East lows"),
         LOW_WEST_WANDER("West lows"),
-//        WALKABLE_GROUND("Walkable ground"),
+        //        WALKABLE_GROUND("Walkable ground"),
         EAST_WEST_VALLEY_RIDGE("East highs west lows"),
         GO_TO_ORIGIN("Wander home"),
         DO_NOTHING("Do nothing"),
         SLOW_ON_STEEP_WANDER("slow on steep wander"),
         EAST_WEST_WALKABLE_TOGGLE("east west walkable toggle");
-        
         private String displayName;
         private String description;
 
@@ -110,19 +111,18 @@ public class FSMFactory {
         public List<DirectionUpdater> makeMachine();
     }
 
-    private static class SlowOnSteepsWanderMaker implements FSMMaker{
+    private static class SlowOnSteepsWanderMaker implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaterList = new ArrayList<DirectionUpdater>();
             updaterList.add(new WanderDirectionUpdater());
             updaterList.add(new SlowOnSteepDirectionUpdater());
-            
+
             return updaterList;
         }
-        
     }
-    
+
     /**
      *
      *   East highs west lows in a lawn mower behavior 
@@ -142,7 +142,7 @@ public class FSMFactory {
             // track 2
             EastHighsWestLowsDirectionUpdater eastHighsWestLows = new EastHighsWestLowsDirectionUpdater();
             eastHighsWestLows.addUpdaterNotificationHandler(new DisableOnSouthNotificationHandler());
-            
+
             // easthighswestlows must shut off when south starts and on when south ends so it listens for both
             south.addUpdaterListener(eastHighsWestLows);
             south2.addUpdaterListener(eastHighsWestLows);
@@ -214,8 +214,8 @@ public class FSMFactory {
             stackGreaterThan50.setNextState(backtrackUpdater);
 
             // backtrack to west
-            UpdaterConditionChecker stackEqualToChecker  = new LocalStackSizeEqualToConditionChecker(eastKey, 0);
-            backtrackUpdater.setConditionChecker( stackEqualToChecker );
+            UpdaterConditionChecker stackEqualToChecker = new LocalStackSizeEqualToConditionChecker(eastKey, 0);
+            backtrackUpdater.setConditionChecker(stackEqualToChecker);
             stackEqualToChecker.setNextState(westernUpdater);
 
             // west to backtrack -- owned by westernUpdate
@@ -224,12 +224,12 @@ public class FSMFactory {
             stackGreaterThan50_b.setNextState(backtrackUpdater2);
 
             // back to south
-            UpdaterConditionChecker stackEqualToCheckerB  = new LocalStackSizeEqualToConditionChecker(westKey, 0);
+            UpdaterConditionChecker stackEqualToCheckerB = new LocalStackSizeEqualToConditionChecker(westKey, 0);
             backtrackUpdater2.setConditionChecker(stackEqualToCheckerB);
             stackEqualToCheckerB.setNextState(southernUpdater);
 
             // back to original east to close the loop
-            UpdaterConditionChecker stackGreaterThan50_b2 = new LocalStackSizeEqualToConditionChecker(southKey,50);
+            UpdaterConditionChecker stackGreaterThan50_b2 = new LocalStackSizeEqualToConditionChecker(southKey, 50);
             southernUpdater.setConditionChecker(stackGreaterThan50_b2);
             stackGreaterThan50_b2.setNextState(easternUpdater);
 
@@ -247,7 +247,7 @@ public class FSMFactory {
             southernUpdater.addUpdaterListener(highGroundUpdater);
             highGroundUpdater.addUpdaterNotificationHandler(new DisableOnBacktrackNotificationHandler());
             highGroundUpdater.addUpdaterNotificationHandler(new DisableOnSouthNotificationHandler());
-            
+
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(highGroundUpdater);
             updaters.add(easternUpdater);
@@ -262,44 +262,22 @@ public class FSMFactory {
      *   Creates a lawnmower motion with no wander
      *
      */
-    private static class LawnMowerMaker implements FSMMaker {
+    public static class LawnMowerMaker implements FSMMaker {
+        public static final String MOWER_KEY = "mower"; 
 
         @Override
         public List<DirectionUpdater> makeMachine() {
             EasternDirectionUpdater easternUpdater = new EasternDirectionUpdater();
-            SouthernDirectionUpdater southernUpdater = new SouthernDirectionUpdater();
-            WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater();
-            SouthernDirectionUpdater southern2Updater = new SouthernDirectionUpdater();
 
-            // east to south
-            UpdaterConditionChecker stackGreaterThan200 = new StackSizeGreaterThanConditionChecker(200);
-            stackGreaterThan200.setNextState(southernUpdater);
-            easternUpdater.setConditionChecker(stackGreaterThan200);
-            easternUpdater.addExitObserver(new ClearStackExitObserver());
-
-            // south to west
-            UpdaterConditionChecker stackGreaterThan10 = new StackSizeGreaterThanConditionChecker(10);
-            stackGreaterThan10.setNextState(westernUpdater);
-            southernUpdater.setConditionChecker(stackGreaterThan10);
-            southernUpdater.addExitObserver(new ClearStackExitObserver());
-
-            // west to south
-            UpdaterConditionChecker stackGreaterThan200b = new StackSizeGreaterThanConditionChecker(200);
-            stackGreaterThan200b.setNextState(southern2Updater);
-            westernUpdater.setConditionChecker(stackGreaterThan200b);
-            westernUpdater.addExitObserver(new ClearStackExitObserver());
-
-            // close the loop south back to east
-            UpdaterConditionChecker stackGreaterThan10c = new StackSizeGreaterThanConditionChecker(10);
-            stackGreaterThan10c.setNextState(easternUpdater);
-            southern2Updater.setConditionChecker(stackGreaterThan10c);
-            southern2Updater.addExitObserver(new ClearStackExitObserver());
+            // east to south or north
+            UpdaterConditionChecker nearEastOrWestBounds = new NearEastWestBorderConditionChecker();
+            easternUpdater.setConditionChecker(nearEastOrWestBounds);
 
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            updaters.add(westernUpdater);
+            updaters.add(new NorthSouthIntentionsUpdater());
+            updaters.add(easternUpdater);
+
             return updaters;
-
-
         }
     }
 
@@ -315,8 +293,6 @@ public class FSMFactory {
             return updaters;
         }
     }
-    
-    
 
     private static class SimpleWanderMaker implements FSMMaker {
 
@@ -327,115 +303,115 @@ public class FSMFactory {
             return updaters;
         }
     }
-    
+
     private static class WalkableGroundWanderMaker implements FSMMaker {
+
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
 
             updaters.add(new WalkableGroundDirectionUpdater());
-            
+
             return updaters;
         }
     }
-    
+
     private static class DeterminedWalkableWanderMaker implements FSMMaker {
+
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
 
             updaters.add(new DeterminedEasternWalkableDirectionUpdater());
-            
-            return updaters;
-        }
-    }
-    
-    private static class AdaptiveEastWestWalkableWanderMaker implements FSMMaker {
-        
-        @Override
-        public List<DirectionUpdater> makeMachine() {
-            
-            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            
-            AdaptiveEasternWalkableDirectionUpdater adaptEast = new AdaptiveEasternWalkableDirectionUpdater();
-            AdaptiveWesternWalkableDirectionUpdater adaptWest = new AdaptiveWesternWalkableDirectionUpdater();
-            
-            IsStuckConditionChecker amyItheStuckEast = new IsStuckConditionChecker();
-            adaptEast.setConditionChecker(amyItheStuckEast);
-            amyItheStuckEast.setNextState(adaptWest);
-            
-            IsStuckConditionChecker amyItheStuckWest = new IsStuckConditionChecker();
-            adaptWest.setConditionChecker(amyItheStuckWest);
-            amyItheStuckWest.setNextState(adaptEast);
-            
-            updaters.add(adaptWest);
-            
-            return updaters;
-        }
-    }
-    
-    private static class AdaptiveNorthSouthWalkableWanderMaker implements FSMMaker {
-        
-        @Override
-        public List<DirectionUpdater> makeMachine() {
-            
-            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            
-            AdaptiveNorthernWalkableDirectionUpdater adaptNorth = new AdaptiveNorthernWalkableDirectionUpdater();
-            AdaptiveSouthernWalkableDirectionUpdater adaptSouth = new AdaptiveSouthernWalkableDirectionUpdater();
-            
-            IsStuckConditionChecker amyItheStuckNorth = new IsStuckConditionChecker();
-            adaptNorth.setConditionChecker(amyItheStuckNorth);
-            amyItheStuckNorth.setNextState(adaptSouth);
-            
-            IsStuckConditionChecker amyItheStuckSouth = new IsStuckConditionChecker();
-            adaptSouth.setConditionChecker(amyItheStuckSouth);
-            amyItheStuckSouth.setNextState(adaptNorth);
-            
-            updaters.add(adaptNorth);
-            
-            return updaters;
-        }
-    }
-    
-    
-    /**
-     * When stuck it chooses the considers the best right angle direction
-     */
-    private static class AdaptiveRightAnglesWalkableWanderMaker implements FSMMaker {
-        
-        @Override
-        public List<DirectionUpdater> makeMachine() {
-            
-            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            RightAnglesAdaptiveEasternDirectionUpdater rightEast = new RightAnglesAdaptiveEasternDirectionUpdater();
-            rightEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
-            
-            
-            updaters.add(rightEast);
-            
-            return updaters;
-        }
-    }
-    
-    /**
-     * When stuck it chooses the considers the best right angle direction
-     */
-    private static class OpportunisticRightAnglesWalkableWanderMaker implements FSMMaker {
-        
-        @Override
-        public List<DirectionUpdater> makeMachine() {
-            
-            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            OppoturnisticRightAnglesEasternDirectionUpdater oppEast=  new OppoturnisticRightAnglesEasternDirectionUpdater();
-            oppEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
-            updaters.add(oppEast);
-            
+
             return updaters;
         }
     }
 
-    
+    private static class AdaptiveEastWestWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            AdaptiveEasternWalkableDirectionUpdater adaptEast = new AdaptiveEasternWalkableDirectionUpdater();
+            AdaptiveWesternWalkableDirectionUpdater adaptWest = new AdaptiveWesternWalkableDirectionUpdater();
+
+            IsStuckConditionChecker amyItheStuckEast = new IsStuckConditionChecker();
+            adaptEast.setConditionChecker(amyItheStuckEast);
+            amyItheStuckEast.setNextState(adaptWest);
+
+            IsStuckConditionChecker amyItheStuckWest = new IsStuckConditionChecker();
+            adaptWest.setConditionChecker(amyItheStuckWest);
+            amyItheStuckWest.setNextState(adaptEast);
+
+            updaters.add(adaptWest);
+
+            return updaters;
+        }
+    }
+
+    private static class AdaptiveNorthSouthWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            AdaptiveNorthernWalkableDirectionUpdater adaptNorth = new AdaptiveNorthernWalkableDirectionUpdater();
+            AdaptiveSouthernWalkableDirectionUpdater adaptSouth = new AdaptiveSouthernWalkableDirectionUpdater();
+
+            IsStuckConditionChecker amyItheStuckNorth = new IsStuckConditionChecker();
+            adaptNorth.setConditionChecker(amyItheStuckNorth);
+            amyItheStuckNorth.setNextState(adaptSouth);
+
+            IsStuckConditionChecker amyItheStuckSouth = new IsStuckConditionChecker();
+            adaptSouth.setConditionChecker(amyItheStuckSouth);
+            amyItheStuckSouth.setNextState(adaptNorth);
+
+            updaters.add(adaptNorth);
+
+            return updaters;
+        }
+    }
+
+    /**
+     * When stuck it chooses the considers the best right angle direction
+     */
+    private static class AdaptiveRightAnglesWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            RightAnglesAdaptiveEasternDirectionUpdater rightEast = new RightAnglesAdaptiveEasternDirectionUpdater();
+            rightEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
+
+
+            updaters.add(rightEast);
+
+            return updaters;
+        }
+    }
+
+    /**
+     * When stuck it chooses the considers the best right angle direction
+     */
+    private static class OpportunisticRightAnglesWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            OppoturnisticRightAnglesEasternDirectionUpdater oppEast = new OppoturnisticRightAnglesEasternDirectionUpdater();
+            oppEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
+            updaters.add(oppEast);
+
+            return updaters;
+        }
+    }
+
     private static class EastWestWalkableToggle implements FSMMaker {
 
         @Override
@@ -447,50 +423,50 @@ public class FSMFactory {
 
             EasternWalkableDirectionUpdater eastWalk = new EasternWalkableDirectionUpdater();
             WesternWalkableDirectionUpdater westWalk = new WesternWalkableDirectionUpdater();
-            
+
             // if velocity is zero switch to west walkable
             VelocityZeroConditionChecker zeroVelocityCondition = new VelocityZeroConditionChecker();
             eastWalk.setConditionChecker(zeroVelocityCondition);
             zeroVelocityCondition.setNextState(westWalk);
-            
+
             VelocityZeroConditionChecker zeroVelocityCondition_2 = new VelocityZeroConditionChecker();
             westWalk.setConditionChecker(zeroVelocityCondition_2);
             zeroVelocityCondition_2.setNextState(eastWalk);
-            
+
             updaters.add(eastWalk);
             updaters.add(new WanderDirectionUpdater(2.0f));
-            
+
             return updaters;
         }
     }
-    
+
     private static class EastWestLowAgitationAwareWanderMaker implements FSMMaker {
-        
+
         @Override
-        public List<DirectionUpdater> makeMachine(){
+        public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             EasternDirectionUpdater easternUpdater = new EasternDirectionUpdater();
             WesternDirectionUpdater westernUpdater = new WesternDirectionUpdater();
-            
+
             // clear dp buffers on exit
             westernUpdater.addExitObserver(new ClearDotProductBufferExitObserver());
             easternUpdater.addExitObserver(new ClearDotProductBufferExitObserver());
-            
-            
+
+
             UpdaterConditionChecker checkerForEastern = new IsAgitatedConditionChecker();
             UpdaterConditionChecker checkerForWestern = new IsAgitatedConditionChecker();
-            
-            
+
+
             checkerForEastern.setNextState(westernUpdater);
             checkerForWestern.setNextState(easternUpdater);
-            
+
             easternUpdater.setConditionChecker(checkerForEastern);
             westernUpdater.setConditionChecker(checkerForWestern);
-            
+
 //            updaters.add(new LowerGroundDirectionUpdater());
             updaters.add(new WalkableGroundDirectionUpdater());
             updaters.add(easternUpdater);
-            
+
             return updaters;
         }
     }
@@ -507,8 +483,8 @@ public class FSMFactory {
             return updaters;
         }
     }
-    
-     private static class LowEastWanderMaker implements FSMMaker {
+
+    private static class LowEastWanderMaker implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -518,7 +494,7 @@ public class FSMFactory {
             updaters.add(new EasternDirectionUpdater());
 
 //            updaters.add(new WanderDirectionUpdater(2.0f));
-            
+
             return updaters;
         }
     }
@@ -531,18 +507,15 @@ public class FSMFactory {
             return updaters;
         }
     }
-    
+
     public static class PensiveEastWestWanderMaker implements FSMMaker {
-       
-        
+
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
             updaters.add(new PensiveEasternWalkableDirectionUpdater());
             return updaters;
         }
-        
-       
     }
 
     public static List<DirectionUpdater> getMachine(MachineName name) {
@@ -561,7 +534,7 @@ public class FSMFactory {
         machineMap.put(MachineName.DO_NOTHING, new DoNothingWanderMaker());
         machineMap.put(MachineName.GO_TO_ORIGIN, new GoHomeWanderMaker());
         machineMap.put(MachineName.SLOW_ON_STEEP_WANDER, new SlowOnSteepsWanderMaker());
-        
+
         // noobs
         machineMap.put(MachineName.EAST_WEST_WALKABLE_TOGGLE, new EastWestWalkableToggle());
         machineMap.put(MachineName.PENSIVE_EAST_WEST, new PensiveEastWestWanderMaker());
@@ -570,7 +543,7 @@ public class FSMFactory {
         machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES, new AdaptiveRightAnglesWalkableWanderMaker());
         machineMap.put(MachineName.OPPORTUNISTIC_RIGHT_ANGLES, new OpportunisticRightAnglesWalkableWanderMaker());
-        
+
     }
 //    private static HashMap<
 }

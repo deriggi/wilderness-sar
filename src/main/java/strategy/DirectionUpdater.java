@@ -8,6 +8,7 @@ import raster.domain.agent.SkelatalAgent;
 import strategy.updater.notificationhandler.UpdaterNotificationHandler;
 import strategy.updater.conditionchecker.UpdaterConditionChecker;
 import strategy.updater.message.UpdaterMessage;
+import strategy.updater.observer.DirectionUpdaterObserver;
 
 /**
  *
@@ -24,4 +25,5 @@ public interface DirectionUpdater {
     public void setDisabled(boolean isDisabled);
     public boolean isDisabled();
     public void addUpdaterNotificationHandler(UpdaterNotificationHandler un);
+    public void addExitObserver(DirectionUpdaterObserver observer);
 }

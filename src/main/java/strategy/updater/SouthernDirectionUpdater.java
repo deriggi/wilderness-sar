@@ -15,23 +15,23 @@ public class SouthernDirectionUpdater extends SkelatalDirectionUpdater {
 
     private final static Logger log = Logger.getLogger(SouthernDirectionUpdater.class.getName());
 
-    
     @Override
-    public String toString(){
+    public String toString() {
         return "South";
     }
-    
     private String key = null;
-    public SouthernDirectionUpdater(String key){
+
+    public SouthernDirectionUpdater(String key) {
         this.key = key;
     }
-    
-    public SouthernDirectionUpdater(){
+
+    public SouthernDirectionUpdater() {
     }
-    
+
     @Override
     public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
-         if(key != null && ownerAgent.getStackedPosition(key) == null){
+
+        if (key != null && ownerAgent.getStackedPosition(key) == null) {
             ownerAgent.registerStack(key);
         }
         if (dxDy == null || dxDy.length != 2) {
@@ -40,10 +40,8 @@ public class SouthernDirectionUpdater extends SkelatalDirectionUpdater {
         if (dxDy[1] < 0) {
             dxDy[1] = 0;
         }
-        
+
         dxDy[1] += ownerAgent.getSpeed();
         ownerAgent.pushLoc(key);
-//        ownerAgent.pushLoc();
     }
-
 }

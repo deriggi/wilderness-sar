@@ -21,9 +21,9 @@ public class BacktrackDirectionUpdater extends SkelatalDirectionUpdater {
     public String toString() {
         return "Backtrack";
     }
-    private Stack<float[]> myPoints = null;
+    private Stack<short[]> myPoints = null;
     
-    public Stack<float[]> getMyPoints() {
+    public Stack<short[]> getMyPoints() {
         return myPoints;
     }
     private String key = null;
@@ -38,9 +38,8 @@ public class BacktrackDirectionUpdater extends SkelatalDirectionUpdater {
         if (myPoints == null){
             myPoints = ownerAgent.getStackedPosition(key);
             if(myPoints == null){
-                log.warning("USING MASTER stack");
-                myPoints =new Stack<float[]>();
-                myPoints.addAll(ownerAgent.getMasterStack());
+                log.warning("not using master stack as backup");
+               
             }
         }
         
@@ -49,7 +48,7 @@ public class BacktrackDirectionUpdater extends SkelatalDirectionUpdater {
         if ( myPoints.size() > 0) {
             log.log(Level.INFO, "running backtrack stack size is {0} ", myPoints.size());
 
-            float[] destination = myPoints.pop();
+            short[] destination = myPoints.pop();
 
             // set velocity equal to the one that would take me to this way point
             float dx = destination[0] - ownerAgent.getLocation()[0];

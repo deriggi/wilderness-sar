@@ -15,6 +15,7 @@ import middletier.AgentService;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Raster2D;
+import strategy.updater.Direction;
 
 /**
  *
@@ -34,8 +35,26 @@ public abstract class SkelatalAgent {
     private Integer id;
     private String nameTag;
     private float considerAFieldChance = 0.10f;
-    private HashMap<String, Stack<float[]>> mapOfStacks = new HashMap<String, Stack<float[]>>();
+    private HashMap<String, Stack<short[]>> mapOfStacks = new HashMap<String, Stack<short[]>>();
     private int stepsTaken = 0;
+    private Direction eastWestIntention = null;
+    private Direction northSouthIntention = null;
+
+    public Direction getEastWestIntention() {
+        return eastWestIntention;
+    }
+
+    public void setEastWestIntention(Direction eastWestIntention) {
+        this.eastWestIntention = eastWestIntention;
+    }
+
+    public Direction getNorthSouthIntention() {
+        return northSouthIntention;
+    }
+
+    public void setNorthSouthIntention(Direction northSouthIntention) {
+        this.northSouthIntention = northSouthIntention;
+    }
 
     public int getStepsTaken() {
         return this.stepsTaken;
@@ -73,26 +92,33 @@ public abstract class SkelatalAgent {
             return;
         }
 
-        Stack<float[]> someStack = mapOfStacks.get(key);
+        Stack<short[]> someStack = mapOfStacks.get(key);
         if (someStack.size() > MAX_STACK_SIZE) {
             someStack.remove(0);
         }
 
-        someStack.push(getLocation());
+        float[] loc = getLocation();
+        short[] shortLoc = new short[]{ (short)loc[0], (short)loc[1] };
+        
+        someStack.push(shortLoc);
 
     }
 
     public void registerStack(String key) {
+        if(key == null){
+            return;
+        }
+        
         if (mapOfStacks.containsKey(key)) {
             log.log(Level.INFO, "already has key  {0} so not registering ", key);
             return;
         }
         log.log(Level.INFO, "registering stack for key {0}", key);
-        mapOfStacks.put(key, new Stack<float[]>());
+        mapOfStacks.put(key, new Stack<short[]>());
         log.log(Level.INFO, "stacks count is now {0}", mapOfStacks.size());
     }
 
-    public Stack<float[]> getStackedPosition(String key) {
+    public Stack<short[]> getStackedPosition(String key) {
         return mapOfStacks.get(key);
     }
 
@@ -203,7 +229,7 @@ public abstract class SkelatalAgent {
         if (masterStack.size() > MAX_STACK_SIZE) {
             masterStack.remove(0);
         }
-
+        
         masterStack.push(getLocation());
 
 

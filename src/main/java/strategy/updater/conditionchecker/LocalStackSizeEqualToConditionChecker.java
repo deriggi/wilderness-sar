@@ -37,7 +37,7 @@ public class LocalStackSizeEqualToConditionChecker extends SkelatalUpdaterCondit
             return false;
         }
         
-        Stack<float[]> localStack  = va.getStackedPosition(mapKey);
+        Stack<short[]> localStack  = va.getStackedPosition(mapKey);
         
         log.log(Level.INFO, "size of local stack in check is {0} ", localStack.size());
         
