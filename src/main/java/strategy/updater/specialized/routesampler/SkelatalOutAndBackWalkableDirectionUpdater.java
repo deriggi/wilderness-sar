@@ -6,6 +6,7 @@ package strategy.updater.specialized.routesampler;
 
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.agent.SkelatalAgent;
 import strategy.DirectionUpdater;
@@ -21,16 +22,18 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
 
     private static final Logger log = Logger.getLogger(SkelatalOutAndBackWalkableDirectionUpdater.class.getName());
     private final int initialSteps = 50;
+    
     private final Stack<float[]> localStack = new Stack<float[]>();
 
     public Stack<float[]> getLocalStack() {
         return localStack;
     }
-    private ArrayList<Integer> totalVisible = new ArrayList<Integer>();
+    private ArrayList<Float> totalVisible = new ArrayList<Float>();
 
-    public ArrayList<Integer> getVisibleCountList() {
+    public ArrayList<Float> getVisibleCountList() {
         return totalVisible;
     }
+    
     private OutOrBack outOrBack = OutOrBack.OUT;
 
     public void checkForStuckOrDone(SkelatalAgent ownerAgent) {
@@ -61,7 +64,7 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
         checkForStuckOrDone(ownerAgent);
 
         if (isOutOrBack().equals(OutOrBack.OUT)) {
-
+            
             doOutMode(dxDy, ownerAgent);
 
         } else {
@@ -81,6 +84,7 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
     }
 
     protected abstract void doOutMode(double[] dxDy, SkelatalAgent ownerAgent);
+    
     private DirectionUpdater next = null;
 
     protected void setNextDirectionUpdater(DirectionUpdater du) {
@@ -109,6 +113,10 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
 //            ownerAgent.getMemory().remove(Direction.EAST.toString());
             log.info("done so choosing a direction after route sampling!");
             //@TODO do choose a direction
+            log.log(Level.INFO, "East value is {0} ", ownerAgent.getMemory().get(Direction.EAST.toString()));
+            log.log(Level.INFO, "West value is {0} ", ownerAgent.getMemory().get(Direction.WEST.toString()));
+            log.log(Level.INFO, "South value is {0} ", ownerAgent.getMemory().get(Direction.SOUTH.toString()));
+            log.log(Level.INFO, "North value is {0} ", ownerAgent.getMemory().get(Direction.NORTH.toString()));
 
             return;
         } else if (locs.isEmpty()) {
@@ -130,9 +138,6 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
 
         ownerAgent.setVelocityVector(new double[]{dx, dy});
 
-
-
-
     }
 
     public float averageFieldOfView() {
@@ -141,7 +146,7 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
         }
         Float sum = 0.0f;
 
-        for (Integer i : totalVisible) {
+        for (Float i : totalVisible) {
             sum += i;
         }
 

@@ -5,6 +5,7 @@
 package strategy.updater.specialized.routesampler;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
@@ -50,8 +51,11 @@ public class OutAndBackEasternDirectionUpdater extends SkelatalOutAndBackWalkabl
         ArrayList<SlopeDataCell> eastFarCells = raster.getEastVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         float portion  = (float) eastFarCells.size() / ( VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE );
         
-        getVisibleCountList().add((int)portion);        
-        ownerAgent.getMemory().put(Direction.EAST.toString(), averageFieldOfView());
+        getVisibleCountList().add(portion);      
+        float averageFieldOfView  = averageFieldOfView();
+        
+        ownerAgent.getMemory().put(Direction.EAST.toString(), averageFieldOfView);
+        log.log(Level.INFO, "average field of view is {0} ", averageFieldOfView);
         
     }
     
