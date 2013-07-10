@@ -47,6 +47,10 @@ import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDi
 import strategy.updater.specialized.opportunistic.OppoturnisticRightAnglesEasternDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.rightangles.RightAnglesAdaptiveEasternDirectionUpdater;
+import strategy.updater.specialized.routesampler.OutAndBackEasternDirectionUpdater;
+import strategy.updater.specialized.routesampler.OutAndBackNorthernDirectionUpdater;
+import strategy.updater.specialized.routesampler.OutAndBackSouthernDirectionUpdater;
+import strategy.updater.specialized.routesampler.OutAndBackWesternDirectionUpdater;
 
 /**
  *
@@ -66,6 +70,7 @@ public class FSMFactory {
         ADAPTIVE_NORTH_SOUTH("mostly north and south"),
         ADAPTIVE_RIGHT_ANGLES("mostly north and south"),
         OPPORTUNISTIC_RIGHT_ANGLES("seeks for the far field"),
+        ROUTE_SAMPLER("route sampling"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -77,6 +82,8 @@ public class FSMFactory {
         DO_NOTHING("Do nothing"),
         SLOW_ON_STEEP_WANDER("slow on steep wander"),
         EAST_WEST_WALKABLE_TOGGLE("east west walkable toggle");
+        
+        
         private String displayName;
         private String description;
 
@@ -264,7 +271,8 @@ public class FSMFactory {
      *
      */
     public static class LawnMowerMaker implements FSMMaker {
-        public static final String MOWER_KEY = "mower"; 
+
+        public static final String MOWER_KEY = "mower";
 
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -300,10 +308,10 @@ public class FSMFactory {
         @Override
         public List<DirectionUpdater> makeMachine() {
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
-            
+
             updaters.add(new WanderDirectionUpdater());
             updaters.add(new BoundaryBounceDirectionUpdater());
-            
+
             return updaters;
         }
     }
@@ -394,6 +402,28 @@ public class FSMFactory {
 
 
             updaters.add(rightEast);
+
+            return updaters;
+        }
+    }
+
+    /**
+     * When stuck it chooses the considers the best right angle direction
+     */
+    private static class RouteSamplingWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            OutAndBackNorthernDirectionUpdater north = new OutAndBackNorthernDirectionUpdater(new AdaptiveNorthernWalkableDirectionUpdater());
+            OutAndBackWesternDirectionUpdater west = new OutAndBackWesternDirectionUpdater(north);
+            OutAndBackSouthernDirectionUpdater south = new OutAndBackSouthernDirectionUpdater(west);
+            OutAndBackEasternDirectionUpdater east = new OutAndBackEasternDirectionUpdater(south);
+
+
+            updaters.add(east);
 
             return updaters;
         }
@@ -547,6 +577,7 @@ public class FSMFactory {
         machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES, new AdaptiveRightAnglesWalkableWanderMaker());
         machineMap.put(MachineName.OPPORTUNISTIC_RIGHT_ANGLES, new OpportunisticRightAnglesWalkableWanderMaker());
+        machineMap.put(MachineName.ROUTE_SAMPLER, new RouteSamplingWalkableWanderMaker());
 
     }
 //    private static HashMap<

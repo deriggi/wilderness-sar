@@ -24,7 +24,9 @@ import strategy.updater.Direction;
 public abstract class SkelatalAgent {
 
     private static Logger log = Logger.getLogger(SkelatalAgent.class.getName());
+    
     public static final int MAX_STACK_SIZE = 200;
+    public static final int MINI_STACK_SIZE = 400;
     private float[] origin = new float[2];
     private double[] velocity = new double[2];
     private float speed = 4;
@@ -39,6 +41,12 @@ public abstract class SkelatalAgent {
     private int stepsTaken = 0;
     private Direction eastWestIntention = null;
     private Direction northSouthIntention = null;
+    private HashMap<String, Float>  memory = new HashMap<String, Float>();
+    
+    public HashMap<String, Float> getMemory(){
+        return memory;
+    }
+    
 
     public Direction getEastWestIntention() {
         return eastWestIntention;
@@ -93,7 +101,7 @@ public abstract class SkelatalAgent {
         }
 
         Stack<short[]> someStack = mapOfStacks.get(key);
-        if (someStack.size() > MAX_STACK_SIZE) {
+        if (someStack.size() > MINI_STACK_SIZE) {
             someStack.remove(0);
         }
 
