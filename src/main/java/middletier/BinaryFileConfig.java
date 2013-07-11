@@ -9,8 +9,9 @@ package middletier;
  * @author Johnny
  */
 public enum BinaryFileConfig {
-//    OUT_PATH("/home/john/javaplay/wisar/terraindata/grdn41w117_13.bte");
+//    myubuntu OUT_PATH("/home/john/javaplay/wisar/terraindata/grdn41w117_13.bte");
      OUT_PATH("C:\\Users\\Johnny\\binaryterrain\\out.bte"); 
+//     OUT_PATH("/usr/share/terraindata/grdn41w117_13.bte"); 
     private String outPath= null;
     
     BinaryFileConfig(String path){
