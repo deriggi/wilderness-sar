@@ -8,6 +8,7 @@ import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ public abstract class SkelatalAgent {
 
     private static Logger log = Logger.getLogger(SkelatalAgent.class.getName());
     
+    public static final String COMS = "coms";
     public static final int MAX_STACK_SIZE = 200;
     public static final int MINI_STACK_SIZE = 400;
     private float[] origin = new float[2];
@@ -43,6 +45,17 @@ public abstract class SkelatalAgent {
     private Direction northSouthIntention = null;
     private HashMap<String, Float>  memory = new HashMap<String, Float>();
     
+    public void handleMessage(HashMap<String, Float> message){
+        if(message == null || message.isEmpty()){
+            return;
+        }
+        Set<String> keys = message.keySet();
+        for(String key : keys){
+            memory.put(key, message.get(key));
+        }
+        
+        
+    }
     public HashMap<String, Float> getMemory(){
         return memory;
     }

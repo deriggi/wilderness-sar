@@ -51,6 +51,10 @@ import strategy.updater.specialized.routesampler.OutAndBackEasternDirectionUpdat
 import strategy.updater.specialized.routesampler.OutAndBackNorthernDirectionUpdater;
 import strategy.updater.specialized.routesampler.OutAndBackSouthernDirectionUpdater;
 import strategy.updater.specialized.routesampler.OutAndBackWesternDirectionUpdater;
+import strategy.updater.specialized.uavteam.UavOutAndBackEasternDirectionUpdater;
+import strategy.updater.specialized.uavteam.UavOutAndBackNorthernDirectionUpdater;
+import strategy.updater.specialized.uavteam.UavOutAndBackSouthernDirectionUpdater;
+import strategy.updater.specialized.uavteam.UavOutAndBackWesternDirectionUpdater;
 
 /**
  *
@@ -71,6 +75,10 @@ public class FSMFactory {
         ADAPTIVE_RIGHT_ANGLES("mostly north and south"),
         OPPORTUNISTIC_RIGHT_ANGLES("seeks for the far field"),
         ROUTE_SAMPLER("route sampling"),
+        UAV_NORTH("uav north"),
+        UAV_EAST("uav east"),
+        UAV_SOUTH("uav south"),
+        UAV_WEST("uav west"),
         EAST_WEST_LAWN_MOWER("East west lawnmower"),
         EAST_WEST_LOW_AGITATION_AWARE("Agitation aware"),
         SIMPLE_WANDER("Wander"),
@@ -428,6 +436,52 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    private static class UavNorthWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine(){
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            UavOutAndBackNorthernDirectionUpdater north = new UavOutAndBackNorthernDirectionUpdater();
+            updaters.add(north);
+            return updaters;
+        }
+    }
+    
+    private static class UavSouthWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine(){
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            UavOutAndBackSouthernDirectionUpdater south = new UavOutAndBackSouthernDirectionUpdater();
+            updaters.add(south);
+            return updaters;
+        }
+    }
+    
+    private static class UavEastWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine(){
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            UavOutAndBackEasternDirectionUpdater east = new UavOutAndBackEasternDirectionUpdater();
+            updaters.add(east);
+            return updaters;
+        }
+    }
+    
+    private static class UavWestWanderMaker implements FSMMaker {
+        
+        @Override
+        public List<DirectionUpdater> makeMachine(){
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            UavOutAndBackWesternDirectionUpdater west = new UavOutAndBackWesternDirectionUpdater();
+            updaters.add(west);
+            return updaters;
+        }
+    }
+    
+    
 
     /**
      * When stuck it chooses the considers the best right angle direction
@@ -578,6 +632,12 @@ public class FSMFactory {
         machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES, new AdaptiveRightAnglesWalkableWanderMaker());
         machineMap.put(MachineName.OPPORTUNISTIC_RIGHT_ANGLES, new OpportunisticRightAnglesWalkableWanderMaker());
         machineMap.put(MachineName.ROUTE_SAMPLER, new RouteSamplingWalkableWanderMaker());
+        
+        // uavs
+        machineMap.put(MachineName.UAV_NORTH, new UavNorthWanderMaker());
+        machineMap.put(MachineName.UAV_EAST, new UavEastWanderMaker());
+        machineMap.put(MachineName.UAV_SOUTH, new UavSouthWanderMaker());
+        machineMap.put(MachineName.UAV_WEST, new UavWestWanderMaker());
 
     }
 //    private static HashMap<
