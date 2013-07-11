@@ -35,6 +35,7 @@ public class OutAndBackSouthernDirectionUpdater extends SkelatalOutAndBackWalkab
 
     @Override
     protected void doOutMode(double[] dxDy, SkelatalAgent ownerAgent) {
+        
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
@@ -50,7 +51,9 @@ public class OutAndBackSouthernDirectionUpdater extends SkelatalOutAndBackWalkab
 
         ArrayList<SlopeDataCell> southFarCells = raster.getSouthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         float portion = (float) southFarCells.size() / (VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE);
-
+        log.log(Level.INFO, "about to divide {0} by {1} ", new Object[]{(float) southFarCells.size(), (VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE)});
+        
+        
         getVisibleCountList().add(portion);
         float averageFieldOfView = averageFieldOfView();
 

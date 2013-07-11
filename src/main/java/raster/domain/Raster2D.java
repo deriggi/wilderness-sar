@@ -6,6 +6,7 @@ package raster.domain;
 
 import com.vividsolutions.jts.geom.Polygon;
 import geomutils.GeomBuilder;
+import geomutils.VectorUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -341,7 +342,7 @@ public class Raster2D {
         double[][] theLine = new double[2][2];
         ForceCalculator fc = new ForceCalculator();
         double[] offset = null;
-        float distance = 0;
+        int distance = 0;
         float elevation = 0;
         ArrayList<SlopeDataCell> visibleCells = new ArrayList<SlopeDataCell>();
 
@@ -353,11 +354,12 @@ public class Raster2D {
             theLine[1][0] = perimeterPoint[0];
             theLine[1][1] = perimeterPoint[1];
             distance = 1;
+            int maxDistance = (int) (VectorUtils.distance(theLine[0], theLine[1]))+1;
             float biggestSlopeSeen = -999999;
             float slope = 0, dx = 0, dy = 0;
             SlopeDataCell visibleCell = null;
 
-            while (distance < 80) {
+            while (distance < maxDistance) {
                 offset = fc.getOffset(theLine, distance);
                 elevation = getCell((int) Math.floor(column + offset[0]), (int) Math.floor(row + offset[1]));
                 dx = distance * 7;
@@ -374,8 +376,8 @@ public class Raster2D {
                     }
 
                 }
-                distance += 1.1;
-                // visible
+//                distance += 1.1;
+                distance += 1;
             }
         }
         return visibleCells;

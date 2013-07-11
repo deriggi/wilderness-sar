@@ -8,17 +8,22 @@ var map;
 function getBoard(){
     
     $.post('/wisar/q/board', function(data){
-        nwlon = data.nwlon;
-        nwlat = data.nwlat;
+        var nwlon = data.nwlon;
+        var nwlat = data.nwlat;
         
-        selon = data.selon;
-        selat = data.selat;
+        var selon = data.selon;
+        var selat = data.selat;
         
-        maxlat = data.maxlat;
-        maxlon = data.maxlon;
+        var maxlat = data.maxlat;
+        var maxlon = data.maxlon;
         
-        minlat = data.minlat;
-        minlon = data.minlon;
+        var minlat = data.minlat;
+        var minlon = data.minlon;
+        
+        var sw = new L.LatLng(selat,nwlon);
+        var ne = new L.LatLng(nwlat, selon);
+        
+        map.setMaxBounds(new L.LatLngBounds(sw, ne));
         
         L.marker([nwlat, nwlon], {
             draggable:false
@@ -137,7 +142,6 @@ var doViewshed
 
 
 function setupMap(){
-    alert('called') ;   
     map = new L.Map('map', {
         center: new L.LatLng(40.34805555555265, -116.89675925930325),
         zoom: 15,
@@ -146,7 +150,6 @@ function setupMap(){
         minZoom: 14
     });
     
-    alert('have map');
 
     map.on('click', function(e){
    
@@ -157,7 +160,6 @@ function setupMap(){
         doViewshed(lng, lat);
    
     });
-    alert('done');
 }
 
 
