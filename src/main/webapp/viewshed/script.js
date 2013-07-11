@@ -61,7 +61,7 @@ function drawAgentLocation(data){
             }).addTo(map);
         }
 }
-
+    
 
 ViewshedContainer = (function setupPushViewshed(){
     var sheds = [];

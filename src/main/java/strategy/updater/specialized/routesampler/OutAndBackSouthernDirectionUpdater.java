@@ -28,18 +28,18 @@ public class OutAndBackSouthernDirectionUpdater extends SkelatalOutAndBackWalkab
     public String toString() {
         return "southanoutandback";
     }
-    
-    public OutAndBackSouthernDirectionUpdater(DirectionUpdater next){
+
+    public OutAndBackSouthernDirectionUpdater(DirectionUpdater next) {
         setNextDirectionUpdater(next);
     }
 
-      @Override
+    @Override
     protected void doOutMode(double[] dxDy, SkelatalAgent ownerAgent) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
         raster.getSouthernCells(visibleCells, (int) loc[0], (int) loc[1]);
-        
+
         // common part
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
@@ -47,15 +47,14 @@ public class OutAndBackSouthernDirectionUpdater extends SkelatalOutAndBackWalkab
         dxDy[1] = acceleration[1];
 
         getLocalStack().push(ownerAgent.getLocation());
-        
+
         ArrayList<SlopeDataCell> southFarCells = raster.getSouthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         float portion = (float) southFarCells.size() / (VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE);
 
         getVisibleCountList().add(portion);
-        float averageFieldOfView  = averageFieldOfView();
-        
+        float averageFieldOfView = averageFieldOfView();
+
         ownerAgent.getMemory().put(Direction.SOUTH.toString(), averageFieldOfView());
         log.log(Level.INFO, "average field of view is {0} ", averageFieldOfView);
     }
-
 }
