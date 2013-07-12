@@ -39,17 +39,20 @@ public class OutAndBackNorthernDirectionUpdater extends SkelatalOutAndBackWalkab
         float[] loc = ownerAgent.getLocation();
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
         raster.getNorthernCells(visibleCells, (int) loc[0], (int) loc[1]);
-
+        
         // common part
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
+        float denom = (float)( 2 * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE );
+        int num = visibleCells.size() ;
+        float portion = (float) ( num / denom );
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
         dxDy[0] = acceleration[0];
         dxDy[1] = acceleration[1];
 
         getLocalStack().push(ownerAgent.getLocation());
 
-        ArrayList<SlopeDataCell> northFarCells = raster.getNorthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
-        float portion = (float) northFarCells.size() / (VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE);
+//        ArrayList<SlopeDataCell> northFarCells = raster.getNorthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+//        float portion = (float) northFarCells.size() / (VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE);
 
         getVisibleCountList().add( portion);
         float averageFieldOfView  = averageFieldOfView();

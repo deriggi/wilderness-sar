@@ -40,16 +40,22 @@ public class OutAndBackEasternDirectionUpdater extends SkelatalOutAndBackWalkabl
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
         raster.getEasternCells(visibleCells, (int) loc[0], (int) loc[1]);
         
+        
         // common part
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
+        float denom = (float)( 2 * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE );
+        int num = visibleCells.size() ;
+        float portion = (float) ( num / denom );
+        log.log( Level.INFO, " dividing {0} by {1} ", new Float[]{(float)num, denom });
+        
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
         dxDy[0] = acceleration[0];
         dxDy[1] = acceleration[1];
 
         getLocalStack().push(ownerAgent.getLocation());
         
-        ArrayList<SlopeDataCell> eastFarCells = raster.getEastVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
-        float portion  = (float) eastFarCells.size() / ( VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE );
+//        ArrayList<SlopeDataCell> eastFarCells = raster.getEastVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
+//        float portion  = (float) eastFarCells.size() / ( VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE );
         
         getVisibleCountList().add(portion);      
         float averageFieldOfView  = averageFieldOfView();

@@ -346,6 +346,8 @@ public class Raster2D {
         float elevation = 0;
         ArrayList<SlopeDataCell> visibleCells = new ArrayList<SlopeDataCell>();
 
+        int maxDistance = radius * 2;
+        
         for (int[] perimeterPoint : perimeterPoints) {
             // make line from center to perimeter
             theLine[0][0] = column;
@@ -354,7 +356,8 @@ public class Raster2D {
             theLine[1][0] = perimeterPoint[0];
             theLine[1][1] = perimeterPoint[1];
             distance = 1;
-            int maxDistance = (int) (VectorUtils.distance(theLine[0], theLine[1]))+1;
+//            int maxDistance = (int) (VectorUtils.distance(theLine[0], theLine[1]))+1;
+            
             float biggestSlopeSeen = -999999;
             float slope = 0, dx = 0, dy = 0;
             SlopeDataCell visibleCell = null;

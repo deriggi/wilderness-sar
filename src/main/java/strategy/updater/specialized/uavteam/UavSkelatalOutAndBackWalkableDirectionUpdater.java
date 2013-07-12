@@ -206,9 +206,12 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
 
             // repeated code!
             List<MemoryData> memCache = toMemoryData(ownerAgent.getMemory());
-            for (int i = memCache.size() - 1; i > 0; i--) {
-                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
+            for(MemoryData memData : memCache){
+                log.info(memData.getName() + "  " + memData.getData());
             }
+//            for (int i = memCache.size() - 1; i > 0; i--) {
+//                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
+//            }
 
 
             return;
@@ -218,8 +221,8 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
 
             // repeated code!
             List<MemoryData> memCache = toMemoryData(ownerAgent.getMemory());
-            for (int i = memCache.size() - 1; i > 0; i--) {
-                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
+            for(MemoryData memData : memCache){
+                log.info(memData.getName() + "  " + memData.getData());
             }
 
 

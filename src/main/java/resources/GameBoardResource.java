@@ -42,7 +42,7 @@ public class GameBoardResource {
     public String viewshed(@PathParam("lon") double lon, @PathParam("lat") double lat) {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         int[] centerPoint = raster.getPosition(lon, lat);
-        int radius = 120;
+        int radius = 40;
 
 //        ArrayList<SlopeDataCell> cells = raster.calculateViewShed(centerPoint[0], centerPoint[1], radius);
         
