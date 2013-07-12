@@ -370,6 +370,7 @@ public class Raster2D {
 //                double aSquared = Math.pow(column + offset[1]  - column, 2);
 //                dx = Math.sqrt(  );
                 dy = elevation - elevationOrigin;
+                
                 slope = dy / dx;
                 if (slope > biggestSlopeSeen) {
                     biggestSlopeSeen = slope;
@@ -380,9 +381,11 @@ public class Raster2D {
 
                 }
 //                distance += 1.1;
-                distance += 1;
+                distance++;
             }
         }
+        log.log(Level.INFO,"visible cell count is {0} ", visibleCells.size());
+        
         return visibleCells;
     }
     

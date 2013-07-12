@@ -43,21 +43,17 @@ public class OutAndBackWesternDirectionUpdater extends SkelatalOutAndBackWalkabl
         raster.getWesternCells(visibleCells, (int) loc[0], (int) loc[1]);
         
         // common part
-        visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
-        float denom = (float)( 2 * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE );
-        int num = visibleCells.size() ;
-        float portion = (float) ( num / denom );
+        // 1) go towards visibles
+        goTowardsVisibleCells(visibleCells, raster, loc, dxDy);
+
+        // 2) calculate distance and visible portion. more of each is bettah!
+        float routeQuality = calculateRouteQuality(ownerAgent, visibleCells);
         
-        float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
-        dxDy[0] = acceleration[0];
-        dxDy[1] = acceleration[1];
+        // 3) add it to runnign tally of route quality
+        getVisibleCountList().add(routeQuality);
 
         getLocalStack().push(ownerAgent.getLocation());
         
-//        ArrayList<SlopeDataCell> westFarCells = raster.getWestVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
-//        float portion = (float) westFarCells.size() / (VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE);
-
-        getVisibleCountList().add( portion);
         float averageFieldOfView  = averageFieldOfView();
         log.log(Level.INFO, "average field of view is {0} ", averageFieldOfView);
         ownerAgent.getMemory().put(Direction.WEST.toString(), averageFieldOfView());

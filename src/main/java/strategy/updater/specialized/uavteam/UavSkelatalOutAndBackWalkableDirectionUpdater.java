@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.agent.SkelatalAgent;
 import strategy.DirectionUpdater;
@@ -207,7 +206,9 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
             // repeated code!
             List<MemoryData> memCache = toMemoryData(ownerAgent.getMemory());
             for(MemoryData memData : memCache){
+                
                 log.info(memData.getName() + "  " + memData.getData());
+            
             }
 //            for (int i = memCache.size() - 1; i > 0; i--) {
 //                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
