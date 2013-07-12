@@ -39,26 +39,19 @@ public class UavOutAndBackNorthernDirectionUpdater extends UavSkelatalOutAndBack
             setRegistered(true);
         }
 
-        Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
-        float[] loc = ownerAgent.getLocation();
-        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
-        
-        log.log(Level.INFO," total visible cells around me are {0} ", visibleCells.size());
-        
-        raster.getNorthernCells(visibleCells, (int) loc[0], (int) loc[1]);
-        log.log(Level.INFO," only the northern ones are of size {0} ", visibleCells.size());
-
-        float portion = (float) visibleCells.size() / (VectorAgent.SHORT_VIS_RANGE  * VectorAgent.SHORT_VIS_RANGE);
-
-        log.log(Level.INFO, "about to divide {0} by {1} ", new Object[]{(float) visibleCells.size(), (VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE)});
-
-        float distanceFromHome = (float)VectorUtils.distance(ownerAgent.getOrigin(), ownerAgent.getLocation());
+        float distanceFromHome = (float)VectorUtils.distance( ownerAgent.getOrigin(), ownerAgent.getLocation() );
 
         // build message
         HashMap<String, Float> message = new HashMap<String, Float>(1);
-        message.put(Direction.NORTH.toString(), portion);
+        message.put(Direction.NORTH.toString(), distanceFromHome);
         Communications.relayMessage(SkelatalAgent.COMS, message);
 
+        // get northern visible cells
+        Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
+        float[] loc = ownerAgent.getLocation();
+        ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);        
+        raster.getNorthernCells(visibleCells, (int) loc[0], (int) loc[1]);
+        
         // common part
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);

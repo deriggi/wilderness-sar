@@ -4,6 +4,7 @@
  */
 package strategy.updater.specialized.uavteam;
 
+import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -14,7 +15,6 @@ import raster.domain.Raster2D;
 import raster.domain.SlopeDataCell;
 import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
-import strategy.DirectionUpdater;
 import strategy.updater.Direction;
 
 /**
@@ -30,27 +30,25 @@ public class UavOutAndBackWesternDirectionUpdater extends UavSkelatalOutAndBackW
         return "west walkable";
     }
 
-
     @Override
     protected void doOutMode(double[] dxDy, SkelatalAgent ownerAgent) {
-        if(!isRegistered()){
+        if (!isRegistered()) {
             Communications.register(SkelatalAgent.COMS, ownerAgent);
             setRegistered(true);
         }
-        
+
+        float distanceFromHome = (float) VectorUtils.distance(ownerAgent.getOrigin(), ownerAgent.getLocation());
+
+        // build message
+        HashMap<String, Float> message = new HashMap<String, Float>(1);
+        message.put(Direction.WEST.toString(), distanceFromHome);
+        Communications.relayMessage(SkelatalAgent.COMS, message);
+
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
         raster.getWesternCells(visibleCells, (int) loc[0], (int) loc[1]);
-        
-        float portion = (float) visibleCells.size() / (VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE);
-        
-        // build message
-        HashMap<String, Float> message = new HashMap <String, Float>(1);
-        message.put(Direction.WEST.toString(), portion);
-        Communications.relayMessage(SkelatalAgent.COMS, message);
-        
-        
+
         // common part
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
@@ -58,6 +56,6 @@ public class UavOutAndBackWesternDirectionUpdater extends UavSkelatalOutAndBackW
         dxDy[1] = acceleration[1];
         getLocalStack().push(ownerAgent.getLocation());
 
-        
+
     }
 }

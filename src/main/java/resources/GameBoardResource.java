@@ -58,9 +58,9 @@ public class GameBoardResource {
 //        double[][] bbox = raster.getBBoxLatLon(smallbox);
 //
 //        Neighborhood nayb = new Neighborhood(bbox,pois, null);
-        
+        log.info("viewsed request");
         double[][][] pois = raster.calculateViewShed(centerPoint[0], centerPoint[1], radius);
-        
+        log.info("viewshed response");
         return GsonGetter.get().toJson(pois);
 
     }

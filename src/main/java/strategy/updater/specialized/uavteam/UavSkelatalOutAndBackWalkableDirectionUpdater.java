@@ -5,6 +5,10 @@
 package strategy.updater.specialized.uavteam;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,15 +26,14 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
     private static final Logger log = Logger.getLogger(UavSkelatalOutAndBackWalkableDirectionUpdater.class.getName());
     private final int initialSteps = 50;
     private boolean registered = false;
-    
-    public boolean isRegistered(){
+
+    public boolean isRegistered() {
         return registered;
     }
-    
-    public void setRegistered(boolean reg){
+
+    public void setRegistered(boolean reg) {
         this.registered = reg;
     }
-    
     private final Stack<float[]> localStack = new Stack<float[]>();
 
     public Stack<float[]> getLocalStack() {
@@ -41,7 +44,6 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
     public ArrayList<Float> getVisibleCountList() {
         return totalVisible;
     }
-    
     private OutOrBack outOrBack = OutOrBack.OUT;
 
     public void checkForStuckOrDone(SkelatalAgent ownerAgent) {
@@ -72,7 +74,7 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
         checkForStuckOrDone(ownerAgent);
 
         if (isOutOrBack().equals(OutOrBack.OUT)) {
-            
+
             doOutMode(dxDy, ownerAgent);
 
         } else {
@@ -92,7 +94,6 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
     }
 
     protected abstract void doOutMode(double[] dxDy, SkelatalAgent ownerAgent);
-    
     private DirectionUpdater next = null;
 
     protected void setNextDirectionUpdater(DirectionUpdater du) {
@@ -101,6 +102,92 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
 
     protected DirectionUpdater getNextDirectionUpdater() {
         return next;
+    }
+
+    private class MemoryData implements Comparable<MemoryData> {
+
+        public MemoryData(String name, float data) {
+            this.name = name;
+            this.data = data;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final MemoryData other = (MemoryData) obj;
+            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+                return false;
+            }
+            if (Float.floatToIntBits(this.data) != Float.floatToIntBits(other.data)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+            hash = 97 * hash + Float.floatToIntBits(this.data);
+            return hash;
+        }
+        private String name;
+        private float data;
+
+        public float getData() {
+            return data;
+        }
+
+        public void setData(float data) {
+            this.data = data;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int compareTo(MemoryData o) {
+            if (o == null) {
+                return 1;
+            }
+            if (o.equals(this)) {
+                return 0;
+            }
+
+            if (o.getData() > getData()) {
+                return -1;
+            }
+
+            if (o.getData() < getData()) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    private List<MemoryData> toMemoryData(HashMap<String, Float> mem) {
+
+        Set<String> keys = mem.keySet();
+        List<MemoryData> memoryData = new ArrayList<MemoryData>();
+
+        for (String s : keys) {
+            memoryData.add(new MemoryData(s, mem.get(s)));
+        }
+
+        Collections.sort(memoryData);
+
+        return memoryData;
+
     }
 
     protected void doBackMode(double[] dxDy, SkelatalAgent ownerAgent) {
@@ -117,26 +204,25 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
                 && ownerAgent.getMemory().containsKey(Direction.SOUTH.toString())
                 && ownerAgent.getMemory().containsKey(Direction.WEST.toString())) {
 
-            // clear that shit
-//            ownerAgent.getMemory().remove(Direction.EAST.toString());
-            log.info("done so choosing a direction after route sampling!");
-            //@TODO do choose a direction
-            log.log(Level.INFO, "East value is {0} ", ownerAgent.getMemory().get(Direction.EAST.toString()));
-            log.log(Level.INFO, "West value is {0} ", ownerAgent.getMemory().get(Direction.WEST.toString()));
-            log.log(Level.INFO, "South value is {0} ", ownerAgent.getMemory().get(Direction.SOUTH.toString()));
-            log.log(Level.INFO, "North value is {0} ", ownerAgent.getMemory().get(Direction.NORTH.toString()));
+            // repeated code!
+            List<MemoryData> memCache = toMemoryData(ownerAgent.getMemory());
+            for (int i = memCache.size() - 1; i > 0; i--) {
+                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
+            }
+
 
             return;
         } else if (locs.isEmpty()) {
 
             log.info("returned home but still don't have complete info from other agents");
-            
-            log.log(Level.INFO, "East value is {0} ", ownerAgent.getMemory().get(Direction.EAST.toString()));
-            log.log(Level.INFO, "West value is {0} ", ownerAgent.getMemory().get(Direction.WEST.toString()));
-            log.log(Level.INFO, "South value is {0} ", ownerAgent.getMemory().get(Direction.SOUTH.toString()));
-            log.log(Level.INFO, "North value is {0} ", ownerAgent.getMemory().get(Direction.NORTH.toString()));
-           
-            
+
+            // repeated code!
+            List<MemoryData> memCache = toMemoryData(ownerAgent.getMemory());
+            for (int i = memCache.size() - 1; i > 0; i--) {
+                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
+            }
+
+
             return;
         }
 
@@ -148,7 +234,6 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
         float dy = destination[1] - ownerAgent.getLocation()[1];
 
         ownerAgent.setVelocityVector(new double[]{dx, dy});
-
     }
 
     public float averageFieldOfView() {
