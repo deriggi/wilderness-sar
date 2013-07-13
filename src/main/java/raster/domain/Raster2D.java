@@ -384,7 +384,7 @@ public class Raster2D {
                 distance++;
             }
         }
-        log.log(Level.INFO,"visible cell count is {0} ", visibleCells.size());
+        log.log(Level.INFO,"visible cell count is {0} for column {1} row {2} and radius {3} ", new Integer[]{visibleCells.size(), column, row, radius});
         
         return visibleCells;
     }

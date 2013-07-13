@@ -29,8 +29,9 @@ public class OutAndBackSouthernDirectionUpdater extends SkelatalOutAndBackWalkab
         return "southanoutandback";
     }
 
-    public OutAndBackSouthernDirectionUpdater(DirectionUpdater next) {
+    public OutAndBackSouthernDirectionUpdater(Direction direction, DirectionUpdater next) {
         setNextDirectionUpdater(next);
+        setDirection(direction);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class OutAndBackSouthernDirectionUpdater extends SkelatalOutAndBackWalkab
         raster.getSouthernCells(visibleCells, (int) loc[0], (int) loc[1]);
         
        // 1) go towards visibles
-        goTowardsVisibleCells(visibleCells, raster, loc, dxDy);
+        goTowardsWalkableCells(visibleCells, raster, loc, dxDy);
 
         // 2) calculate distance and visible portion. more of each is bettah!
         float routeQuality = calculateRouteQuality(ownerAgent, visibleCells);

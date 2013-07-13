@@ -55,7 +55,7 @@ public abstract class SkelatalOppoturnisticRightAnglesDirectionUpdater extends S
     public void considerNorthSouthField(Raster2D raster, float[] loc, SkelatalAgent va) {
 
         // 15 percent considering the big field to our right or left
-        log.info("considering an east west field");
+        log.info("considering an north south field");
 
         float maxCellCount = VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE;
         ArrayList<SlopeDataCell> northFarCells = raster.getNorthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);

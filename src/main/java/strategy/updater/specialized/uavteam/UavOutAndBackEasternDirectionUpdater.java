@@ -4,10 +4,8 @@
  */
 package strategy.updater.specialized.uavteam;
 
-import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Communications;
@@ -23,7 +21,6 @@ import strategy.updater.Direction;
  */
 public class UavOutAndBackEasternDirectionUpdater extends UavSkelatalOutAndBackWalkableDirectionUpdater {
 
-    private static final Logger log = Logger.getLogger(UavOutAndBackEasternDirectionUpdater.class.getName());
 
     @Override
     public String toString() {
@@ -38,11 +35,12 @@ public class UavOutAndBackEasternDirectionUpdater extends UavSkelatalOutAndBackW
             setRegistered(true);
         }
 
-        float distanceFromHome = (float) VectorUtils.distance(ownerAgent.getOrigin(), ownerAgent.getLocation());
-
+        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
+        
         // build message
         HashMap<String, Float> message = new HashMap<String, Float>(1);
         message.put(Direction.EAST.toString(), distanceFromHome);
+        
         Communications.relayMessage(SkelatalAgent.COMS, message);
         
         // visible cells

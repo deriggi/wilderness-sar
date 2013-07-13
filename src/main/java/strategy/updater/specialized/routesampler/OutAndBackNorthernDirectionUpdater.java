@@ -29,8 +29,9 @@ public class OutAndBackNorthernDirectionUpdater extends SkelatalOutAndBackWalkab
         return "east walkable";
     }
 
-    public OutAndBackNorthernDirectionUpdater(DirectionUpdater du){
+    public OutAndBackNorthernDirectionUpdater(Direction direction, DirectionUpdater du){
         setNextDirectionUpdater(du);
+        setDirection(direction);
     }
     
     @Override
@@ -41,7 +42,7 @@ public class OutAndBackNorthernDirectionUpdater extends SkelatalOutAndBackWalkab
         raster.getNorthernCells(visibleCells, (int) loc[0], (int) loc[1]);
         
         // 1) go towards visibles
-        goTowardsVisibleCells(visibleCells, raster, loc, dxDy);
+        goTowardsWalkableCells(visibleCells, raster, loc, dxDy);
 
         // 2) calculate distance and visible portion. more of each is bettah!
         float routeQuality = calculateRouteQuality(ownerAgent, visibleCells);

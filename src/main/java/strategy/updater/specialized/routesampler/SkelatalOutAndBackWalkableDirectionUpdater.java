@@ -6,6 +6,8 @@ package strategy.updater.specialized.routesampler;
 
 import geomutils.VectorUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,8 +17,13 @@ import raster.domain.agent.SkelatalAgent;
 import raster.domain.agent.VectorAgent;
 import strategy.DirectionUpdater;
 import strategy.updater.Direction;
+import strategy.updater.MemoryData;
 import strategy.updater.SkelatalDirectionUpdater;
 import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveEasternDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveNorthernDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveSouthernDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveWesternDirectionUpdater;
 
 /**
  *
@@ -28,9 +35,15 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
     private final int initialSteps = 50;
     public static final int MAX_ROUTE_SAMPLE_DISTANCE = 200;
     private final Stack<float[]> localStack = new Stack<float[]>();
-
     private boolean addStuckPenalty = false;
+    public boolean isStuckPenalty(){
+        return addStuckPenalty;
+    }
+    public void setIsStuckPenalty(boolean penalize){
+        this.addStuckPenalty = penalize;
+    }
     
+
     public Stack<float[]> getLocalStack() {
         return localStack;
     }
@@ -40,7 +53,18 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
         return totalVisible;
     }
     private OutOrBack outOrBack = OutOrBack.OUT;
+    
 
+    private Direction direction = null;
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+    
     public void checkForStuckOrDone(SkelatalAgent ownerAgent) {
 
         // if stuck or full then go back
@@ -49,7 +73,10 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
             setOutOrBack(OutOrBack.BACK);
             log.info("setting mode to back and adding stuck penalty because we are stuck");
             clearLocalCache();
-            addStuckPenalty = true;
+            
+            setIsStuckPenalty(true);
+            updateMemory(ownerAgent);
+            log.log(Level.INFO, "is stuck is {0} ", isStuckPenalty());
 
         } else if (localStack.size() > MAX_ROUTE_SAMPLE_DISTANCE) {
 
@@ -114,14 +141,13 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
                 && ownerAgent.getMemory().containsKey(Direction.SOUTH.toString())
                 && ownerAgent.getMemory().containsKey(Direction.WEST.toString())) {
 
-            // clear that shit
-//            ownerAgent.getMemory().remove(Direction.EAST.toString());
             log.info("done so choosing a direction after route sampling!");
-            //@TODO do choose a direction
             log.log(Level.INFO, "East value is {0} ", ownerAgent.getMemory().get(Direction.EAST.toString()));
             log.log(Level.INFO, "West value is {0} ", ownerAgent.getMemory().get(Direction.WEST.toString()));
             log.log(Level.INFO, "South value is {0} ", ownerAgent.getMemory().get(Direction.SOUTH.toString()));
             log.log(Level.INFO, "North value is {0} ", ownerAgent.getMemory().get(Direction.NORTH.toString()));
+            
+            chooseUpdater(ownerAgent.getMemory());
 
             return;
         } else if (locs.isEmpty()) {
@@ -145,7 +171,50 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
 
     }
 
-    public void goTowardsVisibleCells(ArrayList<SlopeDataCell> visibleCells, Raster2D raster, float[] loc, double dxDy[]) {
+    /**
+     * Based on memory let's choose the right direction
+     * @param agentMemory 
+     */
+    public void chooseUpdater(HashMap<String, Float> agentMemory) {
+        List<MemoryData> data = MemoryData.toMemoryData(agentMemory);
+        if(data.isEmpty()){
+            log.warning("problem: no enough data from agent memory");
+            return;
+        }
+        
+        DirectionUpdater du = null;
+        String bestDirection = data.get(data.size()-1).getName();
+        
+        if(bestDirection.equals( Direction.NORTH.toString() )){
+            
+            du = new RightAnglesAdaptiveNorthernDirectionUpdater();
+            
+        }
+        else if(bestDirection.equals( Direction.EAST.toString() ) ){
+            
+            du = new RightAnglesAdaptiveEasternDirectionUpdater();
+            
+        }
+        else if ( bestDirection.equals( Direction.WEST.toString() )){
+            
+            du = new RightAnglesAdaptiveWesternDirectionUpdater();
+            
+        }
+        else if ( bestDirection.equals( Direction.SOUTH.toString() )){
+            
+            du = new RightAnglesAdaptiveSouthernDirectionUpdater();
+            
+        }
+        
+        AlwaysTrueConditionChecker alwaysTrue = new AlwaysTrueConditionChecker();
+        alwaysTrue.setNextState(du);
+        setConditionChecker(alwaysTrue);
+        
+        log.log(Level.INFO, "switching to next route {0} ", bestDirection);
+
+    }
+
+    public void goTowardsWalkableCells(ArrayList<SlopeDataCell> visibleCells, Raster2D raster, float[] loc, double dxDy[]) {
         visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
 
 
@@ -164,20 +233,24 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
         double distanceFromHome = VectorUtils.distance(ownerAgent.getOrigin(), ownerAgent.getLocation());
         int stackSize = getLocalStack().size();
         double distancePortion = 0;
-        
+
         if (stackSize > 0) {
-            distancePortion = distanceFromHome / ( getLocalStack().size() * ownerAgent.getSpeed() );
-            log.log(Level.INFO, "distance from home {0} out of {1} ", new Float[]{(float)distanceFromHome, (float)( getLocalStack().size() * ownerAgent.getSpeed() ) });
-            log.log(Level.INFO, "distance portion is {0} ", distancePortion);
+            distancePortion = distanceFromHome / (getLocalStack().size() * ownerAgent.getSpeed());
+//            log.log(Level.INFO, "distance from home {0} out of {1} ", new Float[]{(float)distanceFromHome, (float)( getLocalStack().size() * ownerAgent.getSpeed() ) });
+//            log.log(Level.INFO, "distance portion is {0} ", distancePortion);
         }
-        
-        float denom = (float) (10 * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE)/2.0f;
+
+        float denom = (float) (10 * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE) / 2.0f;
         int num = visibleCells.size();
         float visiblePortion = (float) (num / denom);
         float routeQuality = (float) (distancePortion + visiblePortion);
-        log.log(Level.INFO, "num and denom are  {0} {1}", new Float[]{(float)num, denom});
+//        log.log(Level.INFO, "num and denom are  {0} {1}", new Float[]{(float)num, denom});
         return routeQuality;
 
+    }
+    
+     public void updateMemory(SkelatalAgent ownerAgent){
+        ownerAgent.getMemory().put(getDirection().toString(),averageFieldOfView());
     }
 
     public float averageFieldOfView() {
@@ -191,11 +264,13 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
         }
         float avg = sum / totalVisible.size();
         
-        if(addStuckPenalty){
-            avg = avg/2.0f;
+        log.log(Level.INFO, "penalize? : {0} ", isStuckPenalty());
+        if (isStuckPenalty()) {
+            log.info("applying stuck penalty");
+            avg = avg / 2.0f;
         }
         return avg;
 
-        
+
     }
 }

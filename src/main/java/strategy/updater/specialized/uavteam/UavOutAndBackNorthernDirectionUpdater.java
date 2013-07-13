@@ -4,10 +4,8 @@
  */
 package strategy.updater.specialized.uavteam;
 
-import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
@@ -39,7 +37,7 @@ public class UavOutAndBackNorthernDirectionUpdater extends UavSkelatalOutAndBack
             setRegistered(true);
         }
 
-        float distanceFromHome = (float)VectorUtils.distance( ownerAgent.getOrigin(), ownerAgent.getLocation() );
+        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
 
         // build message
         HashMap<String, Float> message = new HashMap<String, Float>(1);

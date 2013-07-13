@@ -425,10 +425,10 @@ public class FSMFactory {
 
             List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
 
-            OutAndBackNorthernDirectionUpdater north = new OutAndBackNorthernDirectionUpdater(new AdaptiveNorthernWalkableDirectionUpdater());
-            OutAndBackWesternDirectionUpdater west = new OutAndBackWesternDirectionUpdater(north);
-            OutAndBackSouthernDirectionUpdater south = new OutAndBackSouthernDirectionUpdater(west);
-            OutAndBackEasternDirectionUpdater east = new OutAndBackEasternDirectionUpdater(south);
+            OutAndBackNorthernDirectionUpdater north = new OutAndBackNorthernDirectionUpdater(Direction.NORTH, new AdaptiveNorthernWalkableDirectionUpdater());
+            OutAndBackWesternDirectionUpdater west = new OutAndBackWesternDirectionUpdater(Direction.WEST, north);
+            OutAndBackSouthernDirectionUpdater south = new OutAndBackSouthernDirectionUpdater(Direction.SOUTH, west);
+            OutAndBackEasternDirectionUpdater east = new OutAndBackEasternDirectionUpdater(Direction.EAST, south);
 
 
             updaters.add(east);

@@ -37,7 +37,7 @@ public class UavOutAndBackWesternDirectionUpdater extends UavSkelatalOutAndBackW
             setRegistered(true);
         }
 
-        float distanceFromHome = (float) VectorUtils.distance(ownerAgent.getOrigin(), ownerAgent.getLocation());
+        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
 
         // build message
         HashMap<String, Float> message = new HashMap<String, Float>(1);

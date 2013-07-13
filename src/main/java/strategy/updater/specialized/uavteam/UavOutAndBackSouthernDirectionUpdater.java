@@ -4,9 +4,9 @@
  */
 package strategy.updater.specialized.uavteam;
 
-import geomutils.VectorUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
@@ -39,7 +39,7 @@ public class UavOutAndBackSouthernDirectionUpdater extends UavSkelatalOutAndBack
         }
         
         
-        float distanceFromHome = (float) VectorUtils.distance(ownerAgent.getOrigin(), ownerAgent.getLocation());
+        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
 
         // build message
         HashMap<String, Float> message = new HashMap<String, Float>(1);
@@ -50,6 +50,7 @@ public class UavOutAndBackSouthernDirectionUpdater extends UavSkelatalOutAndBack
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
+        log.log(Level.INFO, " vis cells for uav : {0} ", visibleCells.size());
         raster.getSouthernCells(visibleCells, (int) loc[0], (int) loc[1]);
 
         // common part

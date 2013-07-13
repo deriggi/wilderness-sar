@@ -38,7 +38,7 @@ public abstract class SkelatalAgent {
     private int masterTimestepsTaken = 0;
     private Integer id;
     private String nameTag;
-    private float considerAFieldChance = 0.10f;
+    private float considerAFieldChance = 0.05f;
     private HashMap<String, Stack<short[]>> mapOfStacks = new HashMap<String, Stack<short[]>>();
     private int stepsTaken = 0;
     private Direction eastWestIntention = null;

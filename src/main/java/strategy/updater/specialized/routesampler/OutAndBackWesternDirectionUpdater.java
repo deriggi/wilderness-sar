@@ -30,8 +30,9 @@ public class OutAndBackWesternDirectionUpdater extends SkelatalOutAndBackWalkabl
         return "west walkable";
     }
 
-    public OutAndBackWesternDirectionUpdater(DirectionUpdater du){
+    public OutAndBackWesternDirectionUpdater(Direction direction, DirectionUpdater du){
         setNextDirectionUpdater(du);
+        setDirection(direction);
     }
     
     
@@ -44,7 +45,7 @@ public class OutAndBackWesternDirectionUpdater extends SkelatalOutAndBackWalkabl
         
         // common part
         // 1) go towards visibles
-        goTowardsVisibleCells(visibleCells, raster, loc, dxDy);
+        goTowardsWalkableCells(visibleCells, raster, loc, dxDy);
 
         // 2) calculate distance and visible portion. more of each is bettah!
         float routeQuality = calculateRouteQuality(ownerAgent, visibleCells);
