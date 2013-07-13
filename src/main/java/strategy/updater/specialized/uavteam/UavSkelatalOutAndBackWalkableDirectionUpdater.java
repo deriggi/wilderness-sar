@@ -6,14 +6,22 @@ package strategy.updater.specialized.uavteam;
 
 import geomutils.VectorUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import raster.domain.Communications;
 import raster.domain.agent.SkelatalAgent;
 import strategy.DirectionUpdater;
 import strategy.updater.Direction;
 import strategy.updater.MemoryData;
 import strategy.updater.SkelatalDirectionUpdater;
+import strategy.updater.conditionchecker.AlwaysTrueConditionChecker;
+import strategy.updater.specialized.EasternWalkableDirectionUpdater;
+import strategy.updater.specialized.NorthernWalkableDirectionUpdater;
+import strategy.updater.specialized.SouthernWalkableDirectionUpdater;
+import strategy.updater.specialized.WesternWalkableDirectionUpdater;
 
 /**
  *
@@ -24,6 +32,16 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
     private static final Logger log = Logger.getLogger(UavSkelatalOutAndBackWalkableDirectionUpdater.class.getName());
     private final int initialSteps = 50;
     private boolean registered = false;
+    private Direction direction = null;
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+    
 
     public boolean isRegistered() {
         return registered;
@@ -65,6 +83,15 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
         return distanceFromHome;
     }
     
+    public void broadcastMessage(Direction direction, String comsChanel, SkelatalAgent ownerAgent){
+        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
+
+        // build message
+        HashMap<String, Float> message = new HashMap<String, Float>(1);
+        message.put(direction.toString(), distanceFromHome);
+        Communications.relayMessage(comsChanel, message);
+    }
+    
     public void checkForStuckOrDone(SkelatalAgent ownerAgent) {
 
         // if stuck or full then go back
@@ -74,6 +101,7 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
             log.info("setting mode to back because we are stuck");
             clearLocalCache();
             setIsStuckPenalty(true);
+            broadcastMessage(getDirection(), SkelatalAgent.COMS, ownerAgent);
                 
 
         } else if (localStack.size() > 200) {
@@ -81,6 +109,7 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
             setOutOrBack(OutOrBack.BACK);
             log.info("setting mode to back beacause walked enough");
             clearLocalCache();
+            broadcastMessage(getDirection(), SkelatalAgent.COMS, ownerAgent);
         }
 
     }
@@ -141,28 +170,16 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
                 && ownerAgent.getMemory().containsKey(Direction.SOUTH.toString())
                 && ownerAgent.getMemory().containsKey(Direction.WEST.toString())) {
 
-            // repeated code!
-            List<MemoryData> memCache = MemoryData.toMemoryData(ownerAgent.getMemory());
-            for(MemoryData memData : memCache){
-                
-                log.info(memData.getName() + "  " + memData.getData());
+            chooseUpdater(ownerAgent.getMemory());
             
-            }
-//            for (int i = memCache.size() - 1; i > 0; i--) {
-//                log.log(Level.INFO, " the order of goodness is {0} ", memCache.get(i).getName());
-//            }
-
-
             return;
         } else if (locs.isEmpty()) {
 
-            log.info("returned home but still don't have complete info from other agents");
-
-            // repeated code!
-            List<MemoryData> memCache = MemoryData.toMemoryData(ownerAgent.getMemory());
-            for(MemoryData memData : memCache){
-                log.info(memData.getName() + "  " + memData.getData());
-            }
+            log.info("returned home but still don't have complete info from other agents so chillin");
+            
+            // so sit still
+            dxDy[0] = 0;
+            dxDy[1] = 0;
 
             return;
         }
@@ -175,6 +192,49 @@ public abstract class UavSkelatalOutAndBackWalkableDirectionUpdater extends Skel
         float dy = destination[1] - ownerAgent.getLocation()[1];
 
         ownerAgent.setVelocityVector(new double[]{dx, dy});
+    }
+    
+     /**
+     * Based on memory let's choose the right direction
+     * @param agentMemory 
+     */
+    public void chooseUpdater(HashMap<String, Float> agentMemory) {
+        List<MemoryData> data = MemoryData.toMemoryData(agentMemory);
+        if(data.isEmpty()){
+            log.warning("problem: no  data from team memory");
+            return;
+        }
+        
+        DirectionUpdater du = null;
+        String bestDirection = data.get(data.size()-1).getName();
+        
+        if(bestDirection.equals( Direction.NORTH.toString() )){
+            
+            du = new NorthernWalkableDirectionUpdater();
+            
+        }
+        else if(bestDirection.equals( Direction.EAST.toString() ) ){
+            
+            du = new EasternWalkableDirectionUpdater();
+            
+        }
+        else if ( bestDirection.equals( Direction.WEST.toString() )){
+            
+            du = new WesternWalkableDirectionUpdater();
+            
+        }
+        else if ( bestDirection.equals( Direction.SOUTH.toString() )){
+            
+            du = new SouthernWalkableDirectionUpdater();
+            
+        }
+        
+        AlwaysTrueConditionChecker alwaysTrue = new AlwaysTrueConditionChecker();
+        alwaysTrue.setNextState(du);
+        setConditionChecker(alwaysTrue);
+        
+        log.log(Level.INFO, "team decided best route is {0} ", bestDirection);
+
     }
 
     public float averageFieldOfView() {

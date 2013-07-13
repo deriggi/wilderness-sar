@@ -5,7 +5,6 @@
 package strategy.updater.specialized.uavteam;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
@@ -28,6 +27,10 @@ public class UavOutAndBackNorthernDirectionUpdater extends UavSkelatalOutAndBack
     public String toString() {
         return "east walkable";
     }
+    
+    public UavOutAndBackNorthernDirectionUpdater(){
+        setDirection(Direction.NORTH);
+    }
 
     @Override
     protected void doOutMode(double[] dxDy, SkelatalAgent ownerAgent) {
@@ -37,12 +40,7 @@ public class UavOutAndBackNorthernDirectionUpdater extends UavSkelatalOutAndBack
             setRegistered(true);
         }
 
-        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
-
-        // build message
-        HashMap<String, Float> message = new HashMap<String, Float>(1);
-        message.put(Direction.NORTH.toString(), distanceFromHome);
-        Communications.relayMessage(SkelatalAgent.COMS, message);
+       
 
         // get northern visible cells
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();

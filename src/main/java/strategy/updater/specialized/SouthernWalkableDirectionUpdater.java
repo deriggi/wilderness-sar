@@ -28,7 +28,6 @@ public class SouthernWalkableDirectionUpdater extends SkelatalDirectionUpdater {
     }
     
     // 16 for a moderately healty walker
-    private float minSlope = .16f;
     
     @Override
     public void updateDirection(double[] dxDy, SkelatalAgent ownerAgent) {
@@ -37,7 +36,7 @@ public class SouthernWalkableDirectionUpdater extends SkelatalDirectionUpdater {
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], VectorAgent.SHORT_VIS_RANGE);
 
         raster.getSouthernCells(visibleCells, (int) loc[0], (int) loc[1]);
-        visibleCells = raster.getSlopeLessThan1D(visibleCells, minSlope);
+        visibleCells = raster.getSlopeLessThan1D(visibleCells, VectorAgent.WALKABLE_SLOPE);
         
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
         

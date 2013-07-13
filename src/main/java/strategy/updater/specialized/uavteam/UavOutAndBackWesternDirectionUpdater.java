@@ -4,9 +4,7 @@
  */
 package strategy.updater.specialized.uavteam;
 
-import geomutils.VectorUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Logger;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
@@ -29,6 +27,10 @@ public class UavOutAndBackWesternDirectionUpdater extends UavSkelatalOutAndBackW
     public String toString() {
         return "west walkable";
     }
+    
+    public UavOutAndBackWesternDirectionUpdater(){
+        setDirection(Direction.WEST);
+    }
 
     @Override
     protected void doOutMode(double[] dxDy, SkelatalAgent ownerAgent) {
@@ -37,12 +39,6 @@ public class UavOutAndBackWesternDirectionUpdater extends UavSkelatalOutAndBackW
             setRegistered(true);
         }
 
-        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
-
-        // build message
-        HashMap<String, Float> message = new HashMap<String, Float>(1);
-        message.put(Direction.WEST.toString(), distanceFromHome);
-        Communications.relayMessage(SkelatalAgent.COMS, message);
 
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();

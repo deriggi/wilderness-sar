@@ -5,7 +5,6 @@
 package strategy.updater.specialized.uavteam;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import raster.domain.Communications;
@@ -27,6 +26,11 @@ public class UavOutAndBackEasternDirectionUpdater extends UavSkelatalOutAndBackW
         return "out and back east";
     }
 
+    
+    public UavOutAndBackEasternDirectionUpdater(){
+        setDirection(Direction.EAST);
+    }
+    
     @Override
     protected void doOutMode(double[] dxDy, SkelatalAgent ownerAgent) {
 
@@ -35,13 +39,6 @@ public class UavOutAndBackEasternDirectionUpdater extends UavSkelatalOutAndBackW
             setRegistered(true);
         }
 
-        float distanceFromHome = distanceFromHomeConsideringStuckPenalty(ownerAgent);
-        
-        // build message
-        HashMap<String, Float> message = new HashMap<String, Float>(1);
-        message.put(Direction.EAST.toString(), distanceFromHome);
-        
-        Communications.relayMessage(SkelatalAgent.COMS, message);
         
         // visible cells
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
