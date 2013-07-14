@@ -75,10 +75,10 @@ public class VectorAgent extends SkelatalAgent {
         addToDotProductBuffer();
         setLastVelocity(getVelocityVector());
         pushLoc();
-
-        if(getDoOutput()){
-            writeOut();
-        }
+        
+        foundOthers(getDetectionRange(), AgentName.LOST);
+        
+       
         
 
     }

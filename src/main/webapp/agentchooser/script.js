@@ -43,6 +43,36 @@ var removeBBox;
 
 
 
+SimId = (function setupSimId(){
+    var simId;
+    
+    return{
+        getSimId : function(){
+            return simId;
+        },
+        setSimId : function(someId){
+            simId = someId;
+        }
+    }
+    
+})();
+
+
+
+//=====================
+// retrieve the gameboard metadata
+//=====================
+function fetchSimId(){
+    
+    $.post('/wisar/q/agent/simid', function(data){
+            
+            if(data && data.length>0){
+                SimId.setSimId(data[0]);
+            }
+            
+        });
+}
+
 //=====================
 // retrieve the gameboard metadata
 //=====================
@@ -849,8 +879,9 @@ function resetAgentCreatorDialog(){
 function createAgent(agent) {
     
     $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {
-        agenttype:agent.agentType, 
-        behaviour:agent.behaviour
+        agenttype : agent.agentType, 
+        behaviour : agent.behaviour, 
+        simid : SimId.getSimId()
     }, function(data){
         drawAgentLocation(data);
         AgentCounter.increment();
@@ -883,7 +914,7 @@ function clearAgents() {
         $('#statusbar').text(data);
         
         
-        });
+    });
 }
 
 

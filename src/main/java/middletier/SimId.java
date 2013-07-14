@@ -35,7 +35,7 @@ public class SimId {
     }
     
     
-    private static  String getNewSimId(){
+    public static  String getNewSimId(){
         StringBuilder sb = new StringBuilder();
         int i = 0;
         while(i++ < 6){

@@ -12,10 +12,13 @@ import java.util.logging.Logger;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.VectorAgent;
 import geomutils.VectorUtils;
+import java.util.List;
 import raster.domain.Raster2D;
+import raster.domain.agent.AgentName;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.SkelatalAgent;
 import strategy.WanderStrategy;
+import util.FileExportHelper;
 
 /**
  *
@@ -44,6 +47,38 @@ public class AgentService {
     }
     
     
+    private void exportAgentStates(List<IdLoc> states){
+        
+        if(states == null || states.isEmpty()){
+            log.warning("trying to export empty or null states");
+            return;
+        }
+        
+        String simId  = states.get(0).getSimId();
+        StringBuilder sb = new StringBuilder();
+        
+        for(IdLoc state : states){
+            sb.append(state.getSimId());
+            sb.append(FileExportHelper.COMMA);
+            
+            sb.append(state.getNameTag());
+            sb.append(FileExportHelper.COMMA);
+            
+            sb.append(state.getId());
+            sb.append(FileExportHelper.COMMA);
+            
+            sb.append(state.getLocation()[0]);
+            sb.append(FileExportHelper.COMMA);
+            
+            sb.append(state.getLocation()[1]);
+            sb.append(FileExportHelper.LINE_SEPARATOR);
+            
+        }
+        
+        FileExportHelper.appendToFile(simId + ".csv", sb.toString());
+        
+    }
+    
     
     public ArrayList<IdLoc> runUntilFound(){
         boolean found = false;
@@ -61,6 +96,7 @@ public class AgentService {
         return states;
     }
     
+    
     public ArrayList<IdLoc> runAgents(){
         
         Collection<VectorAgent> localAgents = getAllAgents();
@@ -75,6 +111,7 @@ public class AgentService {
             idLoc.setLocation( lonLat );
             agentStates.add( idLoc );
             idLoc.setTimestep(a.getMasterTimestepsTaken());
+            
 
         }
         
@@ -82,7 +119,7 @@ public class AgentService {
         
     }
     
-    public SkelatalAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour){
+    public SkelatalAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour, String simId){
         stopSim = false;
         
         VectorAgent a = new VectorAgent();
@@ -90,6 +127,7 @@ public class AgentService {
         a.setLocation(new float[]{column,row});
         a.setOrigin(new float[]{column,row});
         a.setId(getNextId());
+        a.setSimId(simId);
         agents.put(a.getId(), a);
         
         // strategery
@@ -128,7 +166,7 @@ public class AgentService {
     }
     
 
-    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except){
+    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except, AgentName name){
         Set<Integer> keys = agents.keySet();
         HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
         
@@ -140,7 +178,7 @@ public class AgentService {
             double distance = VectorUtils.distance(loc, someAgent.getLocation());
             
             
-            if(distance <= range){
+            if(distance <= range && someAgent.getNameTag().equals(name)){
                 distanceAgentMap.put(distance, someAgent);
             }
         }

@@ -10,6 +10,16 @@ package raster.domain.agent;
  */
 public class IdLoc {
     private int id;
+    private String simId;
+
+    public String getSimId() {
+        return simId;
+    }
+
+    public void setSimId(String simId) {
+        this.simId = simId;
+    }
+    
     private double[] location;
     private Boolean foundOthers = null;
     private Integer timestep = null;

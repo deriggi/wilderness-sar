@@ -18,7 +18,8 @@ public class FileExportHelper {
 
     private static final Logger log = Logger.getLogger(FileExportHelper.class.getName());
 
-    private static final String LINE_SEPARATOR   = "line.separator";
+    public static final String COMMA   = ",";
+    public static final String LINE_SEPARATOR   = "line.separator";
     public static void writeToFile(String fileName, String content) {
         FileWriter fw = null;
         try {

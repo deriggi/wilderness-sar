@@ -5,6 +5,7 @@
 package resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.ws.rs.GET;
@@ -17,7 +18,9 @@ import javax.ws.rs.core.MediaType;
 import middletier.RasterConfig;
 import middletier.RasterLoader;
 import middletier.AgentService;
+import middletier.SimId;
 import raster.domain.Raster2D;
+import raster.domain.agent.AgentName;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.SkelatalAgent;
@@ -51,7 +54,7 @@ public class AgentResource {
     @POST
     @Path("/createagent/{lon: \\-?[0-9]{1,3}\\.[0-9]+}/{lat: \\-?[0-9]{1,3}\\.[0-9]+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String createAgent(@PathParam("lon") double lon, @PathParam("lat") double lat, @FormParam("agenttype") String agentType, @FormParam("behaviour") String behaviour) {
+    public String createAgent(@PathParam("lon") double lon, @PathParam("lat") double lat, @FormParam("agenttype") String agentType, @FormParam("behaviour") String behaviour, @FormParam("simid") String simId) {
 
         log.log(Level.INFO, "agent type: {0}  behaviour: {1}", new Object[]{agentType, behaviour});
 
@@ -60,19 +63,19 @@ public class AgentResource {
         FSMFactory.MachineName behave = FSMFactory.getMachineName(behaviour);
 
         float speed = 0;
-        String nameTag;
+        AgentName nameTag;
         if ((agentType != null) && agentType.toLowerCase().startsWith("uav")) {
 
             speed = 4;
-            nameTag = "uav";
+            nameTag = AgentName.UAV;
         } else {
             speed = 0.25f;
-            nameTag = "lost";
+            nameTag = AgentName.LOST;
         }
 
         AgentService service = AgentService.get();
 
-        SkelatalAgent a = service.createAgent(position[0], position[1], speed, behave);
+        SkelatalAgent a = service.createAgent(position[0], position[1], speed, behave, simId);
         a.setNameTag(nameTag);
 
         double[] aLonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
@@ -140,6 +143,20 @@ public class AgentResource {
         String json = GsonGetter.get().toJson(locs);
         
         return json;
+    }
+    
+    @POST
+    @Path("/simid/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getSimId() {
+
+        String[] simId = new String[1];
+        simId[0]= SimId.getNewSimId();
+        String json = GsonGetter.get().toJson(simId);
+        
+        return json;
+
+
     }
 
     // 

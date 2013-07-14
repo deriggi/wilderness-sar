@@ -32,26 +32,27 @@ public abstract class SkelatalAgent {
     private float[] origin = new float[2];
     private double[] velocity = new double[2];
     private float speed = 4;
+    private String simId = null;
     private int detectionRange = (int) speed * 2;
     private float[] location = new float[2];
     private Stack<float[]> masterStack = new Stack<float[]>();
     private int masterTimestepsTaken = 0;
     private Integer id;
-    private String nameTag;
+    private AgentName nameTag;
     private float considerAFieldChance = 0.05f;
     private HashMap<String, Stack<short[]>> mapOfStacks = new HashMap<String, Stack<short[]>>();
     private int stepsTaken = 0;
     private Direction eastWestIntention = null;
     private Direction northSouthIntention = null;
     private HashMap<String, Float>  memory = new HashMap<String, Float>();
-    private boolean doOutput = false;
     
-    public void setDoOutput(boolean doIt){
-        doOutput = doIt;
+    
+    public String getSimId() {
+        return simId;
     }
-    
-    public boolean getDoOutput(){
-        return doOutput;
+
+    public void setSimId(String simId) {
+        this.simId = simId;
     }
     
     public void handleMessage(HashMap<String, Float> message){
@@ -164,11 +165,11 @@ public abstract class SkelatalAgent {
         return detectionRange;
     }
 
-    public String getNameTag() {
+    public AgentName getNameTag() {
         return nameTag;
     }
 
-    public void setNameTag(String nameTag) {
+    public void setNameTag(AgentName nameTag) {
         this.nameTag = nameTag;
     }
 
@@ -424,9 +425,10 @@ public abstract class SkelatalAgent {
 
     public IdLoc toIdLoc() {
         IdLoc idLoc = new IdLoc();
+        idLoc.setSimId(getSimId());
         idLoc.setId(getId());
-        idLoc.setFoundOthers(foundOthers(detectionRange));
-        idLoc.setNameTag(getNameTag());
+        idLoc.setFoundOthers(foundOthers(getDetectionRange(), AgentName.LOST));
+        idLoc.setNameTag(getNameTag().toString());
         return idLoc;
     }
 
@@ -434,15 +436,14 @@ public abstract class SkelatalAgent {
         this.id = id;
     }
 
-    public boolean foundOthers(int range) {
-        int numberOfDetectedAgents = detect(range).size();
-
+    public boolean foundOthers(int range, AgentName agentName) {
+        int numberOfDetectedAgents = detect(range, agentName).size();
         return numberOfDetectedAgents > 0;
     }
 
-    public Collection<VectorAgent> detect(int range) {
+    public Collection<VectorAgent> detect(int range, AgentName name) {
 
-        HashMap<Double, VectorAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this);
+        HashMap<Double, VectorAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this, name);
         return distanceAgentMap.values();
 
     }
