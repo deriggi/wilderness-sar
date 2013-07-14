@@ -16,8 +16,6 @@ import raster.domain.Raster2D;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.SkelatalAgent;
 import strategy.WanderStrategy;
-import strategy.updater.condition.AlmostOutOfBoundsConditionChecker;
-import strategy.updater.condition.NearOriginConditionChecker;
 
 /**
  *
@@ -42,6 +40,7 @@ public class AgentService {
     public void clearAgents(){
         
         agents.clear();
+        log.info("agents cleared from sim");
     }
     
     

@@ -44,6 +44,15 @@ public abstract class SkelatalAgent {
     private Direction eastWestIntention = null;
     private Direction northSouthIntention = null;
     private HashMap<String, Float>  memory = new HashMap<String, Float>();
+    private boolean doOutput = false;
+    
+    public void setDoOutput(boolean doIt){
+        doOutput = doIt;
+    }
+    
+    public boolean getDoOutput(){
+        return doOutput;
+    }
     
     public void handleMessage(HashMap<String, Float> message){
         if(message == null || message.isEmpty()){

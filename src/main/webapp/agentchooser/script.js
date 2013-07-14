@@ -2,6 +2,7 @@
 
 
 var map;
+var REQUEST_SIZE = 10;
 
 //=====================
 // bbox 
@@ -23,8 +24,11 @@ var removeBBox;
     displayBBox = function(theMap){
         removeBBox();
         bounds = [[this.nwlat, this.nwlon], [this.selat, this.selon]];
-        bbox = L.rectangle(bounds, {color:'#3498DB', weight:0}).addTo(theMap)
-//        theMap.fitBounds(bounds);
+        bbox = L.rectangle(bounds, {
+            color:'#3498DB', 
+            weight:0
+        }).addTo(theMap)
+    //        theMap.fitBounds(bounds);
     }
 
     removeBBox = function(){
@@ -121,7 +125,7 @@ function showViewshed(viewshedPolygons){
             lat = tempPolygon[vertexIndex][1];
             ltlngs.push(new L.LatLng(lat,lon));
         }
-//        ltlngs.pop();
+        //        ltlngs.pop();
         multipolygon.push(ltlngs);
     // have ltlngs now
     }
@@ -134,25 +138,93 @@ function showViewshed(viewshedPolygons){
     
 }
 
+ResponseQueue = (function setupQueue(){
+    var queue = [];
+    var refillRequested = false;
+    
+    return {
+        hasRefillRequested: function(){
+            return refillRequested
+        },
+        setRefillRequested : function(requested){
+            refillRequested = requested;
+        },
+        
+        isEmpty : function(){
+            return queue.length == 0;
+        },
+        clear : function(){
+            queue.length = 0;
+        }, 
+        
+        size : function(){
+            return queue.length;
+        },
+        
+        pushResponse : function (data){
+            queue.push(data);
+        },
+        popResponse : function (){
+            if(queue.length == 0){
+                return null;
+            }
+            var returnObject =  queue[0];
+            queue.splice(0, 1);
+            
+            return returnObject;
+            
+        }
+    }
+    
+})();
+
+// draw agentloc every 100 until quit flag is raised
+function animateResponse(){
+    if(!isRunning()){
+        return;
+    }
+    
+    // if
+    if( !ResponseQueue.hasRefillRequested() && ResponseQueue.size() < REQUEST_SIZE*AgentCounter.getCount()){
+        // call wander again if low on data
+        
+        refill();
+        ResponseQueue.setRefillRequested(true);
+        
+    }
+    drawAgentLocation();
+    window.setTimeout(animateResponse,400)
+}
 
 //=====================
-// display agent and box
+// display agent loc
 //=====================
-function drawAgentLocation(data) {
+function drawAgentLocation() {
+    var data= ResponseQueue.popResponse();
+    $('#queuesize').text('Queue size is: ' + ResponseQueue.size() );
+    
+    if(data == null){
+        return;
+    }
+    
     for(var agentIndex in data){
         var tempLastPosition = getLastLocation(data[agentIndex].id);
         if(tempLastPosition){
 
             // draw line to this location
             var line = [new L.LatLng(tempLastPosition[1],tempLastPosition[0]), new L.LatLng(data[agentIndex].location[1], data[agentIndex].location[0])];
-            var leafletLine = L.polyline(line,{color:'#0068CD'}).addTo(map);
+            var leafletLine = L.polyline(line,{
+                color:'#0068CD'
+            }).addTo(map);
             pushLine(data[agentIndex].id,leafletLine);
 
         }else{
             L.circle(
                 flip(data[agentIndex].location), 
                 8, 
-                {weight:1}).addTo(map);
+                {
+                    weight:1
+                }).addTo(map);
         }
         setLastLocation(data[agentIndex].id, data[agentIndex].location);
         
@@ -161,6 +233,7 @@ function drawAgentLocation(data) {
         }
         
     }
+    
 }
 
 
@@ -171,15 +244,33 @@ function showFindings(findingsData){
     $('#timestepfound').text(timestep);
 }
 
+
+function refill(){
+    var statusbar = $('#statusbar');
+    
+    $(statusbar).text("requesting data...")
+    $.post('/wisar/q/agent/wander/'+REQUEST_SIZE, function(data){
+        $(statusbar).text("data received");
+        for(dataIndex in data){
+            ResponseQueue.pushResponse([data[dataIndex]]);
+        }
+        ResponseQueue.setRefillRequested(false);
+
+    });
+    
+}
 //=====================
 // repeating call to move agent
 //=====================
 function wander(){
-    
-    $.post('/wisar/q/agent/wander/', function(data){
-        
-        drawAgentLocation(data);
-        setTimeoutKey( window.setTimeout(wander, 200) );
+    var statusbar = $('#statusbar');
+    $(statusbar).text("requesting data...")
+    $.post('/wisar/q/agent/wander/' + (REQUEST_SIZE*3), function(data){
+        $(statusbar).text("data received");
+        for(dataIndex in data){
+            ResponseQueue.pushResponse([data[dataIndex]]);
+        }
+        animateResponse();
 
     });
     
@@ -217,6 +308,7 @@ var resumeSim;
 
     setRunning = function(r){
         running = r;
+        
     }
 
     setTimeoutKey = function(tok){
@@ -227,6 +319,7 @@ var resumeSim;
 
         window.clearTimeout(timeoutKey);
         setRunning(false);
+        $('#statusbar').text("sim paused");
 
     }
 
@@ -359,7 +452,7 @@ var setSelectedTypeItem;
 
         selectedTypeItem = theAgentType;
         setAgentType(selectedTypeItem.text())
-        // if uav type set velocity to 4 otherwise 2
+    // if uav type set velocity to 4 otherwise 2
     }
 
 })();
@@ -389,12 +482,12 @@ function setupMap(){
     map = new L.Map('map', {
         center: new L.LatLng(40.34805555555265, -116.89675925930325),
         zoom: 11,
-//        layers: new L.TileLayer('http://{s}.tiles.mapbox.com/v3/deriggi.map-yu0p8myf/{z}/{x}/{y}.png')
-            layers: new L.TileLayer('http://{s}.tiles.mapbox.com/v3/johnderiggi.map-pcso5skt/{z}/{x}/{y}.png')
+        //        layers: new L.TileLayer('http://{s}.tiles.mapbox.com/v3/deriggi.map-yu0p8myf/{z}/{x}/{y}.png')
+        layers: new L.TileLayer('http://{s}.tiles.mapbox.com/v3/johnderiggi.map-pcso5skt/{z}/{x}/{y}.png')
     });
     map.on('click', function(e){
    
-       handleMapClick(e);
+        handleMapClick(e);
    
     });
 
@@ -650,53 +743,67 @@ var getPageHandler;
     // page 0 handlers
     var page0 = [];
     page0.push(function() {
-         $('#agentchooser').hide('slide', {direction:'right'}, 200);
-         resetAgentCreatorDialog();
+        $('#agentchooser').hide('slide', {
+            direction:'right'
+        }, 200);
+        resetAgentCreatorDialog();
     });
     page0.push(function() {
-                        incrementPageNumber();
-                        $('#agentdesigntitle').text('Select a Beahaviour')
-                        $('#page_1').hide('slide',{direction:'left'}, 200, function(){
-                            $('#page_2').show('slide', {direction:'right'}, 200)
-                        });
-                    }
+        incrementPageNumber();
+        $('#agentdesigntitle').text('Select a Beahaviour')
+        $('#page_1').hide('slide',{
+            direction:'left'
+        }, 200, function(){
+            $('#page_2').show('slide', {
+                direction:'right'
+            }, 200)
+        });
+    }
     );
 
 
     // page 1 handlers
     var page1 = [];
     page1.push(function() {
-                        decrementPageNumber();
-                        $('#agentdesigntitle').text('Agent Design');
-                        $('#page_2').hide('slide',{direction:'right'}, 200, function(){
-                            $('#page_1').show('slide', {direction:'left'}, 200)
-                        });
-                        setAction('nothing');
-                    }
+        decrementPageNumber();
+        $('#agentdesigntitle').text('Agent Design');
+        $('#page_2').hide('slide',{
+            direction:'right'
+        }, 200, function(){
+            $('#page_1').show('slide', {
+                direction:'left'
+            }, 200)
+        });
+        setAction('nothing');
+    }
     );
 
     page1.push(function() {
-                        incrementPageNumber();
-                        displayBBox(map);
-                        $('#agentdesigntitle').text('Choose Start Point');
-                        $('#agentchooser').animate({height:'100px'}, 200);
-                        $('#designcontainer').hide();
-                        $('#nextpage').text('done');
+        incrementPageNumber();
+        displayBBox(map);
+        $('#agentdesigntitle').text('Choose Start Point');
+        $('#agentchooser').animate({
+            height:'100px'
+        }, 200);
+        $('#designcontainer').hide();
+        $('#nextpage').text('done');
 
-                        setAction('set');
-                    }                
+        setAction('set');
+    }                
     );
 
     // page 2 handlers
     var page2 = [];
     page2.push(function() {
-                        decrementPageNumber();
-                        $('#agentdesigntitle').text('Select Behaviour');
-                        $('#agentchooser').animate({height:'420px'}, 200);
-                        $('#designcontainer').show();
-                        $('#nextpage').text('next');
-                        setAction('nothing');
-                    }
+        decrementPageNumber();
+        $('#agentdesigntitle').text('Select Behaviour');
+        $('#agentchooser').animate({
+            height:'420px'
+        }, 200);
+        $('#designcontainer').show();
+        $('#nextpage').text('next');
+        setAction('nothing');
+    }
     );                                
     page2.push(function() {
 
@@ -710,7 +817,9 @@ var getPageHandler;
             // reset agent property holder
             resetAgentCreatorDialog();
 
-            $('#agentchooser').hide('slide', {direction:'right'}, 200);
+            $('#agentchooser').hide('slide', {
+                direction:'right'
+            }, 200);
             // $('#addagentsection').hide();
             $('#runagents').fadeIn('fast');
 
@@ -739,14 +848,40 @@ function resetAgentCreatorDialog(){
 }
 function createAgent(agent) {
     
-    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {agenttype:agent.agentType, behaviour:agent.behaviour}, function(data){
+    $.post('/wisar/q/agent/createagent/' + agent.lon + '/' + agent.lat, {
+        agenttype:agent.agentType, 
+        behaviour:agent.behaviour
+    }, function(data){
         drawAgentLocation(data);
-        });
+        AgentCounter.increment();
+    });
 }
 
+AgentCounter = (function setupAgentCounter(){
+    var counter = 0;
+    
+    return {
+        getCount : function(){
+            return counter;  
+        },
+        increment: function(){
+            counter++;
+        },
+        clear: function(){
+            counter = 0;
+        }
+    }
+})();
+
+
 function clearAgents() {
+    stopSim();
+    AgentCounter.clear();
+    ResponseQueue.clear();
     
     $.post('/wisar/q/agent/clearagents/' , function(data){
+        $('#statusbar').text(data);
+        
         
         });
 }

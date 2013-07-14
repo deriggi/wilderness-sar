@@ -18,13 +18,14 @@ public class FileExportHelper {
 
     private static final Logger log = Logger.getLogger(FileExportHelper.class.getName());
 
+    private static final String LINE_SEPARATOR   = "line.separator";
     public static void writeToFile(String fileName, String content) {
         FileWriter fw = null;
         try {
             File f = new File(fileName);
             fw = new FileWriter(f);
             fw.append(content);
-            fw.append(System.getProperty("line.separator"));
+            fw.append(System.getProperty(LINE_SEPARATOR));
         } catch (IOException ex) {
             log.log(Level.SEVERE, "error writing ", ex);
         } finally {
@@ -44,7 +45,7 @@ public class FileExportHelper {
             File f = new File(fileName);
             fw = new FileWriter(f, true);
             fw.append(content);
-            fw.append(System.getProperty("line.separator"));
+            fw.append(System.getProperty(LINE_SEPARATOR));
         } catch (IOException ex) {
             log.log(Level.SEVERE, "error writing ", ex);
         } finally {

@@ -45,14 +45,14 @@
                         alert('already running so ignore');
                         return;
                     }
+                    
+                    
 
                     wander();
                     setRunning(true);
                 });
                 
-                $('#runsim').click(function(){
-                    runsim();
-                });
+               
 
                 $('#nextpage').click(function(){
                     getPageHandler(getPageNumber())[1]();
@@ -133,10 +133,11 @@
 
                 <div class="clearfix section" style='display:none' id='runagents'>
                     
-                    <p> Run the sim </p>
+                    <p id='statusbar'> Run the sim </p>
+                    <p id='queuesize'></p>
 
                     <p> <a  id='wander' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Step </a> </p>
-                    <p> <a  id='runsim' href='#' class ='btn btn-large btn-primary' style='cursor:pointer;'>  Run </a> </p>
+                    
                     <p> <a id='stopsim' href='#' class ='btn btn-large btn-info' style='cursor:pointer;'> Pause </a> </p>
                     <p> <a id='clear' href='#' class ='btn btn-large btn-danger' style='cursor:pointer;'> Clear </a> </p>
                     
