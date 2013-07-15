@@ -24,7 +24,7 @@ import strategy.updater.Direction;
  */
 public abstract class SkelatalAgent {
 
-    private static Logger log = Logger.getLogger(SkelatalAgent.class.getName());
+    private static final Logger log = Logger.getLogger(SkelatalAgent.class.getName());
     
     public static final String COMS = "coms";
     public static final int MAX_STACK_SIZE = 200;
@@ -441,9 +441,9 @@ public abstract class SkelatalAgent {
         return numberOfDetectedAgents > 0;
     }
 
-    public Collection<VectorAgent> detect(int range, AgentName name) {
+    public Collection<SkelatalAgent> detect(int range, AgentName name) {
 
-        HashMap<Double, VectorAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this, name);
+        HashMap<Double, SkelatalAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this, name);
         return distanceAgentMap.values();
 
     }

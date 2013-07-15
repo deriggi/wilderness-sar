@@ -5,14 +5,13 @@
 package middletier;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.logging.Logger;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.VectorAgent;
 import geomutils.VectorUtils;
 import java.util.List;
+import java.util.logging.Level;
 import raster.domain.Raster2D;
 import raster.domain.agent.AgentName;
 import raster.domain.agent.IdLoc;
@@ -27,7 +26,8 @@ import util.FileExportHelper;
 public class AgentService {
 
     private static AgentService service = new AgentService();
-    private HashMap<Integer, VectorAgent> agents = new HashMap<Integer, VectorAgent>();
+//    private HashMap<Integer, VectorAgent> agents = new HashMap<Integer, VectorAgent>();
+    private HashMap<String, List<SkelatalAgent>> agents = new HashMap<String, List<SkelatalAgent>>();
     private int nextId = 1;
     private static final Logger log = Logger.getLogger(AgentService.class.getName());
     private boolean stopSim = false;
@@ -40,14 +40,20 @@ public class AgentService {
         return nextId++;
     }
 
-    public void clearAgents() {
-
-        agents.clear();
-        log.info("agents cleared from sim");
+    public void clearAgents(String simId) {
+        if (!agents.containsKey(simId)) {
+            log.log(Level.WARNING,"no agents for sim {0}", simId);
+            return;
+        }
+        agents.get(simId).clear();
+        agents.remove(simId);
+        
+        log.log( Level.INFO, "agents cleared from {0} sims count is {1}", new String[] { simId, Integer.toString(agents.size()) } );
+        
     }
 
     private void exportAgentStates(List<IdLoc> states) {
-        
+
 
         if (states == null || states.isEmpty()) {
             log.warning("trying to export empty or null states");
@@ -79,7 +85,7 @@ public class AgentService {
 
     }
 
-    public ArrayList<IdLoc> runUntilFound() {
+    public ArrayList<IdLoc> runUntilFound(String simId) {
         if (agents.size() < 2) {
 
             log.warning("not enough agents to run sim");
@@ -93,7 +99,7 @@ public class AgentService {
 
         while (!found && !stopSim) {
 
-            states = runAgents();
+            states = runAgents(simId);
             for (IdLoc state : states) {
                 if (state.getFoundOthers()) {
                     found = true;
@@ -116,13 +122,14 @@ public class AgentService {
         return states;
     }
 
-    public ArrayList<IdLoc> runAgents() {
+    public ArrayList<IdLoc> runAgents(String simId) {
 
-        Collection<VectorAgent> localAgents = getAllAgents();
+        List<SkelatalAgent> localAgents = getAllAgents(simId);
+        
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         ArrayList<IdLoc> agentStates = new ArrayList<IdLoc>();
-
-        for (VectorAgent a : localAgents) {
+        
+            for (SkelatalAgent a : localAgents) {
 
             a.wander();
             double[] lonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
@@ -147,7 +154,12 @@ public class AgentService {
         a.setOrigin(new float[]{column, row});
         a.setId(getNextId());
         a.setSimId(simId);
-        agents.put(a.getId(), a);
+
+        if (!agents.containsKey(simId)) {
+            agents.put(simId, new ArrayList<SkelatalAgent>());
+        }
+        agents.get(simId).add(a);
+        log.log(Level.INFO, "{0} agents in sim {1}", new String[] {Integer.toString(agents.get(simId).size()), simId } );
 
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
@@ -166,33 +178,22 @@ public class AgentService {
         return a;
     }
 
-    public VectorAgent createUAVAgent(float column, float row) {
-        VectorAgent a = new VectorAgent();
-        a.setSpeed(4);
-        a.setLocation(new float[]{column, row});
-        a.setOrigin(new float[]{column, row});
-        a.setId(getNextId());
-        agents.put(a.getId(), a);
+    public HashMap<Double, SkelatalAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except, AgentName name) {
+        String simId = except.getSimId();
+        HashMap<Double, SkelatalAgent> distanceAgentMap = new HashMap<Double, SkelatalAgent>();
+        if (!agents.containsKey(simId)) {
+            log.warning(" no agents with that simid sucka!");
+            return distanceAgentMap;
+        }
 
-        // strategery
-        WanderStrategy wanderStrat = new WanderStrategy();
-        wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.EAST_WEST_LAWN_MOWER));
-//        WanderDirectionUpdater wanderUpdater = new WanderDirectionUpdater();
-//        wanderStrat.addDirectionUpdater(wanderUpdater);
-        a.addMovementStrategy(wanderStrat);
+        List<SkelatalAgent> otherAgents = agents.get(simId);
+        
 
-        return a;
-    }
-
-    public HashMap<Double, VectorAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except, AgentName name) {
-        Set<Integer> keys = agents.keySet();
-        HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
-
-        for (Integer i : keys) {
-            VectorAgent someAgent = agents.get(i);
-            if (someAgent == except) {
+        for (SkelatalAgent someAgent : otherAgents) {
+            if(someAgent.equals(except)){
                 continue;
             }
+
             double distance = VectorUtils.distance(loc, someAgent.getLocation());
 
 
@@ -204,39 +205,26 @@ public class AgentService {
         return distanceAgentMap;
     }
 
-    public HashMap<Double, VectorAgent> getAgentsWithinRange(float[] loc, int range) {
-
-        Set<Integer> keys = agents.keySet();
-        HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
-
-        for (Integer i : keys) {
-            VectorAgent someAgent = agents.get(i);
-            double distance = VectorUtils.distance(loc, someAgent.getLocation());
-
-            if (distance <= range) {
-                distanceAgentMap.put(distance, someAgent);
-            }
-
-        }
-
-        return distanceAgentMap;
-
-    }
-
     public static AgentService get() {
 
         return service;
     }
 
-    public VectorAgent getAgent(int id) {
-        return agents.get(id);
+    public List<SkelatalAgent> getAllAgents(String simId) {
+        if(!agents.containsKey(simId)){
+            log.log(Level.INFO, "sim id does not exist {0} ", simId);
+        }
+        
+        return agents.get(simId);
     }
 
-    public Collection<VectorAgent> getAllAgents() {
-        return agents.values();
-    }
+    public static void main(String[] args) {
+        VectorAgent va = new VectorAgent();
+        VectorAgent va2 = new VectorAgent();
 
-    private void load() {
-        agents.put(getNextId(), new VectorAgent());
+        if (va.equals(va)) {
+            System.out.println("yup");
+        }
+
     }
 }

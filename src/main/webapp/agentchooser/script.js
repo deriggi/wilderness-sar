@@ -279,7 +279,7 @@ function refill(){
     var statusbar = $('#statusbar');
     
     $(statusbar).text("requesting data...")
-    $.post('/wisar/q/agent/wander/'+REQUEST_SIZE, function(data){
+    $.post('/wisar/q/agent/wander/' + SimId.getSimId()+ '/' + REQUEST_SIZE, function(data){
         $(statusbar).text("data received");
         for(dataIndex in data){
             ResponseQueue.pushResponse([data[dataIndex]]);
@@ -295,7 +295,7 @@ function refill(){
 function wander(){
     var statusbar = $('#statusbar');
     $(statusbar).text("requesting data...")
-    $.post('/wisar/q/agent/wander/' + (REQUEST_SIZE*3), function(data){
+    $.post('/wisar/q/agent/wander/' +SimId.getSimId() + '/' + (REQUEST_SIZE*3), function(data){
         $(statusbar).text("data received");
         for(dataIndex in data){
             ResponseQueue.pushResponse([data[dataIndex]]);
@@ -311,7 +311,7 @@ function wander(){
 //=====================
 function runsim(){
     
-    $.post('/wisar/q/agent/runsim/', function(data){
+    $.post('/wisar/q/agent/runsim/'+SimId.getSimId(), function(data){
        // going to need to kick off a thread here 
 //        drawAgentLocation(data);
         
@@ -910,11 +910,11 @@ function clearAgents() {
     AgentCounter.clear();
     ResponseQueue.clear();
     
-    $.post('/wisar/q/agent/clearagents/' , function(data){
+    $.post('/wisar/q/agent/clearagents/' + SimId.getSimId() , function(data){
         $('#statusbar').text(data);
-        
-        
     });
+    
+    fetchSimId();
 }
 
 

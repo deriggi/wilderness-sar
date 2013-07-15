@@ -5,7 +5,6 @@
 package resources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.ws.rs.GET;
@@ -91,35 +90,35 @@ public class AgentResource {
     }
 
     @POST
-    @Path("/runsim/")
+    @Path("/runsim/{ simid: [a-zA-Z0-9]{6} }")
     @Produces(MediaType.APPLICATION_JSON)
-    public String runSim() {
+    public String runSim(@PathParam("simid") String simId) {
 
         AgentService service = AgentService.get();
-        ArrayList<IdLoc> locs = service.runUntilFound();
+        ArrayList<IdLoc> locs = service.runUntilFound(simId);
         String json = GsonGetter.get().toJson(locs);
 
         return json;
     }
 
     @POST
-    @Path("/clearagents/")
+    @Path("/clearagents/{ simid: [a-zA-Z0-9]{6} }")
     @Produces(MediaType.APPLICATION_JSON)
-    public String clearAgents() {
+    public String clearAgents(@PathParam("simid") String simId) {
 
         AgentService service = AgentService.get();
-        service.clearAgents();
+        service.clearAgents(simId);
 
         return GsonGetter.get().toJson("agents cleared");
     }
 
     @POST
-    @Path("/wander/")
+    @Path("/wander/{ simid: [a-zA-Z0-9]{6} }/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String wanderAllAgents() {
-
+    public String wanderAllAgents(@PathParam("simid") String simId) {
+        log.info("calling wander ");
         AgentService service = AgentService.get();
-        ArrayList<IdLoc> locs = service.runAgents();
+        ArrayList<IdLoc> locs = service.runAgents(simId);
         String json = GsonGetter.get().toJson(locs);
 
         return json;
@@ -128,16 +127,18 @@ public class AgentResource {
     }
 
     @POST
-    @Path("/wander/{steps}")
+    @Path("/wander/{ simid: [a-zA-Z0-9]{6} }/{steps}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String wanderNSteps(@PathParam("steps") int steps) {
+    public String wanderNSteps(@PathParam("simid") String simId, @PathParam("steps") int steps) {
         ArrayList<IdLoc> locs = new ArrayList<IdLoc>();
         AgentService service = AgentService.get();
+        log.log(Level.INFO, "moving agents in {0}", simId);
         
         int i = 0;
         while (i++ < steps) {
-            locs.addAll(service.runAgents());
+            locs.addAll(service.runAgents(simId));
         }
+        
         
         String json = GsonGetter.get().toJson(locs);
         
