@@ -82,6 +82,29 @@
                     </compilerArguments>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>middletier.SimBuilder</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-a-jar</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -89,7 +112,7 @@
                 <configuration>
                     <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
                 </configuration>
-            </plugin>
+            </plugin >
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -118,7 +141,7 @@
         </plugins>
     </build>
     
-     <repositories>
+    <repositories>
         
         <repository>
             <id>osgeo</id>
