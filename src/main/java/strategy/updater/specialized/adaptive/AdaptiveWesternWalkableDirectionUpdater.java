@@ -68,7 +68,6 @@ public class AdaptiveWesternWalkableDirectionUpdater extends SkelatalDirectionUp
         }
 
         if (bestCells != null) {
-            log.log(Level.INFO, "adaptive going with {0}", optimalDirection.toString());
             lastDirection = optimalDirection;
             float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, bestCells);
 

@@ -87,7 +87,7 @@ public class VectorAgent extends SkelatalAgent {
         log.info("writing output file ");
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         double[] geoloc = raster.getLonLat(getLocation()[0], getLocation()[1]);
-        FileExportHelper.appendToFile("C:/agentout/testout.csv", geoloc[0] + "," + geoloc[1]);
+        FileExportHelper.appendLineToFile("C:/agentout/testout.csv", geoloc[0] + "," + geoloc[1]);
     }
     
 

@@ -97,7 +97,6 @@ public class AgentResource {
 
         AgentService service = AgentService.get();
         ArrayList<IdLoc> locs = service.runUntilFound();
-
         String json = GsonGetter.get().toJson(locs);
 
         return json;

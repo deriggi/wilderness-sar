@@ -33,7 +33,7 @@ public abstract class SkelatalAgent {
     private double[] velocity = new double[2];
     private float speed = 4;
     private String simId = null;
-    private int detectionRange = (int) speed * 2;
+    private int detectionRange = 40;
     private float[] location = new float[2];
     private Stack<float[]> masterStack = new Stack<float[]>();
     private int masterTimestepsTaken = 0;

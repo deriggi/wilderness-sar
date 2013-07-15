@@ -346,7 +346,7 @@ public class Raster2D {
         float elevation = 0;
         ArrayList<SlopeDataCell> visibleCells = new ArrayList<SlopeDataCell>();
 
-        int maxDistance = radius * 2;
+        int maxDistance = radius ;
         
         for (int[] perimeterPoint : perimeterPoints) {
             // make line from center to perimeter
@@ -384,7 +384,6 @@ public class Raster2D {
                 distance++;
             }
         }
-        log.log(Level.INFO,"visible cell count is {0} for column {1} row {2} and radius {3} ", new Integer[]{visibleCells.size(), column, row, radius});
         
         return visibleCells;
     }

@@ -312,8 +312,8 @@ function wander(){
 function runsim(){
     
     $.post('/wisar/q/agent/runsim/', function(data){
-        
-        drawAgentLocation(data);
+       // going to need to kick off a thread here 
+//        drawAgentLocation(data);
         
 
     });

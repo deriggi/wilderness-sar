@@ -30,155 +30,173 @@ public class AgentService {
     private HashMap<Integer, VectorAgent> agents = new HashMap<Integer, VectorAgent>();
     private int nextId = 1;
     private static final Logger log = Logger.getLogger(AgentService.class.getName());
-    
     private boolean stopSim = false;
-    public void setStopSim(boolean stop){
+
+    public void setStopSim(boolean stop) {
         this.stopSim = stop;
     }
-    
+
     private int getNextId() {
         return nextId++;
     }
 
-    public void clearAgents(){
-        
+    public void clearAgents() {
+
         agents.clear();
         log.info("agents cleared from sim");
     }
-    
-    
-    private void exportAgentStates(List<IdLoc> states){
+
+    private void exportAgentStates(List<IdLoc> states) {
         
-        if(states == null || states.isEmpty()){
+
+        if (states == null || states.isEmpty()) {
             log.warning("trying to export empty or null states");
             return;
         }
-        
-        String simId  = states.get(0).getSimId();
+
+        String simId = states.get(0).getSimId();
         StringBuilder sb = new StringBuilder();
-        
-        for(IdLoc state : states){
+
+        for (IdLoc state : states) {
             sb.append(state.getSimId());
             sb.append(FileExportHelper.COMMA);
-            
+
             sb.append(state.getNameTag());
             sb.append(FileExportHelper.COMMA);
-            
+
             sb.append(state.getId());
             sb.append(FileExportHelper.COMMA);
-            
+
             sb.append(state.getLocation()[0]);
             sb.append(FileExportHelper.COMMA);
-            
+
             sb.append(state.getLocation()[1]);
             sb.append(FileExportHelper.LINE_SEPARATOR);
-            
+
         }
-        
-        FileExportHelper.appendToFile(simId + ".csv", sb.toString());
-        
+
+        FileExportHelper.appendBatchToFile("C:\\agentout\\" + simId + ".csv", sb.toString());
+
     }
-    
-    
-    public ArrayList<IdLoc> runUntilFound(){
+
+    public ArrayList<IdLoc> runUntilFound() {
+        if (agents.size() < 2) {
+
+            log.warning("not enough agents to run sim");
+            return new ArrayList<IdLoc>(0);
+
+        }
+
         boolean found = false;
         ArrayList<IdLoc> states = null;
-        while(!found && !stopSim){
+        ArrayList<IdLoc> buffer = new ArrayList<IdLoc>(200);
+
+        while (!found && !stopSim) {
+
             states = runAgents();
-            for(IdLoc state : states){
-                if(state.getFoundOthers()){
+            for (IdLoc state : states) {
+                if (state.getFoundOthers()) {
                     found = true;
                 }
             }
+            buffer.addAll(states);
+
+            if (buffer.size() == 200) {
+                exportAgentStates(buffer);
+                buffer.clear();
+            }
+
+        }
+        if (buffer.size() > 0) {
+            exportAgentStates(buffer);
+            buffer.clear();
         }
         agents.clear();
-        
+
         return states;
     }
-    
-    
-    public ArrayList<IdLoc> runAgents(){
-        
+
+    public ArrayList<IdLoc> runAgents() {
+
         Collection<VectorAgent> localAgents = getAllAgents();
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         ArrayList<IdLoc> agentStates = new ArrayList<IdLoc>();
-        
+
         for (VectorAgent a : localAgents) {
 
             a.wander();
             double[] lonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
             IdLoc idLoc = a.toIdLoc();
-            idLoc.setLocation( lonLat );
-            agentStates.add( idLoc );
+            idLoc.setLocation(lonLat);
+            agentStates.add(idLoc);
             idLoc.setTimestep(a.getMasterTimestepsTaken());
-            
+
 
         }
-        
+
         return agentStates;
-        
+
     }
-    
-    public SkelatalAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour, String simId){
+
+    public SkelatalAgent createAgent(float column, float row, float speed, FSMFactory.MachineName behaviour, String simId) {
         stopSim = false;
-        
+
         VectorAgent a = new VectorAgent();
         a.setSpeed(speed);
-        a.setLocation(new float[]{column,row});
-        a.setOrigin(new float[]{column,row});
+        a.setLocation(new float[]{column, row});
+        a.setOrigin(new float[]{column, row});
         a.setId(getNextId());
         a.setSimId(simId);
         agents.put(a.getId(), a);
-        
+
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
         wanderStrat.setName(behaviour.toString());
 //        wanderStrat.setConditionChecker(new AlmostOutOfBoundsConditionChecker());
-        wanderStrat.addAllDirectinoUpdaters( FSMFactory.getMachine(behaviour) );
-        
+        wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(behaviour));
+
 //        WanderStrategy goHomeStrategy = new WanderStrategy();
 //        goHomeStrategy.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.GO_TO_ORIGIN));
 //        goHomeStrategy.setConditionChecker(new NearOriginConditionChecker());
 //        goHomeStrategy.setName("GO_TO_ORIGIN");
-        
+
         a.addMovementStrategy(wanderStrat);
 //        a.addMovementStrategy(goHomeStrategy);
-        
+
         return a;
     }
-    
-    public VectorAgent createUAVAgent(float column, float row){
+
+    public VectorAgent createUAVAgent(float column, float row) {
         VectorAgent a = new VectorAgent();
         a.setSpeed(4);
-        a.setLocation(new float[]{column,row});
-        a.setOrigin(new float[]{column,row});
+        a.setLocation(new float[]{column, row});
+        a.setOrigin(new float[]{column, row});
         a.setId(getNextId());
         agents.put(a.getId(), a);
-        
+
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
         wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.EAST_WEST_LAWN_MOWER));
 //        WanderDirectionUpdater wanderUpdater = new WanderDirectionUpdater();
 //        wanderStrat.addDirectionUpdater(wanderUpdater);
         a.addMovementStrategy(wanderStrat);
-        
+
         return a;
     }
-    
 
-    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except, AgentName name){
+    public HashMap<Double, VectorAgent> getAgentsWithinRange(float[] loc, int range, SkelatalAgent except, AgentName name) {
         Set<Integer> keys = agents.keySet();
         HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
-        
-        for(Integer i : keys){
+
+        for (Integer i : keys) {
             VectorAgent someAgent = agents.get(i);
-            if(someAgent == except){
+            if (someAgent == except) {
                 continue;
             }
             double distance = VectorUtils.distance(loc, someAgent.getLocation());
-            
-            
-            if(distance <= range && someAgent.getNameTag().equals(name)){
+
+
+            if (distance <= range && someAgent.getNameTag().equals(name)) {
                 distanceAgentMap.put(distance, someAgent);
             }
         }
@@ -186,16 +204,16 @@ public class AgentService {
         return distanceAgentMap;
     }
 
-    public HashMap<Double,VectorAgent> getAgentsWithinRange(float[] loc, int range){
+    public HashMap<Double, VectorAgent> getAgentsWithinRange(float[] loc, int range) {
 
         Set<Integer> keys = agents.keySet();
         HashMap<Double, VectorAgent> distanceAgentMap = new HashMap<Double, VectorAgent>();
-        
-        for(Integer i : keys){
+
+        for (Integer i : keys) {
             VectorAgent someAgent = agents.get(i);
             double distance = VectorUtils.distance(loc, someAgent.getLocation());
-            
-            if(distance <= range){
+
+            if (distance <= range) {
                 distanceAgentMap.put(distance, someAgent);
             }
 
@@ -204,7 +222,6 @@ public class AgentService {
         return distanceAgentMap;
 
     }
-    
 
     public static AgentService get() {
 
