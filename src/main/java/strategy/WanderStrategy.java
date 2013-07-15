@@ -94,7 +94,7 @@ public class WanderStrategy implements Strategy {
         ownerAgent.steer(ownerAgent.getVelocityVector(), 1);
         
         // timesteps for this strategy
-        timesteps++;
+//        timesteps++;
         
 
     }

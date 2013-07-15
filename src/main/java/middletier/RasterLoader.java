@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import raster.AsciiParser2;
+import raster.CollectGeometryAsciiAction;
 import raster.domain.Raster2D;
 import util.TimerUtil;
 
@@ -42,7 +44,7 @@ public class RasterLoader {
         if (loader == null) {
             loader = new RasterLoader();
             long t0 = new Date().getTime();
-            loader.load(config.getPath(), config.getLon(), config.getLat());
+            loader.load(config.getPath(), config.getLon(), config.getLat(), config.getLowerLat());
 
             long t1 = new Date().getTime();
             loader.log("load time {0} ", (t1 - t0) / 1000.0f);
@@ -55,13 +57,14 @@ public class RasterLoader {
         return loader;
     }
 
-    private void load(String path, float upperLonBound, float upperLatBound) {
+    private void load(String path, float upperLonBound, float upperLatBound, float lowerLatBound) {
         FileInputStream fis = null;
         try {
             //========================
 //            CollectGeometryAsciiAction ca = new CollectGeometryAsciiAction();
 //            ca.setUpperXBound(upperLonBound);
 //            ca.setUpperYBound(upperLatBound);
+//            ca.setLowerXBound(lowerLatBound);
 //            fis = null;
 //            AsciiParser2 ap = new AsciiParser2(ca);
 //            fis = new FileInputStream(path);
@@ -70,29 +73,18 @@ public class RasterLoader {
 //            long t1 = TimerUtil.getTime();
 //            log.log(Level.INFO, " to load from an ascii file {0}" , TimerUtil.seconds(t1, t0));
 //            setData(ca.getRaster2D());
-            //getData().export(BinaryFileConfig.OUT_PATH.getPath());
+//            getData().export(BinaryFileConfig.OUT_PATH.getPath());
             //========================================
 
+            
+            
             long t0 = TimerUtil.getTime();
             Raster2D raster = Raster2D.importIt(BinaryFileConfig.OUT_PATH.getPath());
             long t1 = TimerUtil.getTime();
-
             log.log(Level.INFO, "time to load binary terrain {0}", TimerUtil.seconds(t1, t0));
             setData(raster);
-            // =======================
             
-            //=========================================
-//            int rows = raster.getData().size();
-//            int cols = raster.getData().get(0).size();
-//            ArrayList<ArrayList<Byte>> masterRaster = new ArrayList<ArrayList<Byte>>(rows);
-//            for(int i =0; i < rows; i++){
-//                masterRaster.add(new ArrayList<Byte>());
-//                for(int j = 0; j < cols; j++){
-//                    masterRaster.get(i).add(Byte.MAX_VALUE);
-//                }
-//            }
-//            log.info("max master raster loaded!");
-            //=========================================
+ 
 
 
         } catch (FileNotFoundException ex) {

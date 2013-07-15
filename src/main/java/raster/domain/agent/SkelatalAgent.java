@@ -25,7 +25,6 @@ import strategy.updater.Direction;
 public abstract class SkelatalAgent {
 
     private static final Logger log = Logger.getLogger(SkelatalAgent.class.getName());
-    
     public static final String COMS = "coms";
     public static final int MAX_STACK_SIZE = 200;
     public static final int MINI_STACK_SIZE = 400;
@@ -33,7 +32,7 @@ public abstract class SkelatalAgent {
     private double[] velocity = new double[2];
     private float speed = 4;
     private String simId = null;
-    private int detectionRange = 40;
+    private int detectionRange = 20;
     private float[] location = new float[2];
     private Stack<float[]> masterStack = new Stack<float[]>();
     private int masterTimestepsTaken = 0;
@@ -44,9 +43,26 @@ public abstract class SkelatalAgent {
     private int stepsTaken = 0;
     private Direction eastWestIntention = null;
     private Direction northSouthIntention = null;
-    private HashMap<String, Float>  memory = new HashMap<String, Float>();
-    
-    
+    private HashMap<String, Float> memory = new HashMap<String, Float>();
+    private int delay = 0;
+
+    public boolean doDelay() {
+        if (delay > 0) {
+            delay--;
+            return true;
+        }
+        
+        return false;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public int getDelay() {
+        return this.delay;
+    }
+
     public String getSimId() {
         return simId;
     }
@@ -54,22 +70,22 @@ public abstract class SkelatalAgent {
     public void setSimId(String simId) {
         this.simId = simId;
     }
-    
-    public void handleMessage(HashMap<String, Float> message){
-        if(message == null || message.isEmpty()){
+
+    public void handleMessage(HashMap<String, Float> message) {
+        if (message == null || message.isEmpty()) {
             return;
         }
         Set<String> keys = message.keySet();
-        for(String key : keys){
+        for (String key : keys) {
             memory.put(key, message.get(key));
         }
-        
-        
+
+
     }
-    public HashMap<String, Float> getMemory(){
+
+    public HashMap<String, Float> getMemory() {
         return memory;
     }
-    
 
     public Direction getEastWestIntention() {
         return eastWestIntention;
@@ -129,17 +145,17 @@ public abstract class SkelatalAgent {
         }
 
         float[] loc = getLocation();
-        short[] shortLoc = new short[]{ (short)loc[0], (short)loc[1] };
-        
+        short[] shortLoc = new short[]{(short) loc[0], (short) loc[1]};
+
         someStack.push(shortLoc);
 
     }
 
     public void registerStack(String key) {
-        if(key == null){
+        if (key == null) {
             return;
         }
-        
+
         if (mapOfStacks.containsKey(key)) {
             log.log(Level.INFO, "already has key  {0} so not registering ", key);
             return;
@@ -260,7 +276,7 @@ public abstract class SkelatalAgent {
         if (masterStack.size() > MAX_STACK_SIZE) {
             masterStack.remove(0);
         }
-        
+
         masterStack.push(getLocation());
 
 
@@ -343,26 +359,26 @@ public abstract class SkelatalAgent {
     public void setVelocityVector(double[] aVelocityVector) {
         this.velocity = aVelocityVector;
     }
-    
-    public Direction getGeneralDirection(){
-        
-        
-        if( velocity[1] < 0 && Math.abs(velocity[1]) >  Math.abs(velocity[0])  ){
+
+    public Direction getGeneralDirection() {
+
+
+        if (velocity[1] < 0 && Math.abs(velocity[1]) > Math.abs(velocity[0])) {
             return Direction.NORTH;
         }
-        
-        if( velocity[1] > 0 && Math.abs(velocity[1]) > Math.abs(velocity[0]) ){
+
+        if (velocity[1] > 0 && Math.abs(velocity[1]) > Math.abs(velocity[0])) {
             return Direction.SOUTH;
         }
-        
-        if( velocity[0] < 0 && Math.abs(velocity[0]) > Math.abs(velocity[1]) ){
+
+        if (velocity[0] < 0 && Math.abs(velocity[0]) > Math.abs(velocity[1])) {
             return Direction.WEST;
         }
-        
-        if( velocity[0] > 0 && Math.abs(velocity[0]) > Math.abs(velocity[1]) ){
+
+        if (velocity[0] > 0 && Math.abs(velocity[0]) > Math.abs(velocity[1])) {
             return Direction.EAST;
         }
-        
+
         log.log(Level.INFO, "oddly, there is no defined direction for {0}, {1}", velocity);
         return null;
     }

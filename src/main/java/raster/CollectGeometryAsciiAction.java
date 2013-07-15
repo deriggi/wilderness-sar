@@ -45,7 +45,16 @@ public class CollectGeometryAsciiAction implements AsciiAction {
     public int calculatedRowCount = 0;
     public Polygon nw = null;
     public Polygon se = null;
-    private float upperXBound = 0, upperYBound = 0;
+    private float upperXBound = 0, upperYBound = 0, lowerXBound = 0;
+
+    public float getLowerXBound() {
+        return lowerXBound;
+    }
+    
+    public void setLowerXBound(float lowerX) {
+        this.lowerXBound = lowerX;
+    }
+    
     private RandomAccessFile raf = null;
 
     public float getUpperXBound() {
@@ -123,7 +132,7 @@ public class CollectGeometryAsciiAction implements AsciiAction {
             
     @Override
     public void handleNonNullData(double y, double x, double data) {
-        if (x < getUpperXBound() && y < getUpperYBound()) {
+        if (x < getUpperXBound() && y < getUpperYBound() && y > getLowerXBound()) {
            
             
 //            ba.update(data);

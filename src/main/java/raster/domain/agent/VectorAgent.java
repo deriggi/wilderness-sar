@@ -53,10 +53,15 @@ public class VectorAgent extends SkelatalAgent {
         setVelocityVector(new double[]{0.0, 0.0});
 
     }
+    
 
     // rename to move?
     @Override
     public void wander() {
+        if(doDelay()){
+            log.log(Level.INFO, "agent is delayed until {0} ", getDelay());
+            return;
+        }
 
         // this shit is probably going to get shelved
         Strategy currentStrat = strategies.get(strategyIndex);

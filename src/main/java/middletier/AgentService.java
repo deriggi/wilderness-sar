@@ -42,18 +42,17 @@ public class AgentService {
 
     public void clearAgents(String simId) {
         if (!agents.containsKey(simId)) {
-            log.log(Level.WARNING,"no agents for sim {0}", simId);
+            log.log(Level.WARNING, "no agents for sim {0}", simId);
             return;
         }
         agents.get(simId).clear();
         agents.remove(simId);
-        
-        log.log( Level.INFO, "agents cleared from {0} sims count is {1}", new String[] { simId, Integer.toString(agents.size()) } );
-        
+
+        log.log(Level.INFO, "agents cleared from {0} sims count is {1}", new String[]{simId, Integer.toString(agents.size())});
+
     }
 
     private void exportAgentStates(List<IdLoc> states) {
-
 
         if (states == null || states.isEmpty()) {
             log.warning("trying to export empty or null states");
@@ -84,14 +83,15 @@ public class AgentService {
         FileExportHelper.appendBatchToFile("C:\\agentout\\" + simId + ".csv", sb.toString());
 
     }
+    
 
     public ArrayList<IdLoc> runUntilFound(String simId) {
-        if (agents.size() < 2) {
-
-            log.warning("not enough agents to run sim");
-            return new ArrayList<IdLoc>(0);
-
-        }
+//        if (agents.get(simId) == null || agents.get(simId).size() < 2) {
+//
+//            log.warning("not enough agents to run sim");
+//            return new ArrayList<IdLoc>(0);
+//
+//        }
 
         boolean found = false;
         ArrayList<IdLoc> states = null;
@@ -117,7 +117,87 @@ public class AgentService {
             exportAgentStates(buffer);
             buffer.clear();
         }
-        agents.clear();
+        clearAgents(simId);
+
+        return states;
+    }
+
+    public ArrayList<IdLoc> runFor(String simId, int count) {
+//        if (agents.get(simId) == null || agents.get(simId).size() < 2) {
+//
+//            log.warning("not enough agents to run sim");
+//            return new ArrayList<IdLoc>(0);
+//
+//        }
+
+        boolean found = false;
+        ArrayList<IdLoc> states = null;
+        ArrayList<IdLoc> buffer = new ArrayList<IdLoc>(200);
+        int x = 0;
+        while (x++ <count && !stopSim) {
+
+            states = runAgents(simId);
+            for (IdLoc state : states) {
+                if (state.getFoundOthers()) {
+                    found = true;
+                }
+            }
+            buffer.addAll(states);
+
+            if (buffer.size() == 200) {
+                exportAgentStates(buffer);
+                buffer.clear();
+            }
+
+        }
+        if (buffer.size() > 0) {
+            exportAgentStates(buffer);
+            buffer.clear();
+        }
+        clearAgents(simId);
+
+        return states;
+    }
+    
+    
+    public ArrayList<IdLoc> runUntilFound(String simId, int every) {
+        if (agents.get(simId) == null || agents.get(simId).size() < 2) {
+
+            log.warning("not enough agents to run sim");
+            return new ArrayList<IdLoc>(0);
+
+        }
+
+        boolean found = false;
+        ArrayList<IdLoc> states = null;
+        ArrayList<IdLoc> buffer = new ArrayList<IdLoc>(200);
+
+        int i = 0;
+        while (!found && !stopSim) {
+            if (i++%every == 0) {
+                states = runAgents(simId);
+                for (IdLoc state : states) {
+                    if (state.getFoundOthers()) {
+                        found = true;
+                    }
+                }
+                buffer.addAll(states);
+
+                if (buffer.size() == 200) {
+                    exportAgentStates(buffer);
+                    buffer.clear();
+                }
+                
+            }
+        }
+
+
+
+        if (buffer.size() > 0) {
+            exportAgentStates(buffer);
+            buffer.clear();
+        }
+        clearAgents(simId);
 
         return states;
     }
@@ -125,11 +205,12 @@ public class AgentService {
     public ArrayList<IdLoc> runAgents(String simId) {
 
         List<SkelatalAgent> localAgents = getAllAgents(simId);
-        
+
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         ArrayList<IdLoc> agentStates = new ArrayList<IdLoc>();
-        
-            for (SkelatalAgent a : localAgents) {
+
+        for (SkelatalAgent a : localAgents) {
+
 
             a.wander();
             double[] lonLat = raster.getLonLat(a.getLocation()[0], a.getLocation()[1]);
@@ -159,7 +240,7 @@ public class AgentService {
             agents.put(simId, new ArrayList<SkelatalAgent>());
         }
         agents.get(simId).add(a);
-        log.log(Level.INFO, "{0} agents in sim {1}", new String[] {Integer.toString(agents.get(simId).size()), simId } );
+        log.log(Level.INFO, "{0} agents in sim {1}", new String[]{Integer.toString(agents.get(simId).size()), simId});
 
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
@@ -187,10 +268,10 @@ public class AgentService {
         }
 
         List<SkelatalAgent> otherAgents = agents.get(simId);
-        
+
 
         for (SkelatalAgent someAgent : otherAgents) {
-            if(someAgent.equals(except)){
+            if (someAgent.equals(except)) {
                 continue;
             }
 
@@ -211,20 +292,10 @@ public class AgentService {
     }
 
     public List<SkelatalAgent> getAllAgents(String simId) {
-        if(!agents.containsKey(simId)){
+        if (!agents.containsKey(simId)) {
             log.log(Level.INFO, "sim id does not exist {0} ", simId);
         }
-        
+
         return agents.get(simId);
-    }
-
-    public static void main(String[] args) {
-        VectorAgent va = new VectorAgent();
-        VectorAgent va2 = new VectorAgent();
-
-        if (va.equals(va)) {
-            System.out.println("yup");
-        }
-
     }
 }
