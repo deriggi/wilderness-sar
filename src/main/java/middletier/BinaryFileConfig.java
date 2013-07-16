@@ -17,6 +17,11 @@ public enum BinaryFileConfig {
     BinaryFileConfig(String path){
         this.outPath = path;
     }
+    
+   
+    public void setPath(String path){
+        this.outPath = path;
+    }
     public String getPath(){
         return this.outPath;
     }

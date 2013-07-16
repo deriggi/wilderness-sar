@@ -234,7 +234,7 @@ public class Raster2D {
         log.log(Level.INFO, "rows from binary header: {0} ", rows);
         log.log(Level.INFO, "columns from binary header: {0} ", columns);
         log.log(Level.INFO, "the length of this thing {0} ", raf.length());
-        log.log(Level.INFO, "made an array of size {0} ", (int) raf.length() - (41));
+       
 
 //        raf.skipBytes(40);
         raf.readFully(rawInput);

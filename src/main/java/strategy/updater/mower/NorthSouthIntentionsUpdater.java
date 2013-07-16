@@ -46,7 +46,7 @@ public class NorthSouthIntentionsUpdater extends SkelatalDirectionUpdater {
             int toNorth = (int) loc[1];
             int toSouth = (int) Math.abs(loc[1] - southEnd);
 
-            if (toNorth > toSouth) {
+            if (Math.random() < 0.5f) {
                 ownerAgent.setNorthSouthIntention(Direction.NORTH);
                 log.info("intending to go north ");
             } else {

@@ -60,6 +60,8 @@ public class RasterLoader {
     private void load(String path, float upperLonBound, float upperLatBound, float lowerLatBound) {
         FileInputStream fis = null;
         try {
+            
+            // method one: load from ascii file
             //========================
 //            CollectGeometryAsciiAction ca = new CollectGeometryAsciiAction();
 //            ca.setUpperXBound(upperLonBound);
@@ -77,7 +79,7 @@ public class RasterLoader {
             //========================================
 
             
-            
+            // method 2 load from binary file
             long t0 = TimerUtil.getTime();
             Raster2D raster = Raster2D.importIt(BinaryFileConfig.OUT_PATH.getPath());
             long t1 = TimerUtil.getTime();

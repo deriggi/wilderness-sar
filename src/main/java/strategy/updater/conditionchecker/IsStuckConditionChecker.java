@@ -35,7 +35,7 @@ public class IsStuckConditionChecker extends SkelatalUpdaterConditionChecker {
                 
         Float average = va.averageDistanceLastXPoints(POINTS_TO_CHECK);
 
-        log.log(Level.INFO, "average of last fifty is {0} comparing to {1} ", new Float[]{average, va.getSpeed() * 2});    
+        log.log(Level.FINE, "average of last fifty is {0} comparing to {1} ", new Float[]{average, va.getSpeed() * 2});    
         
         if(average != null && average < va.getSpeed() * 2){
             
