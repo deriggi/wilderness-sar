@@ -45,6 +45,24 @@ public abstract class SkelatalAgent {
     private Direction northSouthIntention = null;
     private HashMap<String, Float> memory = new HashMap<String, Float>();
     private int delay = 0;
+    private boolean stuck = false;
+    private Direction direction = null;
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public boolean isStuck() {
+        return stuck;
+    }
+
+    public void setStuck(boolean stuck) {
+        this.stuck = stuck;
+    }
 
     public boolean doDelay() {
         if (delay > 0) {

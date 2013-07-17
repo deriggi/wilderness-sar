@@ -96,6 +96,7 @@ public class AgentService {
 
     }
 
+    
     private void exportAgentStates(List<IdLoc> states, String outputFolderName) {
 
         if (states == null || states.isEmpty()) {
@@ -134,6 +135,7 @@ public class AgentService {
         StringBuilder fileNameBuilder = new StringBuilder();
         fileNameBuilder.append(baseOut);
         fileNameBuilder.append(simId);
+        
         fileNameBuilder.append(CSV);
 
         FileExportHelper.appendBatchToFile(fileNameBuilder.toString(), sb.toString());
@@ -177,13 +179,14 @@ public class AgentService {
         return states;
     }
 
+    /**
+     * Useful if you want to run a sim for a bit
+     * @param simId
+     * @param count
+     * @param outputFolder
+     * @return 
+     */
     public ArrayList<IdLoc> runFor(String simId, int count, String outputFolder) {
-//        if (agents.get(simId) == null || agents.get(simId).size() < 2) {
-//
-//            log.warning("not enough agents to run sim");
-//            return new ArrayList<IdLoc>(0);
-//
-//        }
 
         boolean found = false;
         ArrayList<IdLoc> states = null;
@@ -197,6 +200,35 @@ public class AgentService {
                     found = true;
                 }
             }
+            buffer.addAll(states);
+
+            if (buffer.size() == 200) {
+                exportAgentStates(buffer, outputFolder);
+                buffer.clear();
+            }
+
+        }
+        if (buffer.size() > 0) {
+            exportAgentStates(buffer);
+            buffer.clear();
+        }
+        clearAgents(simId);
+
+        return states;
+    }
+    
+    
+    public ArrayList<SkelatalAgent> runForVerbose(String simId, int count, String outputFolder) {
+
+        boolean found = false;
+        ArrayList<IdLoc> states = null;
+        ArrayList<SkelatalAgent> buffer = new ArrayList<SkelatalAgent>(200);
+        int x = 0;
+        while (x++ < count) {
+
+            runAgents(simId);
+            getAllAgents(simId);
+            
             buffer.addAll(states);
 
             if (buffer.size() == 200) {

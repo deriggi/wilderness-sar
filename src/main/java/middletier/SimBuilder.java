@@ -11,12 +11,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.Raster2D;
 import raster.domain.agent.AgentName;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.SkelatalAgent;
+import raster.domain.agent.VectorAgent;
 
 /**
  *
@@ -44,7 +46,15 @@ public class SimBuilder {
         //type, behave
         // run until found simid
 
-        new SimBuilder().processDirectory(new File("C:\\agentin"), 10);
+        new SimBuilder().runAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
+    }
+    
+    private void runAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder){
+        // create an agent of each type
+        String simId = SimId.getNewSimId();
+        double[] randy = getRandomPoint(north, south, east, west);
+        createAgent(randy[0], randy[1], name, machine, simId);
+        AgentService.get().runFor(simId, steps, exportFolder);
     }
 
     private void processDirectory(File directory, int runsPerFile) {

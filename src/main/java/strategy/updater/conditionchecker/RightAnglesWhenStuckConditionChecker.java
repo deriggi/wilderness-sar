@@ -109,8 +109,10 @@ public class RightAnglesWhenStuckConditionChecker extends SkelatalUpdaterConditi
                     
                 }
             }
+            va.setStuck(true);
             return true;
         }
+        va.setStuck(false);
         return false;
     }
 }

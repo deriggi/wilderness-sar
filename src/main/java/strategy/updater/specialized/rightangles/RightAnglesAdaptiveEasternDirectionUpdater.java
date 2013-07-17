@@ -68,16 +68,19 @@ public class RightAnglesAdaptiveEasternDirectionUpdater extends SkelatalDirectio
 
         if (bestCells != null) {
             log.log(Level.INFO, "adaptive going with {0}", optimalDirection.toString());
+            ownerAgent.setDirection(optimalDirection);
+            
             lastDirection = optimalDirection;
             float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, bestCells);
 
             dxDy[0] = acceleration[0];
             dxDy[1] = acceleration[1];
+            
         } else {
             dxDy[0] = 0;
             dxDy[1] = 0;
             log.warning("velocity is zero");
-            log.warning("LOL no good options");
+            ownerAgent.setDirection(null);
 
         }
 
