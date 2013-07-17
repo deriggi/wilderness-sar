@@ -38,7 +38,6 @@ public class FileExportHelper {
             }
         }
 
-
     }
 
     public static void appendLineToFile(String fileName, String content) {
@@ -47,7 +46,7 @@ public class FileExportHelper {
             File f = new File(fileName);
             fw = new FileWriter(f, true);
             fw.append(content);
-            fw.append(System.getProperty(LINE_SEPARATOR));
+            fw.append(LINE_SEPARATOR);
         } catch (IOException ex) {
             log.log(Level.SEVERE, "error writing ", ex);
         } finally {

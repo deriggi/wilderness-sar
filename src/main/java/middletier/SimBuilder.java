@@ -57,23 +57,18 @@ public class SimBuilder {
         File[] files = directory.listFiles();
         for (File f : files) {
 
-            
+
             AgentService service = AgentService.get();
 
             int i = 0;
             while (i++ < runsPerFile) {
                 String simId = SimId.getNewSimId();
-                String outFolder = readFile(f, simId);
-                AgentService.get().runUntilFound(simId, 100, outFolder);
+                readFile(f, simId);
+                AgentService.get().runUntilFound(simId, 100, f.getName().substring(0,f.getName().length() - 4));
                 service.clearAgents(simId);
             }
 
-            
-
         }
-
-
-
 
         // for each file in directory
         //get simid
@@ -82,25 +77,17 @@ public class SimBuilder {
 
     }
 
-    private String readFile(File inputFile, String simId) {
+    private void readFile(File inputFile, String simId) {
         log.log(Level.INFO, "processing file {0} ", inputFile.getAbsolutePath());
-        String outputFolderName = null;
 
         try {
             FileInputStream fis = new FileInputStream(inputFile);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String line = null;
-            int lineCounter = 0;
             while ((line = br.readLine()) != null) {
-                
-                if (lineCounter++ == 0) {
-                
-                    outputFolderName = line;
-                
-                } else {
-                    
-                    createAgentsFromLine(line.toUpperCase(), simId);
-                }
+
+
+                createAgentsFromLine(line.toUpperCase(), simId);
 
             }
 
@@ -110,7 +97,6 @@ public class SimBuilder {
         } catch (IOException ex) {
             Logger.getLogger(SimBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return outputFolderName;
     }
 
     private void createAgentsFromLine(String line, String simId) {
