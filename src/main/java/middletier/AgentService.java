@@ -77,7 +77,7 @@ public class AgentService {
         FileExportHelper.appendLineToFile(fileNameBuilder.toString(), lineBuilder.toString());
 
     }
-    
+
     private void addFoundLine(String simId, String outputFolder, double[] loc) {
         String baseOut = "C:\\agentout\\" + outputFolder + "\\";
         StringBuilder fileNameBuilder = new StringBuilder();
@@ -96,7 +96,26 @@ public class AgentService {
 
     }
 
-    
+    private void exportAgents(List<SkelatalAgent> agents, String outputFolderName, String simId) {
+        String baseOut = "C:\\agentout\\" + outputFolderName + "\\";
+        new File(baseOut).mkdirs();
+
+        StringBuilder sb = new StringBuilder();
+
+        for (SkelatalAgent agent : agents) {
+            sb.append(AgentDataExtractor.getLineFromAgent(agent));
+        }
+        
+        StringBuilder fileNameBuilder = new StringBuilder();
+        fileNameBuilder.append(baseOut);
+        fileNameBuilder.append(simId);
+        fileNameBuilder.append(CSV);
+
+        
+        FileExportHelper.appendBatchToFile(fileNameBuilder.toString(), sb.toString());
+        
+    }
+
     private void exportAgentStates(List<IdLoc> states, String outputFolderName) {
 
         if (states == null || states.isEmpty()) {
@@ -135,7 +154,7 @@ public class AgentService {
         StringBuilder fileNameBuilder = new StringBuilder();
         fileNameBuilder.append(baseOut);
         fileNameBuilder.append(simId);
-        
+
         fileNameBuilder.append(CSV);
 
         FileExportHelper.appendBatchToFile(fileNameBuilder.toString(), sb.toString());
@@ -216,36 +235,32 @@ public class AgentService {
 
         return states;
     }
-    
-    
-    public ArrayList<SkelatalAgent> runForVerbose(String simId, int count, String outputFolder) {
 
-        boolean found = false;
-        ArrayList<IdLoc> states = null;
+    public void runForVerbose(String simId, int count, String outputFolder) {
+
+        
         ArrayList<SkelatalAgent> buffer = new ArrayList<SkelatalAgent>(200);
         int x = 0;
         while (x++ < count) {
 
             runAgents(simId);
-            getAllAgents(simId);
+            buffer.addAll(getAllAgents(simId));
+            exportAgents(buffer,outputFolder, simId);
+            buffer.clear();
             
-            buffer.addAll(states);
-
-            if (buffer.size() == 200) {
-                exportAgentStates(buffer, outputFolder);
-                buffer.clear();
-            }
+//            if (buffer.size() > 200) {
+//                exportAgents(buffer, outputFolder, simId);
+//                buffer.clear();
+//            }
 
         }
         if (buffer.size() > 0) {
-            exportAgentStates(buffer);
+            exportAgents(buffer, outputFolder, simId);
             buffer.clear();
         }
         clearAgents(simId);
-
-        return states;
     }
-
+    
     
 
     public ArrayList<IdLoc> runUntilFound(String simId, int every, String outName) {

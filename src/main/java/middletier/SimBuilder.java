@@ -46,7 +46,16 @@ public class SimBuilder {
         //type, behave
         // run until found simid
 
-        new SimBuilder().runAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
+//        new SimBuilder().runAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
+        new SimBuilder().runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
+    }
+    
+    private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder){
+        // create an agent of each type
+        String simId = SimId.getNewSimId();
+        double[] randy = getRandomPoint(north, south, east, west);
+        createAgent(randy[0], randy[1], name, machine, simId);
+        AgentService.get().runForVerbose(simId, steps, exportFolder);
     }
     
     private void runAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder){
