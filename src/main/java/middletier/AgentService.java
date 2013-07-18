@@ -238,8 +238,8 @@ public class AgentService {
 
     public void runForVerbose(String simId, int count, String outputFolder) {
 
-        
-        ArrayList<SkelatalAgent> buffer = new ArrayList<SkelatalAgent>(200);
+        // write header here
+        ArrayList<SkelatalAgent> buffer = new ArrayList<SkelatalAgent>();
         int x = 0;
         while (x++ < count) {
 
@@ -248,11 +248,6 @@ public class AgentService {
             exportAgents(buffer,outputFolder, simId);
             buffer.clear();
             
-//            if (buffer.size() > 200) {
-//                exportAgents(buffer, outputFolder, simId);
-//                buffer.clear();
-//            }
-
         }
         if (buffer.size() > 0) {
             exportAgents(buffer, outputFolder, simId);

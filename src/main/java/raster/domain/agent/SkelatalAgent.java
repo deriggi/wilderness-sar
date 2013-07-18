@@ -286,7 +286,7 @@ public abstract class SkelatalAgent {
         for (Float f : dotProductBuffer) {
             sum += f;
         }
-        log.log(Level.INFO, "dividing {0} by {1} ", new Float[]{sum, (float) dotProductBuffer.size()});
+        log.log(Level.FINE, "dividing {0} by {1} ", new Float[]{sum, (float) dotProductBuffer.size()});
         return sum / dotProductBuffer.size();
     }
 

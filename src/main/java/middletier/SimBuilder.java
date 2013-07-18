@@ -47,7 +47,11 @@ public class SimBuilder {
         // run until found simid
 
 //        new SimBuilder().runAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
-        new SimBuilder().runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
+        SimBuilder sim = new SimBuilder();
+        int i = 0;
+        while(i++ < 100){
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptiveratest2");
+        }
     }
     
     private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder){

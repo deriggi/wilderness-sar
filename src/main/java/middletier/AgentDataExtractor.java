@@ -24,11 +24,6 @@ public class AgentDataExtractor {
         builder.append(agent.getLatitude());
         builder.append(COMMA);
         
-        builder.append(agent.isStuck());
-        builder.append(COMMA);
-        
-        builder.append(agent.getDirection());
-        builder.append(COMMA);
         
         builder.append(agent.averageDistanceLastXPoints(50));
         builder.append(COMMA);
