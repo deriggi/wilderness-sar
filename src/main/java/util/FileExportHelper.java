@@ -19,6 +19,7 @@ public class FileExportHelper {
     private static final Logger log = Logger.getLogger(FileExportHelper.class.getName());
 
     public static final String COMMA   = ",";
+    public static final String CSV   = ".csv";
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     public static void writeToFile(String fileName, String content) {

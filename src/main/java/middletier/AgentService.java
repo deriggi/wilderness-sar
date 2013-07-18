@@ -105,15 +105,15 @@ public class AgentService {
         for (SkelatalAgent agent : agents) {
             sb.append(AgentDataExtractor.getLineFromAgent(agent));
         }
-        
+
         StringBuilder fileNameBuilder = new StringBuilder();
         fileNameBuilder.append(baseOut);
         fileNameBuilder.append(simId);
         fileNameBuilder.append(CSV);
 
-        
+
         FileExportHelper.appendBatchToFile(fileNameBuilder.toString(), sb.toString());
-        
+
     }
 
     private void exportAgentStates(List<IdLoc> states, String outputFolderName) {
@@ -239,15 +239,21 @@ public class AgentService {
     public void runForVerbose(String simId, int count, String outputFolder) {
 
         // write header here
+        String header = "longitude, latitude, avgdlastfifty, dotproductavg";
+        String root = new StringBuilder().append("C:\\agentout\\").append(outputFolder).append("\\").toString();
+        String filePath = new StringBuilder().append(root).append(simId).append(FileExportHelper.CSV).toString();
+
+        new File(root).mkdirs();
+        FileExportHelper.appendLineToFile(filePath, header);
         ArrayList<SkelatalAgent> buffer = new ArrayList<SkelatalAgent>();
         int x = 0;
         while (x++ < count) {
 
             runAgents(simId);
             buffer.addAll(getAllAgents(simId));
-            exportAgents(buffer,outputFolder, simId);
+            exportAgents(buffer, outputFolder, simId);
             buffer.clear();
-            
+
         }
         if (buffer.size() > 0) {
             exportAgents(buffer, outputFolder, simId);
@@ -255,8 +261,6 @@ public class AgentService {
         }
         clearAgents(simId);
     }
-    
-    
 
     public ArrayList<IdLoc> runUntilFound(String simId, int every, String outName) {
         if (agents.get(simId) == null || agents.get(simId).size() < 2) {

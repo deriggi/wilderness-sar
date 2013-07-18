@@ -50,7 +50,7 @@ public class SimBuilder {
         SimBuilder sim = new SimBuilder();
         int i = 0;
         while(i++ < 100){
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptiveratest2");
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_EAST_WEST, AgentName.UAV, 1000, "adaptive_east_west_2");
         }
     }
     
