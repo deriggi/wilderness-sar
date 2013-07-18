@@ -19,7 +19,7 @@ def calcMetadata(singleFile, column):
 
 	distance = calculateDistance(data[0][0], data[0][1], data[len(data)-1][0], data[len(data)-1][1])
 	averageDp = averageColumn(column, data)
-	countBelow = countBelowThreshold(2, data 10)
+	countBelow = fractionBelowThreshold(2, data, 10)
 
 	simid = singleFile[singleFile.rfind('/')+1:singleFile.rfind('.')]
 
@@ -48,15 +48,19 @@ def loadCsv(filename):
 
 	return theData
 
-def countBelowThreshold(index, dataArray, threshold):
-	int countBelow = 0;
+def fractionBelowThreshold(index, dataArray, threshold):
+	countBelow = 0;
+	total = 0
 	for i in range(0, len(dataArray)):
+
 		element = dataArray[i][index]
-		if(float(element) < threshold):
+		
+		if(element != 'null' and float(element) < threshold):
 			countBelow = countBelow + 1;
+		if element != 'null' :
+			total = total + 1;	
 
-	return countBelow
-
+	return float(countBelow)/float(total)
 
 
 def averageColumn(index ,  dataArray):
@@ -95,18 +99,30 @@ def calculateDistance(lon1, lat1, lon2, lat2):
 	d = R * c;
 	return d
 
+def makeHeader():
+	header = [];
+	header.append('simid')
+	header.append('averagedotproduct')
+	header.append('totaldistance')
+	header.append('fractiondistbelowten')
+
+	return ','.join(header)
+
 def runner():
 
 	# list of files
-	fileList = getFiles('C:/agentout/adaptivera_test/')
+	fileList = getFiles('C:/agentout/adaptiveratest2/')
+
+	appendToFile('C:/agentout/adaptiveratest2/metadata.csv', makeHeader())
 
 	for i in range ( 0, len(fileList) ):
 
 		print ' working file ', fileList[i]
+
 		# get the metada 
 		metadata = calcMetadata(fileList[i], 3)
 
 		# append to master file
-		appendToFile('C:/agentout/adaptivera_test/metadata.csv', metadata)
+		appendToFile('C:/agentout/adaptiveratest2/metadata.csv', metadata)
 
 runner()
