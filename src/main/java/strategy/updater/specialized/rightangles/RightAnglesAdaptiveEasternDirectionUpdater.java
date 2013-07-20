@@ -30,7 +30,6 @@ public class RightAnglesAdaptiveEasternDirectionUpdater extends SkelatalDirectio
         return "adaptive east";
     }
     // 16 for a moderately healty walker
-    private int visibilityRadius = 10;
     private Direction lastDirection = null;
 
     @Override
@@ -43,14 +42,14 @@ public class RightAnglesAdaptiveEasternDirectionUpdater extends SkelatalDirectio
         ArrayList<SlopeDataCell> bestCells = null;
 
 
-        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (easternCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = easternCells.size();
             optimalDirection = Direction.EAST;
             bestCells = easternCells;
         }
 
-        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
@@ -58,7 +57,7 @@ public class RightAnglesAdaptiveEasternDirectionUpdater extends SkelatalDirectio
             bestCells = southernCells;
         }
 
-        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.SOUTH)
                 && northernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = northernCells.size();

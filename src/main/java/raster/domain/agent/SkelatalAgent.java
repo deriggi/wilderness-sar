@@ -47,7 +47,8 @@ public abstract class SkelatalAgent {
     private int delay = 0;
     private boolean stuck = false;
     private Direction direction = null;
-
+    private BorderChecker borderChecker = new BorderChecker();
+    
     public Direction getDirection() {
         return direction;
     }
@@ -69,7 +70,7 @@ public abstract class SkelatalAgent {
             delay--;
             return true;
         }
-        
+
         return false;
     }
 
@@ -480,5 +481,61 @@ public abstract class SkelatalAgent {
         HashMap<Double, SkelatalAgent> distanceAgentMap = AgentService.get().getAgentsWithinRange(getLocation(), range, this, name);
         return distanceAgentMap.values();
 
+    }
+    
+    public boolean isWithinRangeOfBorder(int range){
+        return borderChecker.isBorderWithinRange(this, range);
+    }
+
+    private class BorderChecker {
+
+        private Raster2D raster = raster = RasterLoader.get(RasterConfig.BIG).getData();
+        private int eastEnd = raster.countColumns() - 1;
+        private int westEnd = 0;
+        private int northEnd = 0;
+        private int southEnd = raster.countRows() - 1;
+
+        public int getEastEnd() {
+            return eastEnd;
+        }
+
+        public int getNorthEnd() {
+            return northEnd;
+        }
+
+        public int getSouthEnd() {
+            return southEnd;
+        }
+
+        public int getWestEnd() {
+            return westEnd;
+        }
+
+        public boolean isBorderWithinRange(SkelatalAgent agent, int range) {
+
+            float[] loc = agent.getLocation();
+
+            if (Math.abs(loc[0] - getWestEnd()) < range) {
+
+                return true;
+
+            } else if (Math.abs(loc[0] - getEastEnd()) < range) {
+
+                return true;
+
+            }
+
+            if (Math.abs(loc[1] - getSouthEnd()) < range) {
+
+                return true;
+
+            } else if (Math.abs(loc[1] - getNorthEnd()) < range) {
+
+                return true;
+
+            }
+
+            return false;
+        }
     }
 }

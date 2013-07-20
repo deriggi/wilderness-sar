@@ -31,7 +31,6 @@ public class RightAnglesAdaptiveWesternDirectionUpdater extends SkelatalDirectio
         return "west walkable";
     }
     // 16 for a moderately healty walker
-    private int visibilityRadius = 10;
     private Direction lastDirection = null;
     
 
@@ -45,14 +44,14 @@ public class RightAnglesAdaptiveWesternDirectionUpdater extends SkelatalDirectio
         ArrayList<SlopeDataCell> bestCells = null;
 
 
-        ArrayList<SlopeDataCell> westernCells = raster.getWestVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> westernCells = raster.getWestVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (westernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = westernCells.size();
             optimalDirection = Direction.WEST;
             bestCells = westernCells;
         }
 
-        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
@@ -60,7 +59,7 @@ public class RightAnglesAdaptiveWesternDirectionUpdater extends SkelatalDirectio
             bestCells = southernCells;
         }
 
-        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> northernCells = raster.getNorthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.SOUTH)
                 && northernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = northernCells.size();

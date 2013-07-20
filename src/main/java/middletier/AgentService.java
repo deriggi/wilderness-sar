@@ -236,6 +236,17 @@ public class AgentService {
         return states;
     }
 
+   
+
+    private boolean anyAgentsNearBorder(List<SkelatalAgent> agents){
+        for(SkelatalAgent a : agents){
+            if(a.isWithinRangeOfBorder(VectorAgent.SHORT_VIS_RANGE + (int)a.getSpeed())){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void runForVerbose(String simId, int count, String outputFolder) {
 
         // write header here
@@ -248,7 +259,10 @@ public class AgentService {
         ArrayList<SkelatalAgent> buffer = new ArrayList<SkelatalAgent>();
         int x = 0;
         while (x++ < count) {
-
+            
+            if(anyAgentsNearBorder(getAllAgents(simId))){
+                x = count+1;
+            }
             runAgents(simId);
             buffer.addAll(getAllAgents(simId));
             exportAgents(buffer, outputFolder, simId);

@@ -47,6 +47,9 @@ import strategy.updater.specialized.determinedwalker.DeterminedEasternWalkableDi
 import strategy.updater.specialized.opportunistic.OppoturnisticRightAnglesEasternDirectionUpdater;
 import strategy.updater.specialized.pensivewalker.PensiveEasternWalkableDirectionUpdater;
 import strategy.updater.specialized.rightangles.RightAnglesAdaptiveEasternDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveNorthernDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveSouthernDirectionUpdater;
+import strategy.updater.specialized.rightangles.RightAnglesAdaptiveWesternDirectionUpdater;
 import strategy.updater.specialized.routesampler.OutAndBackEasternDirectionUpdater;
 import strategy.updater.specialized.routesampler.OutAndBackNorthernDirectionUpdater;
 import strategy.updater.specialized.routesampler.OutAndBackSouthernDirectionUpdater;
@@ -72,7 +75,11 @@ public class FSMFactory {
         DETERMINED_EAST_WEST("determined east or west"),
         ADAPTIVE_EAST_WEST("mostly east and west"),
         ADAPTIVE_NORTH_SOUTH("mostly north and south"),
-        ADAPTIVE_RIGHT_ANGLES("mostly north and south"),
+        ADAPTIVE_SOUTH_NORTH("mostly south then north"),
+        ADAPTIVE_RIGHT_ANGLES_EAST("mostly east"),
+        ADAPTIVE_RIGHT_ANGLES_NORTH("mostly north"),
+        ADAPTIVE_RIGHT_ANGLES_SOUTH("mostly south"),
+        ADAPTIVE_RIGHT_ANGLES_WEST("mostly west"),
         OPPORTUNISTIC_RIGHT_ANGLES("seeks for the far field"),
         ROUTE_SAMPLER("route sampling"),
         UAV_NORTH("uav north"),
@@ -395,11 +402,35 @@ public class FSMFactory {
             return updaters;
         }
     }
+    
+    private static class AdaptiveSouthNorthWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            AdaptiveNorthernWalkableDirectionUpdater adaptNorth = new AdaptiveNorthernWalkableDirectionUpdater();
+            AdaptiveSouthernWalkableDirectionUpdater adaptSouth = new AdaptiveSouthernWalkableDirectionUpdater();
+
+            IsStuckConditionChecker amyItheStuckNorth = new IsStuckConditionChecker();
+            adaptNorth.setConditionChecker(amyItheStuckNorth);
+            amyItheStuckNorth.setNextState(adaptSouth);
+
+            IsStuckConditionChecker amyItheStuckSouth = new IsStuckConditionChecker();
+            adaptSouth.setConditionChecker(amyItheStuckSouth);
+            amyItheStuckSouth.setNextState(adaptNorth);
+
+            updaters.add(adaptSouth);
+
+            return updaters;
+        }
+    }
 
     /**
      * When stuck it chooses the considers the best right angle direction
      */
-    private static class AdaptiveRightAnglesWalkableWanderMaker implements FSMMaker {
+    private static class AdaptiveRightAnglesEasternWalkableWanderMaker implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -408,6 +439,51 @@ public class FSMFactory {
             RightAnglesAdaptiveEasternDirectionUpdater rightEast = new RightAnglesAdaptiveEasternDirectionUpdater();
             rightEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.EAST));
 
+
+            updaters.add(rightEast);
+
+            return updaters;
+        }
+    }
+    
+    private static class AdaptiveRightAnglesNorthWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            RightAnglesAdaptiveNorthernDirectionUpdater rightNorth = new RightAnglesAdaptiveNorthernDirectionUpdater();
+            rightNorth.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.NORTH));
+
+            updaters.add(rightNorth);
+
+            return updaters;
+        }
+    }
+    
+    private static class AdaptiveRightAnglesSouthWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            RightAnglesAdaptiveSouthernDirectionUpdater rightSouth = new RightAnglesAdaptiveSouthernDirectionUpdater();
+            rightSouth.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.SOUTH));
+
+            updaters.add(rightSouth);
+
+            return updaters;
+        }
+    }
+    
+    private static class AdaptiveRightAnglesWestWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+            RightAnglesAdaptiveWesternDirectionUpdater rightEast = new RightAnglesAdaptiveWesternDirectionUpdater();
+            rightEast.setConditionChecker(new RightAnglesWhenStuckConditionChecker(Direction.WEST));
 
             updaters.add(rightEast);
 
@@ -629,7 +705,11 @@ public class FSMFactory {
         machineMap.put(MachineName.DETERMINED_EAST_WEST, new DeterminedWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_EAST_WEST, new AdaptiveEastWestWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
-        machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES, new AdaptiveRightAnglesWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_SOUTH_NORTH, new AdaptiveSouthNorthWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES_EAST, new AdaptiveRightAnglesEasternWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES_WEST, new AdaptiveRightAnglesWestWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES_SOUTH, new AdaptiveRightAnglesSouthWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES_NORTH, new AdaptiveRightAnglesNorthWalkableWanderMaker());
         machineMap.put(MachineName.OPPORTUNISTIC_RIGHT_ANGLES, new OpportunisticRightAnglesWalkableWanderMaker());
         machineMap.put(MachineName.ROUTE_SAMPLER, new RouteSamplingWalkableWanderMaker());
         

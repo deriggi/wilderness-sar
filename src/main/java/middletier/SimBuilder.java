@@ -11,14 +11,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import raster.domain.Raster2D;
 import raster.domain.agent.AgentName;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.SkelatalAgent;
-import raster.domain.agent.VectorAgent;
 
 /**
  *
@@ -50,7 +48,10 @@ public class SimBuilder {
         SimBuilder sim = new SimBuilder();
         int i = 0;
         while(i++ < 100){
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_EAST_WEST, AgentName.UAV, 1000, "adaptive_east_west_2");
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_EAST, AgentName.UAV, 1000, "adaptive_ra_east_vs");
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_NORTH, AgentName.UAV, 1000, "adaptive_ra_north_vs");
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_WEST, AgentName.UAV, 1000, "adaptive_ra_west_vs");
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_SOUTH, AgentName.UAV, 1000, "adaptive_ra_south_vs");
         }
     }
     

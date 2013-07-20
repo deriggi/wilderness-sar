@@ -30,7 +30,6 @@ public class RightAnglesAdaptiveSouthernDirectionUpdater extends SkelatalDirecti
         return "east walkable";
     }
     // 16 for a moderately healty walker
-    private int visibilityRadius = 10;
     private Direction lastDirection = null;
 
     @Override
@@ -42,7 +41,7 @@ public class RightAnglesAdaptiveSouthernDirectionUpdater extends SkelatalDirecti
         Direction optimalDirection = null;
         ArrayList<SlopeDataCell> bestCells = null;
 
-        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> southernCells = raster.getSouthVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (!directionEquals(lastDirection, Direction.NORTH)
                 && southernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = southernCells.size();
@@ -50,7 +49,7 @@ public class RightAnglesAdaptiveSouthernDirectionUpdater extends SkelatalDirecti
             bestCells = southernCells;
         }
 
-        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> easternCells = raster.getEastVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.WEST)
                 && easternCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = easternCells.size();
@@ -58,7 +57,7 @@ public class RightAnglesAdaptiveSouthernDirectionUpdater extends SkelatalDirecti
             bestCells = easternCells;
         }
 
-        ArrayList<SlopeDataCell> westernCells = raster.getWestVisibleCells( loc, visibilityRadius, VectorAgent.WALKABLE_SLOPE);
+        ArrayList<SlopeDataCell> westernCells = raster.getWestVisibleCells( loc, VectorAgent.SHORT_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         if (GameUtils.percentChanceTrue(0.20f) && !directionEquals(lastDirection, Direction.EAST)
                 && westernCells.size() > maxVisibleCellCount) {
             maxVisibleCellCount = westernCells.size();
