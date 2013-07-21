@@ -96,8 +96,7 @@ public class AgentService {
 
     }
 
-    private void exportAgents(List<SkelatalAgent> agents, String outputFolderName, String simId) {
-        String baseOut = "C:\\agentout\\" + outputFolderName + "\\";
+    private void exportAgents(List<SkelatalAgent> agents, String baseOut, String simId) {
         new File(baseOut).mkdirs();
 
         StringBuilder sb = new StringBuilder();
@@ -247,11 +246,11 @@ public class AgentService {
         return false;
     }
     
-    public void runForVerbose(String simId, int count, String outputFolder) {
+    public void runForVerbose(String simId, int count, String outputFolder, SimBuilder.BBox spot) {
 
         // write header here
         String header = "longitude, latitude, avgdlastfifty, dotproductavg";
-        String root = new StringBuilder().append("C:\\agentout\\").append(outputFolder).append("\\").toString();
+        String root = new StringBuilder().append("C:\\agentout\\").append(spot.toString()).append("\\").append(outputFolder).append("\\").toString();
         String filePath = new StringBuilder().append(root).append(simId).append(FileExportHelper.CSV).toString();
 
         new File(root).mkdirs();
@@ -265,12 +264,12 @@ public class AgentService {
             }
             runAgents(simId);
             buffer.addAll(getAllAgents(simId));
-            exportAgents(buffer, outputFolder, simId);
+            exportAgents(buffer, root, simId);
             buffer.clear();
 
         }
         if (buffer.size() > 0) {
-            exportAgents(buffer, outputFolder, simId);
+            exportAgents(buffer, root, simId);
             buffer.clear();
         }
         clearAgents(simId);

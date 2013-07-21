@@ -77,6 +77,7 @@ public class FSMFactory {
         PENSIVE_EAST_WEST("east or maybe west"),
         DETERMINED_EAST_WEST("determined east or west"),
         ADAPTIVE_EAST_WEST("mostly east and west"),
+        ADAPTIVE_WEST_EAST("mostly west and east"),
         ADAPTIVE_NORTH_SOUTH("mostly north and south"),
         ADAPTIVE_SOUTH_NORTH("mostly south then north"),
         ADAPTIVE_RIGHT_ANGLES_EAST("mostly east"),
@@ -362,6 +363,31 @@ public class FSMFactory {
     }
 
     private static class AdaptiveEastWestWalkableWanderMaker implements FSMMaker {
+
+        @Override
+        public List<DirectionUpdater> makeMachine() {
+
+            List<DirectionUpdater> updaters = new ArrayList<DirectionUpdater>();
+
+            AdaptiveEasternWalkableDirectionUpdater adaptEast = new AdaptiveEasternWalkableDirectionUpdater();
+            AdaptiveWesternWalkableDirectionUpdater adaptWest = new AdaptiveWesternWalkableDirectionUpdater();
+
+            IsStuckConditionChecker amyItheStuckEast = new IsStuckConditionChecker();
+            adaptEast.setConditionChecker(amyItheStuckEast);
+            amyItheStuckEast.setNextState(adaptWest);
+
+            IsStuckConditionChecker amyItheStuckWest = new IsStuckConditionChecker();
+            adaptWest.setConditionChecker(amyItheStuckWest);
+            amyItheStuckWest.setNextState(adaptEast);
+
+            updaters.add(adaptEast);
+
+            return updaters;
+        }
+    }
+    
+    
+    private static class AdaptiveWestEastWalkableWanderMaker implements FSMMaker {
 
         @Override
         public List<DirectionUpdater> makeMachine() {
@@ -753,6 +779,7 @@ public class FSMFactory {
         machineMap.put(MachineName.PENSIVE_EAST_WEST, new PensiveEastWestWanderMaker());
         machineMap.put(MachineName.DETERMINED_EAST_WEST, new DeterminedWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_EAST_WEST, new AdaptiveEastWestWalkableWanderMaker());
+        machineMap.put(MachineName.ADAPTIVE_WEST_EAST, new AdaptiveWestEastWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_NORTH_SOUTH, new AdaptiveNorthSouthWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_SOUTH_NORTH, new AdaptiveSouthNorthWalkableWanderMaker());
         machineMap.put(MachineName.ADAPTIVE_RIGHT_ANGLES_EAST, new AdaptiveRightAnglesEasternWalkableWanderMaker());

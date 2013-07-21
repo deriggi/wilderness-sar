@@ -25,18 +25,28 @@ import raster.domain.agent.SkelatalAgent;
 public class SimBuilder {
 
     private static final Logger log = Logger.getLogger(SimBuilder.class.getName());
-    // north
-    // http://localhost:8080/wisar/q/agent/createagent/-116.82260513305663/40.40186269942073
-    double[] north = new double[]{-116.82260513305663, 40.40186269942073};
-    //south
-    // http://localhost:8080/wisar/q/agent/createagent/-116.81419372558595/40.37205123555801
-    double[] south = new double[]{-116.81419372558595, 40.37205123555801};
-    // east
-//        http://localhost:8080/wisar/q/agent/createagent/-116.81213378906249/40.39075031913329
-    double[] east = new double[]{-116.81213378906249, 40.39075031913329};
-    // west
-    double[] west = new double[]{-116.83084487915039, 40.38891986882411};
-
+    
+    
+    public enum BBox {
+        
+        SPOT_1(new double[]{-116.82260513305663,40.40186269942073}, 
+                new double[]{-116.81419372558595, 40.37205123555801}, 
+                new double[]{-116.81213378906249, 40.39075031913329},
+                new double[]{-116.83084487915039, 40.38891986882411}),
+        
+        SPOT_2(new double[]{-116.76132202148436,40.41924662614147}, 
+                new double[]{-116.7491340637207, 40.41218903196705}, 
+                new double[]{-116.7491340637207, 40.41218903196705},
+                new double[]{-116.76801681518553, 40.410620577175244});
+        
+        BBox(double[] north, double[] south, double[] east, double[] west){
+            this.north = north; this.south = south; this.east = east; this.west = west;
+        }
+        
+        private double[] north, south, east, west;
+        
+    }
+    
     public static void main(String[] args) {
 //        new SimBuilder().runny();
         // sim id
@@ -48,22 +58,22 @@ public class SimBuilder {
         SimBuilder sim = new SimBuilder();
         int i = 0;
         while(i++ < 100){
-            sim.runVerboseAgent(FSMFactory.MachineName.ROUTE_SAMPLER, AgentName.UAV, 2000, "route_sampler");
+            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_EAST_WEST, AgentName.UAV, 2000,  BBox.SPOT_2);
         }
     }
     
-    private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder){
+    private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps,  BBox randomBox){
         // create an agent of each type
         String simId = SimId.getNewSimId();
-        double[] randy = getRandomPoint(north, south, east, west);
+        double[] randy = getRandomPoint(randomBox);
         createAgent(randy[0], randy[1], name, machine, simId);
-        AgentService.get().runForVerbose(simId, steps, exportFolder);
+        AgentService.get().runForVerbose(simId, steps, machine.toString(), randomBox);
     }
     
-    private void runAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder){
+    private void runAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder, BBox randomBox){
         // create an agent of each type
         String simId = SimId.getNewSimId();
-        double[] randy = getRandomPoint(north, south, east, west);
+        double[] randy = getRandomPoint(randomBox);
         createAgent(randy[0], randy[1], name, machine, simId);
         AgentService.get().runFor(simId, steps, exportFolder);
     }
@@ -136,7 +146,7 @@ public class SimBuilder {
             delay = getRandomFrom(500, 1500);
         }
 
-        double[] randy = getRandomPoint(north, south, east, west);
+        double[] randy = getRandomPoint(BBox.SPOT_1);
         createAgent(randy[0], randy[1], name, machine, simId, delay);
         log.log(Level.INFO, "created {0} {1} ", new String[]{name.toString(), machine.toString(), Integer.toString(delay)});
 
@@ -146,14 +156,14 @@ public class SimBuilder {
 
         // get sim Id
         String simId = SimId.getNewSimId();
-        double[] randy = getRandomPoint(north, south, east, west);
+        double[] randy = getRandomPoint(BBox.SPOT_1);
 
         createAgent(randy[0], randy[1], AgentName.LOST, FSMFactory.MachineName.ADAPTIVE_EAST_WEST, simId);
 
-        randy = getRandomPoint(north, south, east, west);
+        randy = getRandomPoint(BBox.SPOT_1);
         createAgent(randy[0], randy[1], AgentName.UAV, FSMFactory.MachineName.EAST_WEST_LAWN_MOWER, simId);
 
-        randy = getRandomPoint(north, south, east, west);
+        randy = getRandomPoint(BBox.SPOT_1);
         createAgent(randy[0], randy[1], AgentName.UAV, FSMFactory.MachineName.EAST_WEST_LAWN_MOWER, simId);
 
 
@@ -162,6 +172,10 @@ public class SimBuilder {
 
     }
 
+    public double[] getRandomPoint(BBox box){
+        return getRandomPoint(box.north, box.south, box.east, box.west);
+    }
+    
     public double[] getRandomPoint(double[] north, double[] south, double[] east, double[] west) {
 
 
@@ -219,7 +233,7 @@ public class SimBuilder {
 
         int i = 0;
         while (i++ < 20) {
-            double[] randy = sim.getRandomPoint(sim.north, sim.south, sim.east, sim.west);
+            double[] randy = sim.getRandomPoint(BBox.SPOT_1);
             System.out.println(randy[0] + " " + randy[1]);
         }
 

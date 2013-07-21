@@ -57,7 +57,7 @@ public abstract class SkelatalOppoturnisticRightAnglesDirectionUpdater extends S
         // 15 percent considering the big field to our right or left
         log.info("considering an north south field");
 
-        float maxCellCount = VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE;
+        float maxCellCount = (float)Math.PI*VectorAgent.LONG_VIS_RANGE * VectorAgent.LONG_VIS_RANGE/2.0f;
         ArrayList<SlopeDataCell> northFarCells = raster.getNorthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
         ArrayList<SlopeDataCell> southFarCells = raster.getSouthVisibleCells(loc, VectorAgent.LONG_VIS_RANGE, VectorAgent.WALKABLE_SLOPE);
 
@@ -120,7 +120,7 @@ public abstract class SkelatalOppoturnisticRightAnglesDirectionUpdater extends S
         if (eastPortion > WALKABLE_PORTION_THRESHOLD || westPortion > WALKABLE_PORTION_THRESHOLD) {
 
             log.info("settling on a far field");
-            va.setConsiderAFieldChance(va.getConsiderAFieldChance() / 2.0f);
+            va.setConsiderAFieldChance(va.getConsiderAFieldChance() / 4.0f);
             log.log(Level.INFO, "percent chance is now  {0} ", va.getConsiderAFieldChance());
 
             DirectionUpdater du = null;

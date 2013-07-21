@@ -27,7 +27,7 @@ public class VectorAgent extends SkelatalAgent {
     // constants, 'hey man you should use enums'
     public static final float WALKABLE_SLOPE = 0.18f;
     public static final int SHORT_VIS_RANGE = 25;
-    public static final int LONG_VIS_RANGE = 70;
+    public static final int LONG_VIS_RANGE = 80;
 
     public Strategy getMovementStrategy() {
         return strategies.get(strategyIndex);
