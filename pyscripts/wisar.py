@@ -5,9 +5,13 @@ def getFiles(folder):
 	children = os.listdir(folder)
 	filesOnly = []
 	for c in children:
-		filesOnly.append(folder + c )
+		filesOnly.append(folder + '/'+ c )
 	return filesOnly
 
+
+def getLeafFolderName(folderPath):
+	folder = folderPath[folderPath.rfind('/')+1:]
+	return folder
 
 def appendToFile(filePath, line):
 	fileHandle = open(filePath, 'a')
@@ -157,7 +161,7 @@ def appendToStdvFile(inputfile, folder):
 	data = loadCsv(inputfile)
 	
 	line = []
-	line.append(folder)
+	line.append(getLeafFolderName(folder))
 	
 	line.append(str(averageColumn(1,data)))
 	line.append(str(stdv(1,data)))
@@ -176,13 +180,13 @@ def appendToStdvFile(inputfile, folder):
 #========================================
 # runners
 #========================================
-def runner(folder):
-	agentOutPath = 'C:/agentout/'+ folder + '/'
+def runner(agentOutPath):
+	
 	removeMetaFile(agentOutPath)
 	# list of files adaptiveratest2
 	fileList = getFiles(agentOutPath)
 
-	metadaFilePath = 'C:/agentout/' + folder + '/metadata.csv'
+	metadaFilePath = agentOutPath + '/metadata.csv'
 
 	appendToFile(metadaFilePath, makeHeader())
 
@@ -201,15 +205,15 @@ def runner(folder):
 	
 def addToSdtvFromMetadaFile(folder):
 	
-	fileList = getFiles('C:/agentout/'+ folder + '/')
+	fileList = getFiles(folder)
 	
 	for i in range ( 0, len(fileList) ):
 		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
-			appendToStdvFile(fileList[i], folder)	
+			appendToStdvFile(fileList[i], folder ) 	
 
 def findFilesWhereAgentWentSouthOfOrigin(folder):
 	
-	fileList = getFiles('C:/agentout/'+ folder + '/')
+	fileList = getFiles(folder)
 	
 	for i in range ( 0, len(fileList) ):
 		data =loadCsv(fileList[i]);
@@ -223,15 +227,27 @@ def findFilesWhereAgentWentSouthOfOrigin(folder):
 # add header 
 # call runner on all
 # call addToStdfFromMeta on all
-addToSdtvFromMetadaFile('adaptive_ra_east_vs')
-addToSdtvFromMetadaFile('adaptive_ra_north_vs')
-addToSdtvFromMetadaFile('adaptive_ra_south_vs')
-addToSdtvFromMetadaFile('adaptive_ra_west_vs')
-addToSdtvFromMetadaFile('adaptive_south_north')
-addToSdtvFromMetadaFile('adaptive_north_south')
-addToSdtvFromMetadaFile('adaptive_east_west_2')
-addToSdtvFromMetadaFile('opportune_east')
-addToSdtvFromMetadaFile('opportune_south')
-addToSdtvFromMetadaFile('opportune_north')
-addToSdtvFromMetadaFile('opportune_west')
+# similarity of route
+# separation of final locations
+# r squared on start coord to number iterations 
+
+# rootPath = 'C:/agentout/'
+# folderList = os.listdir(rootPath)
+# for child in folderList:
+# 	if(os.path.isdir(rootPath + child )):
+# 		print rootPath +child
+
+#addToSdtvFromMetadaFile('C:/agentout/adaptive_ra_east_vs')
+
+# addToSdtvFromMetadaFile('adaptive_ra_east_vs')
+# addToSdtvFromMetadaFile('adaptive_ra_north_vs')
+# addToSdtvFromMetadaFile('adaptive_ra_south_vs')
+# addToSdtvFromMetadaFile('adaptive_ra_west_vs')
+# addToSdtvFromMetadaFile('adaptive_south_north')
+# addToSdtvFromMetadaFile('adaptive_north_south')
+# addToSdtvFromMetadaFile('adaptive_east_west_2')
+# addToSdtvFromMetadaFile('opportune_east')
+# addToSdtvFromMetadaFile('opportune_south')
+# addToSdtvFromMetadaFile('opportune_north')
+# addToSdtvFromMetadaFile('opportune_west')
 #print( calculateDistance(-116.828682431865, 40.3770334879529, -116.767784062181, 40.3853990342854) )
