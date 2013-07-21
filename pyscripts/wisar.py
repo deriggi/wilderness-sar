@@ -20,6 +20,7 @@ def calcMetadata(singleFile, column):
 	distance = calculateDistance(data[0][0], data[0][1], data[len(data)-1][0], data[len(data)-1][1])
 	averageDp = averageColumn(column, data)
 	countBelow = fractionBelowThreshold(2, data, 10)
+	
 
 	simid = singleFile[singleFile.rfind('/')+1:singleFile.rfind('.')]
 
@@ -41,7 +42,7 @@ def loadCsv(filename):
 
 	theData = []
 
-	for i in range(0, len(someList)):
+	for i in range(1, len(someList)):
 
 		lineParts = someList[i].split(',')
 		theData.append(lineParts)
@@ -62,26 +63,55 @@ def fractionBelowThreshold(index, dataArray, threshold):
 
 	return float(countBelow)/float(total)
 
+def stdv(index, dataArray):
+	avg = averageColumn(index,dataArray)
+	sumi = 0
+
+	for i in range(0, len(dataArray)):
+		element = dataArray[i][index]
+		diff = float(element) - avg
+		sumi += diff*diff
+
+	return math.sqrt(sumi/len(dataArray))	
 
 def averageColumn(index ,  dataArray):
 	
-	sum = 0.0
+	sumi = 0.0
 	n = 0
 	for i in range(0, len(dataArray)):
 		
 		element = dataArray[i][index]
 		
 		if(element != 'null'):
-			sum += float(dataArray[i][index]);
+			sumi += float(dataArray[i][index]);
 			n = n+1;
 
 	returnVal = 0;
 	if i == 0:
 		returnVal =  0
 	else:
-		returnVal = sum/n
-		print "dividing by ", n
+		returnVal = sumi/n
+		
 
+	return returnVal
+
+def removeMetaFile(folder):
+	fileList = getFiles(folder)
+	for i in range ( 0, len(fileList) ):
+		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
+			os.remove(fileList[i])
+
+
+def isLastElementLessThan(column ,  dataArray, threshold):
+	
+	sum = 0.0
+	n = 0
+		
+	element = dataArray[len(dataArray)-1][column]
+	returnVal = False
+	if	element < threshold:
+		returnVal = True
+		
 	return returnVal
 
 def calculateDistance(lon1, lat1, lon2, lat2):
@@ -108,12 +138,53 @@ def makeHeader():
 
 	return ','.join(header)
 
-def runner():
+def makeStdvHeader():
+	header = [];
+	header.append('behavior')
+	
+	header.append('avgvaveragedotproduct')
+	header.append('stdvaveragedotproduct')
+	
+	header.append('avgtotaldistance')
+	header.append('stdvtotaldistance')
+	
+	header.append('avgfractiondistbelowten')
+	header.append('stdvfractiondistbelowten')
 
-	# list of files
-	fileList = getFiles('C:/agentout/adaptiveratest2/')
+	return ','.join(header)
 
-	appendToFile('C:/agentout/adaptiveratest2/metadata.csv', makeHeader())
+def appendToStdvFile(inputfile, folder):
+	data = loadCsv(inputfile)
+	
+	line = []
+	line.append(folder)
+	
+	line.append(str(averageColumn(1,data)))
+	line.append(str(stdv(1,data)))
+	
+	line.append(str(averageColumn(2,data)))
+	line.append(str(stdv(2,data)))
+
+	line.append(str(averageColumn(3,data)))
+	line.append(str(stdv(3,data)))
+	
+	outputFile = 'C:/agentout/stdv.csv'
+	
+	appendToFile(outputFile , ','.join(line))
+
+
+#========================================
+# runners
+#========================================
+def runner(folder):
+	agentOutPath = 'C:/agentout/'+ folder + '/'
+	removeMetaFile(agentOutPath)
+	# list of files adaptiveratest2
+	fileList = getFiles(agentOutPath)
+
+	metadaFilePath = 'C:/agentout/' + folder + '/metadata.csv'
+
+	appendToFile(metadaFilePath, makeHeader())
 
 	for i in range ( 0, len(fileList) ):
 
@@ -123,6 +194,44 @@ def runner():
 		metadata = calcMetadata(fileList[i], 3)
 
 		# append to master file
-		appendToFile('C:/agentout/adaptiveratest2/metadata.csv', metadata)
+		appendToFile(metadaFilePath, metadata)
 
-runner()
+
+	# stdv appendToFile(outputFile, makeStdvHeader())
+	
+def addToSdtvFromMetadaFile(folder):
+	
+	fileList = getFiles('C:/agentout/'+ folder + '/')
+	
+	for i in range ( 0, len(fileList) ):
+		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
+			appendToStdvFile(fileList[i], folder)	
+
+def findFilesWhereAgentWentSouthOfOrigin(folder):
+	
+	fileList = getFiles('C:/agentout/'+ folder + '/')
+	
+	for i in range ( 0, len(fileList) ):
+		data =loadCsv(fileList[i]);
+		if data[len(data)-1][1] < data[0][1]:
+			print fileList[i]
+
+
+
+# appendToFile('C:/agentout/stdv.csv', makeStdvHeader())
+# remove stdv file
+# add header 
+# call runner on all
+# call addToStdfFromMeta on all
+addToSdtvFromMetadaFile('adaptive_ra_east_vs')
+addToSdtvFromMetadaFile('adaptive_ra_north_vs')
+addToSdtvFromMetadaFile('adaptive_ra_south_vs')
+addToSdtvFromMetadaFile('adaptive_ra_west_vs')
+addToSdtvFromMetadaFile('adaptive_south_north')
+addToSdtvFromMetadaFile('adaptive_north_south')
+addToSdtvFromMetadaFile('adaptive_east_west_2')
+addToSdtvFromMetadaFile('opportune_east')
+addToSdtvFromMetadaFile('opportune_south')
+addToSdtvFromMetadaFile('opportune_north')
+addToSdtvFromMetadaFile('opportune_west')
+#print( calculateDistance(-116.828682431865, 40.3770334879529, -116.767784062181, 40.3853990342854) )
