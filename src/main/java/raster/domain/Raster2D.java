@@ -471,6 +471,18 @@ public class Raster2D {
     }
         
 
+    public double[][][] calculateViewShedAndForceVector(int column, int row, int radius) {
+
+        ArrayList<SlopeDataCell> visibleCells = getVisibleCells(column, row, radius);
+        float[] forceVector = calculateForcesAgainst(new int[]{column, row}, visibleCells);
+        
+        
+        double[][][] visibleGons = convertMapToCoords(myJoin(visibleCells));
+
+
+        return visibleGons;
+    }
+    
     public double[][][] calculateViewShed(int column, int row, int radius) {
 
         ArrayList<SlopeDataCell> visibleCells = getVisibleCells(column, row, radius);

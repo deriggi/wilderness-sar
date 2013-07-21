@@ -240,11 +240,11 @@ public abstract class SkelatalOutAndBackWalkableDirectionUpdater extends Skelata
 //            log.log(Level.INFO, "distance portion is {0} ", distancePortion);
         }
 
-        float denom = (float) (10 * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE) / 2.0f;
+        float denom = (float) (Math.PI * VectorAgent.SHORT_VIS_RANGE * VectorAgent.SHORT_VIS_RANGE) / 2.0f;
         int num = visibleCells.size();
         float visiblePortion = (float) (num / denom);
         float routeQuality = (float) (distancePortion + visiblePortion);
-//        log.log(Level.INFO, "num and denom are  {0} {1}", new Float[]{(float)num, denom});
+        log.log(Level.INFO, "num and denom are  {0} {1}", new Float[]{(float)num, denom});
         return routeQuality;
 
     }

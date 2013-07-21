@@ -240,7 +240,7 @@ public class AgentService {
 
     private boolean anyAgentsNearBorder(List<SkelatalAgent> agents){
         for(SkelatalAgent a : agents){
-            if(a.isWithinRangeOfBorder(VectorAgent.SHORT_VIS_RANGE + (int)a.getSpeed())){
+            if(a.isWithinRangeOfBorder(VectorAgent.LONG_VIS_RANGE + (int)a.getSpeed())){
                 return true;
             }
         }

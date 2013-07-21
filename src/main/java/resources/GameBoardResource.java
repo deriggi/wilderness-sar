@@ -43,22 +43,8 @@ public class GameBoardResource {
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         int[] centerPoint = raster.getPosition(lon, lat);
         int radius = 40;
+//        raster.calculateForcesAgainst(centerPoint, null);
 
-//        ArrayList<SlopeDataCell> cells = raster.calculateViewShed(centerPoint[0], centerPoint[1], radius);
-        
-
-//        int cellIndex = 0;
-//        for (SlopeDataCell cell : cells) {
-//            pois[cellIndex] = raster.getLonLat(cell.getColumn(), cell.getRow());
-//            cellIndex++;
-//        }
-//
-//        ArrayList<ArrayList<SlopeDataCell>> smallbox = raster.getSlopeDataNeighborhood(centerPoint[0], centerPoint[1], radius);
-//
-//        double[][] bbox = raster.getBBoxLatLon(smallbox);
-//
-//        Neighborhood nayb = new Neighborhood(bbox,pois, null);
-        log.info("viewsed request");
         double[][][] pois = raster.calculateViewShed(centerPoint[0], centerPoint[1], radius);
         log.info("viewshed response");
         return GsonGetter.get().toJson(pois);

@@ -48,10 +48,7 @@ public class SimBuilder {
         SimBuilder sim = new SimBuilder();
         int i = 0;
         while(i++ < 100){
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_EAST, AgentName.UAV, 1000, "adaptive_ra_east_vs");
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_NORTH, AgentName.UAV, 1000, "adaptive_ra_north_vs");
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_WEST, AgentName.UAV, 1000, "adaptive_ra_west_vs");
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_SOUTH, AgentName.UAV, 1000, "adaptive_ra_south_vs");
+            sim.runVerboseAgent(FSMFactory.MachineName.ROUTE_SAMPLER, AgentName.UAV, 2000, "route_sampler");
         }
     }
     
