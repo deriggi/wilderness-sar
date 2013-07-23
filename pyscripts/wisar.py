@@ -68,6 +68,7 @@ def fractionBelowThreshold(index, dataArray, threshold):
 
 	return float(countBelow)/float(total)
 
+
 def stdv(index, dataArray):
 	avg = averageColumn(index,dataArray)
 	sumi = 0
@@ -79,6 +80,15 @@ def stdv(index, dataArray):
 
 	return math.sqrt(sumi/len(dataArray))
 
+def sqrtAvgSumSquares(index, dataArray):
+	
+	sumi = 0
+
+	for i in range(0, len(dataArray)):
+		element = dataArray[i][index]
+		sumi += float(element)*float(element)
+
+	return math.sqrt(sumi/len(dataArray))
 
 
 
@@ -160,11 +170,14 @@ def makeStdvHeader():
 	header.append('avgfractiondistbelowten')
 	header.append('stdvfractiondistbelowten')
 
+	header.append('avgdistancetomeancenterlastpoint')
+	header.append('standarddistancelastpoint')
+
 	
 
 	return ','.join(header)
 
-def appendToStdvFile(inputfile, folder):
+def appendToStdvFile(inputfile, folder, outName, outputRoot):
 	data = loadCsv(inputfile)
 	
 	line = []
@@ -179,11 +192,14 @@ def appendToStdvFile(inputfile, folder):
 	line.append(str(averageColumn(3,data)))
 	line.append(str(stdv(3,data)))
 	
+	line.append(str(averageColumn(4,data)))
+	line.append(str(sqrtAvgSumSquares(4,data)))
+	
 	
 
 
 	
-	outputFile = 'C:/agentout/stdv.csv'
+	outputFile = outputRoot+outName+'.csv'
 	
 	appendToFile(outputFile , ','.join(line))
 
@@ -191,7 +207,7 @@ def appendToStdvFile(inputfile, folder):
 #========================================
 # runners
 #========================================
-def runner(agentOutPath):
+def summaraizeRoutes(agentOutPath):
 	
 	removeMetaFile(agentOutPath)
 	# list of files adaptiveratest2
@@ -213,15 +229,16 @@ def runner(agentOutPath):
 		appendToFile(metadaFilePath, metadata)
 
 
-	# stdv appendToFile(outputFile, makeStdvHeader())
 	
-def addToSdtvFromMetadaFile(folder):
 	
+def summaraizeBehaviors(folder, outName, outputRoot):
+	
+
 	fileList = getFiles(folder)
 
 	for i in range ( 0, len(fileList) ):
 		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
-			appendToStdvFile(fileList[i], folder ) 	
+			appendToStdvFile(fileList[i], folder, outName, outputRoot ) 	
 
 def findFilesWhereAgentWentSouthOfOrigin(folder):
 	
@@ -255,32 +272,35 @@ def meanCenterLastPoint(folder):
 	
 	return meancenter
 
-# appendToFile('C:/agentout/stdv.csv', makeStdvHeader())
-# remove stdv file
-# add header 
-# call runner on all
-# call addToStdfFromMeta on all
-# similarity of route
-# separation of final locations
-# r squared on start coord to number iterations 
 
-rootPath = 'C:/agentout/SPOT_2/'
-folderList = os.listdir(rootPath)
-for child in folderList:
-	if(os.path.isdir(rootPath + child )):
-		print runner(rootPath +child)
 
-#addToSdtvFromMetadaFile('C:/agentout/adaptive_ra_east_vs')
 
-# addToSdtvFromMetadaFile('adaptive_ra_east_vs')
-# addToSdtvFromMetadaFile('adaptive_ra_north_vs')
-# addToSdtvFromMetadaFile('adaptive_ra_south_vs')
-# addToSdtvFromMetadaFile('adaptive_ra_west_vs')
-# addToSdtvFromMetadaFile('adaptive_south_north')
-# addToSdtvFromMetadaFile('adaptive_north_south')
-# addToSdtvFromMetadaFile('adaptive_east_west_2')
-# addToSdtvFromMetadaFile('opportune_east')
-# addToSdtvFromMetadaFile('opportune_south')
-# addToSdtvFromMetadaFile('opportune_north')
-# addToSdtvFromMetadaFile('opportune_west')
-#print( calculateDistance(-116.828682431865, 40.3770334879529, -116.767784062181, 40.3853990342854) )
+
+#===============================
+# summarize each behavior
+#===============================
+outputRoot = 'C:/agentout/'
+spot = "SPOT_2"
+def runBehaviorSummary(outputRoot, spot):
+	os.remove(outputRoot + spot + '.csv')
+	rootPath = outputRoot + spot + '/'
+	appendToFile(outputRoot + spot + '.csv', makeStdvHeader())
+	folderList = os.listdir(rootPath)
+	for child in folderList:
+		if(os.path.isdir(rootPath + child )):
+			summaraizeBehaviors(rootPath +child, spot, outputRoot)
+
+
+#===============================
+# collec metadata for each route
+#===============================
+def runRouteSummary(outputRoot, spot):
+	rootPath = outputRoot + spot+ '/'
+	folderList = os.listdir(rootPath)
+	for child in folderList:
+		if(os.path.isdir(rootPath + child )):
+			summaraizeRoutes(rootPath +child)
+
+
+runRouteSummary(outputRoot, spot)
+runBehaviorSummary(outputRoot, spot)
