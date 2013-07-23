@@ -18,7 +18,7 @@ def appendToFile(filePath, line):
 	fileHandle.write(line+'\n');
 	fileHandle.close()
 
-def calcMetadata(singleFile, column):
+def calcMetadata(singleFile, column, meanCenterLastPoint):
 	data =loadCsv(singleFile);
 
 	distance = calculateDistance(data[0][0], data[0][1], data[len(data)-1][0], data[len(data)-1][1])
@@ -33,6 +33,7 @@ def calcMetadata(singleFile, column):
 	line.append(str(averageDp))
 	line.append(str(distance))
 	line.append(str(countBelow))
+	line.append(str(calculateDistance(meanCenterLastPoint[0], meanCenterLastPoint[1], data[len(data)-1][0], data[len(data)-1][1])))
 
 	metadataLine = ','.join(line) 
 
@@ -76,7 +77,10 @@ def stdv(index, dataArray):
 		diff = float(element) - avg
 		sumi += diff*diff
 
-	return math.sqrt(sumi/len(dataArray))	
+	return math.sqrt(sumi/len(dataArray))
+
+
+
 
 def averageColumn(index ,  dataArray):
 	
@@ -139,6 +143,7 @@ def makeHeader():
 	header.append('averagedotproduct')
 	header.append('totaldistance')
 	header.append('fractiondistbelowten')
+	header.append('distancetomeancenterlastpoint')
 
 	return ','.join(header)
 
@@ -154,6 +159,8 @@ def makeStdvHeader():
 	
 	header.append('avgfractiondistbelowten')
 	header.append('stdvfractiondistbelowten')
+
+	
 
 	return ','.join(header)
 
@@ -172,6 +179,10 @@ def appendToStdvFile(inputfile, folder):
 	line.append(str(averageColumn(3,data)))
 	line.append(str(stdv(3,data)))
 	
+	
+
+
+	
 	outputFile = 'C:/agentout/stdv.csv'
 	
 	appendToFile(outputFile , ','.join(line))
@@ -189,13 +200,14 @@ def runner(agentOutPath):
 	metadaFilePath = agentOutPath + '/metadata.csv'
 
 	appendToFile(metadaFilePath, makeHeader())
+	meanCenter = meanCenterLastPoint(agentOutPath)
 
 	for i in range ( 0, len(fileList) ):
 
 		print ' working file ', fileList[i]
 
 		# get the metada 
-		metadata = calcMetadata(fileList[i], 3)
+		metadata = calcMetadata(fileList[i], 3, meanCenter)
 
 		# append to master file
 		appendToFile(metadaFilePath, metadata)
@@ -206,7 +218,7 @@ def runner(agentOutPath):
 def addToSdtvFromMetadaFile(folder):
 	
 	fileList = getFiles(folder)
-	
+
 	for i in range ( 0, len(fileList) ):
 		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
 			appendToStdvFile(fileList[i], folder ) 	
@@ -221,6 +233,27 @@ def findFilesWhereAgentWentSouthOfOrigin(folder):
 			print fileList[i]
 
 
+def meanCenterLastPoint(folder):
+	fileList = getFiles(folder)
+
+	sumx=0
+	sumy=0
+	tempData = None
+	for i in range( 0, len(fileList)):
+		if(fileList[i][fileList[i].rfind('/')+1:] != 'metadata.csv'):
+			tempData = loadCsv(fileList[i])
+			sumx += float(tempData[len(tempData)-1][0])
+			sumy += float(tempData[len(tempData)-1][1])
+		# avg sum last x, last y
+	
+	avgx = sumx/i
+	avgy = sumy/i
+
+	meancenter = []
+	meancenter.append(avgx)
+	meancenter.append(avgy)
+	
+	return meancenter
 
 # appendToFile('C:/agentout/stdv.csv', makeStdvHeader())
 # remove stdv file
@@ -231,11 +264,11 @@ def findFilesWhereAgentWentSouthOfOrigin(folder):
 # separation of final locations
 # r squared on start coord to number iterations 
 
-# rootPath = 'C:/agentout/'
-# folderList = os.listdir(rootPath)
-# for child in folderList:
-# 	if(os.path.isdir(rootPath + child )):
-# 		print rootPath +child
+rootPath = 'C:/agentout/SPOT_2/'
+folderList = os.listdir(rootPath)
+for child in folderList:
+	if(os.path.isdir(rootPath + child )):
+		print runner(rootPath +child)
 
 #addToSdtvFromMetadaFile('C:/agentout/adaptive_ra_east_vs')
 
