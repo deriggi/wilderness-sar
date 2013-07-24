@@ -19,6 +19,7 @@ import raster.domain.agent.IdLoc;
 import raster.domain.agent.SkelatalAgent;
 import strategy.WanderStrategy;
 import util.FileExportHelper;
+import util.WisarPaths;
 
 /**
  *
@@ -61,7 +62,7 @@ public class AgentService {
     }
 
     private void addRunawayLine(String simId, String outputFolder) {
-        String baseOut = "C:\\agentout\\" + outputFolder + "\\";
+        String baseOut = WisarPaths.AGENT_OUT + outputFolder + "\\";
         StringBuilder fileNameBuilder = new StringBuilder();
         fileNameBuilder.append(baseOut);
         fileNameBuilder.append(simId);
@@ -79,7 +80,7 @@ public class AgentService {
     }
 
     private void addFoundLine(String simId, String outputFolder, double[] loc) {
-        String baseOut = "C:\\agentout\\" + outputFolder + "\\";
+        String baseOut = WisarPaths.AGENT_OUT + outputFolder + "\\";
         StringBuilder fileNameBuilder = new StringBuilder();
         fileNameBuilder.append(baseOut);
         fileNameBuilder.append(simId);
@@ -126,7 +127,7 @@ public class AgentService {
             outputFolderName = SimId.getNewSimId() + "_OUT";
         }
 
-        String baseOut = "C:\\agentout\\" + outputFolderName + "\\";
+        String baseOut = WisarPaths.AGENT_OUT + outputFolderName + "\\";
         new File(baseOut).mkdirs();
 
         String simId = states.get(0).getSimId();
@@ -250,7 +251,7 @@ public class AgentService {
 
         // write header here
         String header = "longitude, latitude, avgdlastfifty, dotproductavg";
-        String root = new StringBuilder().append("C:\\agentout\\").append(spot.toString()).append("\\").append(outputFolder).append("\\").toString();
+        String root = new StringBuilder().append(WisarPaths.AGENT_OUT).append(spot.toString()).append("/").append(outputFolder).append("/").toString();
         String filePath = new StringBuilder().append(root).append(simId).append(FileExportHelper.CSV).toString();
 
         new File(root).mkdirs();
@@ -313,6 +314,11 @@ public class AgentService {
 
             if (writes++ > max) {
                 // add a runaway line
+                found = true;
+                addRunawayLine(simId, outName);
+            }
+            
+            if( anyAgentsNearBorder(getAllAgents(simId))){
                 found = true;
                 addRunawayLine(simId, outName);
             }

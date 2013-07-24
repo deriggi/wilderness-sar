@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,52 +26,81 @@ import raster.domain.agent.SkelatalAgent;
 public class SimBuilder {
 
     private static final Logger log = Logger.getLogger(SimBuilder.class.getName());
-    
-    
+
     public enum BBox {
-        
-        SPOT_1(new double[]{-116.82260513305663,40.40186269942073}, 
-                new double[]{-116.81419372558595, 40.37205123555801}, 
-                new double[]{-116.81213378906249, 40.39075031913329},
-                new double[]{-116.83084487915039, 40.38891986882411}),
-        
-        SPOT_2(new double[]{-116.76132202148436,40.41924662614147}, 
-                new double[]{-116.7491340637207, 40.41218903196705}, 
-                new double[]{-116.7491340637207, 40.41218903196705},
-                new double[]{-116.76801681518553, 40.410620577175244});
-        
-        BBox(double[] north, double[] south, double[] east, double[] west){
-            this.north = north; this.south = south; this.east = east; this.west = west;
+
+        SPOT_1(new double[]{-116.82260513305663, 40.40186269942073},
+        new double[]{-116.81419372558595, 40.37205123555801},
+        new double[]{-116.81213378906249, 40.39075031913329},
+        new double[]{-116.83084487915039, 40.38891986882411}),
+        SPOT_2(new double[]{-116.76132202148436, 40.41924662614147},
+        new double[]{-116.7491340637207, 40.41218903196705},
+        new double[]{-116.7491340637207, 40.41218903196705},
+        new double[]{-116.76801681518553, 40.410620577175244});
+
+        BBox(double[] north, double[] south, double[] east, double[] west) {
+            this.north = north;
+            this.south = south;
+            this.east = east;
+            this.west = west;
         }
-        
         private double[] north, south, east, west;
-        
     }
-    
+
     public static void main(String[] args) {
-//        new SimBuilder().runny();
+        // new SimBuilder().runny();
         // sim id
         // for each line
-        //type, behave
+        // type, behave
         // run until found simid
-
-//        new SimBuilder().runAgent(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES, AgentName.UAV, 1000, "adaptivera_test");
-        SimBuilder sim = new SimBuilder();
-        int i = 0;
-        while(i++ < 100){
-            sim.runVerboseAgent(FSMFactory.MachineName.ADAPTIVE_EAST_WEST, AgentName.UAV, 2000,  BBox.SPOT_2);
-        }
+        
+        new SimBuilder().processDirectory(new File("C:/agentin/"), 10);
     }
     
-    private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps,  BBox randomBox){
+    private void evaluateAllAgents(){
+        ArrayList<FSMFactory.MachineName> machines = new ArrayList<FSMFactory.MachineName>();
+        ArrayList<BBox> boxes = new ArrayList<BBox>();
+
+        machines.add(FSMFactory.MachineName.ADAPTIVE_EAST_WEST);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_WEST_EAST);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_NORTH_SOUTH);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_SOUTH_NORTH);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_EAST);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_NORTH);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_SOUTH);
+        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_WEST);
+        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_EAST);
+        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_NORTH);
+        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_SOUTH);
+        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_WEST);
+        machines.add(FSMFactory.MachineName.ROUTE_SAMPLER);
+        machines.add(FSMFactory.MachineName.PENSIVE_EAST_WEST);
+        machines.add(FSMFactory.MachineName.DETERMINED_EAST_WEST);
+
+        boxes.add(BBox.SPOT_1);
+        boxes.add(BBox.SPOT_2);
+
+
+        SimBuilder sim = new SimBuilder();
+        for (FSMFactory.MachineName machine : machines) {
+            for (BBox box : boxes) {
+                for (int i = 0; i < 100; i++) {
+                    sim.runVerboseAgent(machine, AgentName.UAV, 2000, box);
+                }
+            }
+
+        }
+    }
+
+    private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps, BBox randomBox) {
         // create an agent of each type
         String simId = SimId.getNewSimId();
         double[] randy = getRandomPoint(randomBox);
         createAgent(randy[0], randy[1], name, machine, simId);
         AgentService.get().runForVerbose(simId, steps, machine.toString(), randomBox);
     }
-    
-    private void runAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder, BBox randomBox){
+
+    private void runAgent(FSMFactory.MachineName machine, AgentName name, int steps, String exportFolder, BBox randomBox) {
         // create an agent of each type
         String simId = SimId.getNewSimId();
         double[] randy = getRandomPoint(randomBox);
@@ -95,7 +125,7 @@ public class SimBuilder {
             while (i++ < runsPerFile) {
                 String simId = SimId.getNewSimId();
                 readFile(f, simId);
-                AgentService.get().runUntilFound(simId, 100, f.getName().substring(0,f.getName().length() - 4));
+                AgentService.get().runUntilFound(simId, 100, f.getName().substring(0, f.getName().length() - 4));
                 service.clearAgents(simId);
             }
 
@@ -172,10 +202,10 @@ public class SimBuilder {
 
     }
 
-    public double[] getRandomPoint(BBox box){
+    public double[] getRandomPoint(BBox box) {
         return getRandomPoint(box.north, box.south, box.east, box.west);
     }
-    
+
     public double[] getRandomPoint(double[] north, double[] south, double[] east, double[] west) {
 
 

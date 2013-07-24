@@ -4,13 +4,15 @@
  */
 package middletier;
 
+import util.WisarPaths;
+
 /**
  *
  * @author Johnny
  */
 public enum BinaryFileConfig {
 //    myubuntu OUT_PATH("/home/john/javaplay/wisar/terraindata/grdn41w117_13.bte");
-     OUT_PATH("C:\\Users\\Johnny\\binaryterrain\\small.bte"); 
+     OUT_PATH(WisarPaths.BINARY_TERRAIN); 
 //     OUT_PATH("/usr/share/terraindata/grdn41w117_13.bte"); 
     private String outPath= null;
     
