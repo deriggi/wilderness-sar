@@ -26,8 +26,13 @@ def runner():
 	children = []
 	children.append('C:/agentout/SPOT_1.csv')
 	children.append('C:/agentout/SPOT_2.csv')
-	print(averageColumns(3, children))
+	avgDict = averageColumns(3, children)
+	stdvDict = averageColumns(4, children)
 	
+	dicts = []
+	dicts.append(stdvDict)
+	dicts.append(avgDict)
+	print( mergeDictionaries(dicts) )
 
 def appendToFile(filePath, line):
 	fileHandle = open(filePath, 'a')
@@ -35,7 +40,7 @@ def appendToFile(filePath, line):
 	fileHandle.close()
 
 
-
+# average the column in the file set
 def averageColumns(index, files):
 	behaves = {}
 	for i in range(0, len(files)):
@@ -48,13 +53,26 @@ def averageColumns(index, files):
 	for key in behaves:
 		behaves[key] = behaves[key]/len(files)
 
-	return behaves 	
+	return behaves
+
+# given a list of dictionaries merge to key, n1, n2
+def mergeDictionaries(manyDicts):
+	masterDict = {}
+
+	for i in range(0, len(manyDicts)):
+		for j in manyDicts[i]:
+			if j not in masterDict:
+				masterDict[j] = []
+			
+			masterDict[j].append( manyDicts[i][j] )
+	return masterDict
+
 # def collectRanks(metaFiles, column, outputfolder):
 	# get a meta csv, sort it by column, write it to rank folder by columnname file
 	# loadCsv()
 
 # give this a folder to a list of csvs with ranks
-# outfile = 'C:/agentout/rank/rankoutput.csv'
+outfile = 'C:/agentout/rank/allspotsummary.csv'
 # if os.path.isfile(outfile):
 # 	os.remove(outfile)
 # ranks = runner('C:/agentout/rank/')
