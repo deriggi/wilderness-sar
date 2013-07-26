@@ -280,9 +280,10 @@ def meanCenterLastPoint(folder):
 # summarize each behavior
 #===============================
 outputRoot = 'C:/agentout/'
-spot = "SPOT_2"
+spot = "SPOT_1"
 def runBehaviorSummary(outputRoot, spot):
-	os.remove(outputRoot + spot + '.csv')
+	if os.path.isfile(outputRoot + spot + '.csv'):
+		os.remove(outputRoot + spot + '.csv')
 	rootPath = outputRoot + spot + '/'
 	appendToFile(outputRoot + spot + '.csv', makeStdvHeader())
 	folderList = os.listdir(rootPath)
@@ -304,3 +305,5 @@ def runRouteSummary(outputRoot, spot):
 
 runRouteSummary(outputRoot, spot)
 runBehaviorSummary(outputRoot, spot)
+
+# todo: compare the last points of every route in a spot to see how different the algos are
