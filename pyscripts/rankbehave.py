@@ -22,23 +22,56 @@ def getFiles(folder):
 		filesOnly.append(folder + '/'+ c )
 	return filesOnly
 
+def getHeaderFromFile(somefile):
+	openfile = open(somefile, 'r')
+	firstline = list(openfile)[0];
+	openfile.close()
+
+	return firstline
+
 def runner():
+	outfile = 'C:/agentout/rank/allspotsummary.csv'
 	children = []
 	children.append('C:/agentout/SPOT_1.csv')
 	children.append('C:/agentout/SPOT_2.csv')
-	avgDict = averageColumns(3, children)
-	stdvDict = averageColumns(4, children)
 	
+	headerLine =  getHeaderFromFile('C:/agentout/SPOT_1.csv')
+	linelength = len(headerLine.split(','))
+
 	dicts = []
-	dicts.append(stdvDict)
-	dicts.append(avgDict)
-	print( mergeDictionaries(dicts) )
+
+	for i in range (1, linelength):
+		dicts.append(averageColumns(i,children))
+
+
+	#todo ,write these to a summary file!
+	if os.path.isfile(outfile):
+		os.remove(outfile)
+
+	appendToFileRaw(outfile,headerLine)
+	writeDictList(mergeDictionaries(dicts) , outfile)
+
+# def fromDictEntryToLine()
+def writeDictList(dictlist, outfile):
+	for key in dictlist:
+		line=[]
+		line.append(key)
+		line.extend(dictlist[key])
+		line = [str(x) for x in line]
+		csvline = ",".join(line)
+		appendToFile(outfile,csvline)
+
+
 
 def appendToFile(filePath, line):
 	fileHandle = open(filePath, 'a')
 	fileHandle.write(line+'\n');
 	fileHandle.close()
 
+def appendToFileRaw(filePath, line):
+	fileHandle = open(filePath, 'a')
+	fileHandle.write(line);
+	fileHandle.close()
 
 # average the column in the file set
 def averageColumns(index, files):
@@ -72,7 +105,6 @@ def mergeDictionaries(manyDicts):
 	# loadCsv()
 
 # give this a folder to a list of csvs with ranks
-outfile = 'C:/agentout/rank/allspotsummary.csv'
 # if os.path.isfile(outfile):
 # 	os.remove(outfile)
 # ranks = runner('C:/agentout/rank/')
