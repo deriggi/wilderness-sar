@@ -279,8 +279,7 @@ def meanCenterLastPoint(folder):
 #===============================
 # summarize each behavior
 #===============================
-outputRoot = 'C:/agentout/'
-spot = "SPOT_1"
+
 def runBehaviorSummary(outputRoot, spot):
 	if os.path.isfile(outputRoot + spot + '.csv'):
 		os.remove(outputRoot + spot + '.csv')
@@ -302,7 +301,8 @@ def runRouteSummary(outputRoot, spot):
 		if(os.path.isdir(rootPath + child )):
 			summaraizeRoutes(rootPath +child)
 
-
+outputRoot = 'C:/agentout/'
+spot = "SPOT_1"
 runRouteSummary(outputRoot, spot)
 runBehaviorSummary(outputRoot, spot)
 

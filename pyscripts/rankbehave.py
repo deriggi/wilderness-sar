@@ -22,14 +22,12 @@ def getFiles(folder):
 		filesOnly.append(folder + '/'+ c )
 	return filesOnly
 
-def runner(root):
-	children = getFiles(root)
-
-	behaviors = {}
-	for c in children:
-		applyRanks(behaviors,loadCsv(c), 1.0/len(children))
-
-	return behaviors
+def runner():
+	children = []
+	children.append('C:/agentout/SPOT_1.csv')
+	children.append('C:/agentout/SPOT_2.csv')
+	print(averageColumns(3, children))
+	
 
 def appendToFile(filePath, line):
 	fileHandle = open(filePath, 'a')
@@ -37,23 +35,29 @@ def appendToFile(filePath, line):
 	fileHandle.close()
 
 
-def writeRanks(ranks, outFile):
-	for key in ranks:
-		appendToFile(outfile, str(ranks[key]) + ',' + key)
 
+def averageColumns(index, files):
+	behaves = {}
+	for i in range(0, len(files)):
+		data = loadCsv(files[i])
+		for j in range (0, len(data)):
+			if data[j][0] not in behaves:
+				behaves[ data[j][0] ] = 0
+			behaves[ data[j][0] ] += float(data[j][index])
 
-def applyRanks(behaviors, dataFrame, weight):
-	
-	for i in range (0, len(dataFrame)):
-		if dataFrame[i][1] not in behaviors:
-			behaviors[dataFrame[i][1]] = 0
-		
-		behaviors[dataFrame[i][1]] += int(dataFrame[i][0])
+	for key in behaves:
+		behaves[key] = behaves[key]/len(files)
 
+	return behaves 	
+# def collectRanks(metaFiles, column, outputfolder):
+	# get a meta csv, sort it by column, write it to rank folder by columnname file
+	# loadCsv()
 
 # give this a folder to a list of csvs with ranks
-ranks = runner('C:/agentout/rank/')
-outfile = 'C:/agentout/rank/rankoutput.csv'
-if os.path.isfile(outfile):
-	os.remove(outfile)
-writeRanks(ranks, outfile)
+# outfile = 'C:/agentout/rank/rankoutput.csv'
+# if os.path.isfile(outfile):
+# 	os.remove(outfile)
+# ranks = runner('C:/agentout/rank/')
+
+runner()
+
