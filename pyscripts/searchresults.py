@@ -61,14 +61,16 @@ def makeMetaFiles(outputRoot, spot):
 
 def summarizeSearchResults(outputroot):
 	outs = getFiles(outputroot)
-	totals = {}
+	uavs = {}
+	agents = {}
+	meta = {}
 	# count, steps
-	totals['mower'] = [0,0]
-	totals['wander'] = [0,0]
-	totals['team'] = [0,0]
-	totals['meta'] = [0,0]
-	totals['nc'] = [0,0]
-	totals['lost'] = [0,0]
+	uavs['mower'] = [0,0,0]
+	uavs['wander'] = [0,0,0]
+	uavs['team'] = [0,0,0]
+	meta['meta'] = [0,0]
+	meta['nc'] = [0,0]
+	meta['lost'] = [0,0]
 
 
 	for i in range ( 0, len(outs) ):
@@ -85,42 +87,52 @@ def summarizeSearchResults(outputroot):
 		print 'loading ' + outs[i]
 		startLostAgentName = outs[i].rfind('/')+1
 		lostAgentName = outs[i][startLostAgentName : outs[i].find('1', startLostAgentName)-1]
-		if lostAgentName not in totals:
-			totals[lostAgentName] = [0,0]
+		if lostAgentName not in agents:
+			agents[lostAgentName] = [0,0]
+
+		if lostAgentName + '_' + key not in agents:
+			agents[lostAgentName + '_' + key] = [0,0]
 
 		data = loadCsv(outs[i], 1)
 		
 		for j in range(0,len(data)):
 
 			if(data[j][0] == 'FOUND'):
-				totals[key][0] += 1
-				totals[key][1] += float(data[j][1])
-				totals[lostAgentName][1] +=1
-
+				uavs[key][0] += 1
+				uavs[key][1] += float(data[j][1])
+				agents[lostAgentName][1] +=1
+				agents[lostAgentName + '_' + key][1] +=1
 			elif(data[j][0] == 'RUNAWAY'):
-				totals['lost'][0] += 1
-				totals['lost'][1] += float(data[j][1])
-				totals[lostAgentName][0] +=1
-		
+				meta['lost'][0] += 1
+				meta['lost'][1] += float(data[j][1])
+				uavs[key][2] += 1
+				agents[lostAgentName][0] +=1
+				agents[lostAgentName + '_' + key][0] +=1
 			if(data[j][0] != 'result'):
-				totals['meta'][0] += 1
+				meta['meta'][0] += 1
+
+
 				
 
-	return totals
+	return [uavs, agents, meta]
 
 def writeDict(outfile, dictthing):
 	appendToFile(outfile,"key,value")
 	for key in dictthing:
 		line=[]
-		line.append(key)	
-		line.append(dictthing[key][0])	
-		line.append(dictthing[key][1])	
+		line.append(key)
+		for j in range (0 , len(dictthing[key])):	
+			line.append(dictthing[key][j])	
+
 		line = [str(x) for x in line]
 		csvline = ",".join(line)
 		appendToFile(outfile,csvline)
 
 spot = 'SPOT_2'
-makeMetaFiles('C:/agentout/searchresults/',spot)
+# makeMetaFiles('C:/agentout/searchresults/',spot)
 data = summarizeSearchResults('C:/agentout/searchresults/'+spot)
-writeDict('C:/agentout/searchresults/' + spot + '/totals.csv', data)
+
+writeDict('C:/agentout/searchresults/' + spot + '/uavs.csv', 	data[0] )
+writeDict('C:/agentout/searchresults/' + spot + '/agents.csv', 	data[1] )
+writeDict('C:/agentout/searchresults/' + spot + '/meta.csv', 	data[2] )
 
