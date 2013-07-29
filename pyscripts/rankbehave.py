@@ -98,7 +98,7 @@ def averageColumns(index, files):
 
 # starting point to merge all metadata, give it spot_1 level folder
 
-def runRouteSummary(outputRoot, spot, mergedFileName):
+def mergeAllMetaDataFiles(outputRoot, spot, mergedFileName):
 	rootPath = outputRoot + spot+ '/'
 	folderList = os.listdir(rootPath)
 	outFileHandle = open(mergedFileName, 'a')
@@ -113,11 +113,50 @@ def runRouteSummary(outputRoot, spot, mergedFileName):
 					outFileHandle.write(oneMeta[s])
 	outFileHandle.close()
 
-	
+
+def mergeMetaFilesInFolderSet(folders, outFileName):
+	outFileHandle = open(outFileName, 'a')
+	header = getMetaHeader()
+	outFileHandle.write(header + '\n')
+
+	for folder in folders:
+		if(os.path.isdir(folder  )):
+			oneMeta = getMetaData(folder)
+			if(oneMeta != None):
+				for s in range(1, len(oneMeta)):
+					outFileHandle.write(oneMeta[s])
+
+	outFileHandle.close()
+
+def getFolderList(rootPath):
+	folderList = os.listdir(rootPath)
+	fullpathlist = []
+	for f in folderList:
+		if os.path.isdir(rootPath+f):
+			fullpathlist.append(rootPath+f)
+
+	fullpathlist.sort()
+	return fullpathlist
+
+#get two lists, run each pair through mergemetafiles
+def mergeMetaResultsByAgent(spot1, spot2):
+	lista = getFolderList(spot1)
+	listb = getFolderList(spot2)
+
+	if len(lista) != len(listb):
+		print 'alert the lists are not same'
+	else:
+		for i in range(0, len(lista)):
+			if listb[i][listb[i].rfind('/'):] != lista[i][lista[i].rfind('/'):]:  
+				print 'ALERT shouldnt merge ' + lista[i] + ' , ' + listb[i]
+			else:
+				print 'printing ' + lista[i]
+				mergeMetaFilesInFolderSet([ lista[i], listb[i] ], 'C:/agentout/mergedagentmetadata/' + listb[i][listb[i].rfind('/')+1:]+'_merged.csv')
+
 
 
 def getMetaHeader():
-	header = 'simid\,averagedotproduct,totaldistance,fractiondistbelowten,distancetomeancenterlastpoint'
+	header = 'simid,averagedotproduct,totaldistance,fractiondistbelowten,distancetomeancenterlastpoint'
 	return header
 	
 
@@ -145,6 +184,8 @@ def mergeDictionaries(manyDicts):
 
 
 # runner()
-runRouteSummary('C:/agentout/', 'SPOT_1', 'C:/agentout/SPOT_1/allmetadata.csv')
+#mergeAllMetaDataFiles('C:/agentout/', 'SPOT_1', 'C:/agentout/SPOT_1/allmetadata.csv')
+# mergeMetaFilesInFolderSet([ 'C:/agentout/SPOT_1/ROUTE_SAMPLER/', 'C:/agentout/SPOT_2/ROUTE_SAMPLER/'], 'C:/agentout/MERGED_ROUTE_SAMPLER.csv')
+mergeMetaResultsByAgent('C:/agentout/SPOT_1/', 'C:/agentout/SPOT_2/')
 
 # g

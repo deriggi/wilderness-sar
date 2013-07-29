@@ -113,11 +113,7 @@ def averageColumn(index ,  dataArray):
 
 	return returnVal
 
-def removeMetaFile(folder):
-	fileList = getFiles(folder)
-	for i in range ( 0, len(fileList) ):
-		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
-			os.remove(fileList[i])
+
 
 
 def isLastElementLessThan(column ,  dataArray, threshold):
@@ -176,6 +172,33 @@ def makeStdvHeader():
 	
 
 	return ','.join(header)
+
+
+#=====================================================================================
+# a starting point to processing combined metadta, use this for combining spot1 and 2
+#======================================================================================
+def processCombinedAgentMetadata(inputfile,  outfile):
+	data = loadCsv(inputfile)
+	
+	line = []
+	line.append( inputfile[inputfile.rfind('/')+1: inputfile.rfind('.csv')] )
+	
+	line.append(str(averageColumn(1,data)))
+	line.append(str(stdv(1,data)))
+	
+	line.append(str(averageColumn(2,data)))
+	line.append(str(stdv(2,data)))
+
+	line.append(str(averageColumn(3,data)))
+	line.append(str(stdv(3,data)))
+	
+	line.append(str(averageColumn(4,data)))
+	line.append(str(sqrtAvgSumSquares(4,data)))
+	
+	print 'writingn to ' + outfile
+	appendToFile(outfile , ','.join(line))
+
+
 
 def appendToStdvFile(inputfile, folder, outName, outputRoot):
 	data = loadCsv(inputfile)
@@ -301,9 +324,13 @@ def runRouteSummary(outputRoot, spot):
 		if(os.path.isdir(rootPath + child )):
 			summaraizeRoutes(rootPath +child)
 
-outputRoot = 'C:/agentout/'
-spot = "SPOT_1"
-runRouteSummary(outputRoot, spot)
-runBehaviorSummary(outputRoot, spot)
+
+
+# outputRoot = 'C:/agentout/'
+# spot = "SPOT_1"
+# runRouteSummary(outputRoot, spot)
+# runBehaviorSummary(outputRoot, spot)
+
+processCombinedAgentMetadata('C:/agentout/mergedagentmetadata/ADAPTIVE_EAST_WEST_merged.csv', 'C:/agentout/mergedagentmetadata/ADAPTIVE_EAST_WEST_merged_stdv.csv')
 
 # todo: compare the last points of every route in a spot to see how different the algos are
