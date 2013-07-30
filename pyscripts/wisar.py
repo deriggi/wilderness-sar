@@ -34,6 +34,10 @@ def calcMetadata(singleFile, column, meanCenterLastPoint):
 	line.append(str(distance))
 	line.append(str(countBelow))
 	line.append(str(calculateDistance(meanCenterLastPoint[0], meanCenterLastPoint[1], data[len(data)-1][0], data[len(data)-1][1])))
+	if(distance == 0):
+		line.append(str(0))
+	else:
+		line.append(str(math.log(distance)))
 
 	metadataLine = ','.join(line) 
 
@@ -116,6 +120,8 @@ def averageColumn(index ,  dataArray):
 
 
 
+
+
 def isLastElementLessThan(column ,  dataArray, threshold):
 	
 	sum = 0.0
@@ -127,6 +133,23 @@ def isLastElementLessThan(column ,  dataArray, threshold):
 		returnVal = True
 		
 	return returnVal
+
+def calculateZScore(meatadataFilePath,column):
+	metadata = loadCsv(meatadataFilePath)
+	avg  = 	averageColumn(column,metadata)
+	standardDeviation = 		stdv(column, metadata)
+	
+	for i in range (0, len(metadata)):
+		print metadata[i]
+		zscore = (float(metadata[i][column])-avg)/standardDeviation
+		metadata[i].append(zscore)
+
+	return metadata
+
+
+
+
+
 
 def calculateDistance(lon1, lat1, lon2, lat2):
 	R = 6371
@@ -150,6 +173,8 @@ def makeHeader():
 	header.append('totaldistance')
 	header.append('fractiondistbelowten')
 	header.append('distancetomeancenterlastpoint')
+	header.append('logdistance')
+	header.append('zscoretotaldistance')
 
 	return ','.join(header)
 
@@ -168,6 +193,9 @@ def makeStdvHeader():
 
 	header.append('avgdistancetomeancenterlastpoint')
 	header.append('standarddistancelastpoint')
+
+	header.append('ageragelogdistance')
+	header.append('averagezscore')
 
 	
 
@@ -198,6 +226,12 @@ def processCombinedAgentMetadata(inputfile,  outfile):
 	print 'writingn to ' + outfile
 	appendToFile(outfile , ','.join(line))
 
+def processMergedAgentData(rootFolder, outfile):
+	appendToFile(outfile, makeStdvHeader())
+
+	files = getFiles(rootFolder)
+	for agentfile  in files:
+		processCombinedAgentMetadata(agentfile, outfile)
 
 
 def appendToStdvFile(inputfile, folder, outName, outputRoot):
@@ -218,6 +252,9 @@ def appendToStdvFile(inputfile, folder, outName, outputRoot):
 	line.append(str(averageColumn(4,data)))
 	line.append(str(sqrtAvgSumSquares(4,data)))
 	
+	line.append(str(averageColumn(5,data)))
+
+	line.append(str(averageColumn(6,data)))
 	
 
 
@@ -226,7 +263,13 @@ def appendToStdvFile(inputfile, folder, outName, outputRoot):
 	
 	appendToFile(outputFile , ','.join(line))
 
-
+def removeMetaFile(folder):
+	fileList = getFiles(folder)
+	if len(fileList) < 2:
+		return
+	for i in range(0, len(fileList)):
+		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
+			os.remove(fileList[i])
 #========================================
 # runners
 #========================================
@@ -248,10 +291,32 @@ def summaraizeRoutes(agentOutPath):
 		# get the metada 
 		metadata = calcMetadata(fileList[i], 3, meanCenter)
 
+		
+		
 		# append to master file
 		appendToFile(metadaFilePath, metadata)
 
+	zscoredData = calculateZScore(metadaFilePath,2)
+	removeMetaFile(agentOutPath)
+	writeDataToCsv(makeHeader,zscoredData,metadaFilePath)
 
+def clipNewLines(row):
+	newRow = []
+	for element in row:
+		element = str(element)
+		if element.rfind('\n') != -1:
+			element = element[0:element.rfind('\n')]
+		newRow.append(element)
+	return newRow	
+
+def writeDataToCsv(header, data, path):
+	appendToFile(path, makeHeader())
+	for i in range(0, len(data)):
+		data[i] = clipNewLines(data[i])
+		# [str(x) for x in data[i]]
+		print data[i]
+		line = ','.join(data[i])
+		appendToFile(path, line)
 	
 	
 def summaraizeBehaviors(folder, outName, outputRoot):
@@ -326,11 +391,11 @@ def runRouteSummary(outputRoot, spot):
 
 
 
-# outputRoot = 'C:/agentout/'
-# spot = "SPOT_1"
-# runRouteSummary(outputRoot, spot)
-# runBehaviorSummary(outputRoot, spot)
+outputRoot = 'C:/agentout/'
+spot = "SPOT_1"
+runRouteSummary(outputRoot, spot)
+runBehaviorSummary(outputRoot, spot)
 
-processCombinedAgentMetadata('C:/agentout/mergedagentmetadata/ADAPTIVE_EAST_WEST_merged.csv', 'C:/agentout/mergedagentmetadata/ADAPTIVE_EAST_WEST_merged_stdv.csv')
+# processMergedAgentData('C:/agentout/mergedagentmetadata/', 'C:/agentout/combinedagentsummary.csv')
 
 # todo: compare the last points of every route in a spot to see how different the algos are

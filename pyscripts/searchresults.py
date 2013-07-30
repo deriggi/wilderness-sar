@@ -129,7 +129,7 @@ def writeDict(outfile, dictthing):
 		appendToFile(outfile,csvline)
 
 spot = 'SPOT_2'
-# makeMetaFiles('C:/agentout/searchresults/',spot)
+makeMetaFiles('C:/agentout/searchresults/',spot)
 data = summarizeSearchResults('C:/agentout/searchresults/'+spot)
 
 writeDict('C:/agentout/searchresults/' + spot + '/uavs.csv', 	data[0] )
