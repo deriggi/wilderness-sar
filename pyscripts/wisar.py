@@ -391,11 +391,11 @@ def runRouteSummary(outputRoot, spot):
 
 
 
-outputRoot = 'C:/agentout/'
-spot = "SPOT_1"
-runRouteSummary(outputRoot, spot)
-runBehaviorSummary(outputRoot, spot)
+# outputRoot = 'C:/agentout/'
+# spot = "SPOT_1"
+# runRouteSummary(outputRoot, spot)
+# runBehaviorSummary(outputRoot, spot)
 
-# processMergedAgentData('C:/agentout/mergedagentmetadata/', 'C:/agentout/combinedagentsummary.csv')
+processMergedAgentData('C:/agentout/mergedagentmetadata/', 'C:/agentout/combinedagentsummary.csv')
 
 # todo: compare the last points of every route in a spot to see how different the algos are
