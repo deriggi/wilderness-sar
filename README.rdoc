@@ -22,4 +22,4 @@ world, search and rescue teams could become more effective, less costly, and les
 
 This medley of psychology, technology, and wilderness is explored through the use of a bespoke agent based simulation in which lost persons are pitted against their own disorientation and a Nevada mountain range. Developing the simulation and running evaluations with various agent types revealed demonstrable effects of the agents’ ability to navigate unfamiliar terrain and their likelihood of being detected by person-seeking aerial vehicles. More thoughtful and less erratic lost-person behavior makes it more likely for the agent to travel far from its starting location. Lost persons considering a smaller set of options were more often detected by the search vehicles. From the air, teams that collaborated on route quality were more likely to make detections. Developing a set of nuanced lost person agents was the focus of the development. Further research could improve this study by building more diversity into the search vehicle behaviors and the geography of the wilderness.
 
-
+Section&nbsp;1[https://github.com/deriggi/wilderness-sar/wiki]
