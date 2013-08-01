@@ -1,4 +1,4 @@
-= Wilderness Search and Rescue
+= Wilderness Search and Rescue Simulation
 
 === Setup
 
