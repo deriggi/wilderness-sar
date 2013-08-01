@@ -1,6 +1,6 @@
 = Wilderness Search and Rescue Simulation
 
-=== Setup
+== Setup
 
 To play with this code you should have Java 6 or 7. It is highly recommended that you have Maven installed. With maven:
 
