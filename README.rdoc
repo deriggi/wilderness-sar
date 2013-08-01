@@ -13,7 +13,7 @@ that the behavior of a lost person is inextricably linked to how they perceive t
 presides, then behavior could be irrational, repetitive, and counter-intuitive. If a calm, disciplined, and 
 problem-solving mindset takes reign, then the patterns of motion are predictable and are often the product of a careful 
 evaluation of options. Regardless of a person’s mindset, some wilderness environments have within them only a few places
-traversable by someone with average athletic ability. Considering that, the combination of a person’s mindset and the 
+traversable by someone with average athletic ability. From the perspective of simulation and modeling, the combination of a person’s mindset and the 
 terrain on which they’re lost should be reasonable input variables into a model attempting to predict the lost person’s 
 most likely path. Taken a significant step further, if unmanned aerial vehicles enabled with terrain recognition and 
 navigation capabilities derived from basic artificial intelligence principles could harness such a model, then they 
