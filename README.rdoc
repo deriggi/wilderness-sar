@@ -6,7 +6,9 @@ To play with this code you should have Java 6 or 7. It is highly recommended tha
 
 * mvn package
 
-Then find the wisar.war file and deploy!
+Doing so will create two files: wisar.jar and wisar.war.  The jar can be used to run batch simulations. The war file is
+the web application
+
 == Abstract
 Search and rescue cases studies offer interesting insights into the thought process of a lost person. There is evidence 
 that the behavior of a lost person is inextricably linked to how they perceive the problem of being lost. If panic 
