@@ -1,0 +1,27 @@
+= Wilderness Search and Rescue Simulation
+
+== Setup
+
+To play with this code you should have Java 6 or 7. It is highly recommended that you have Maven installed. With maven:
+
+* mvn package
+
+Doing so will create two files: wisar.jar and wisar.war.  The jar can be used to run batch simulations. The war file is
+the web application
+
+== Abstract
+Search and rescue cases studies offer interesting insights into the thought process of a lost person. There is evidence 
+that the behavior of a lost person is inextricably linked to how they perceive the problem of being lost. If panic 
+presides, then behavior could be irrational, repetitive, and counter-intuitive. If a calm, disciplined, and 
+problem-solving mindset takes reign, then the patterns of motion are predictable and are often the product of a careful 
+evaluation of options. Regardless of a person’s mindset, some wilderness environments have within them only a few places
+traversable by someone with average athletic ability. From the perspective of simulation and modeling, the combination of a person’s mindset and the 
+terrain on which they’re lost should be reasonable input variables into a model attempting to predict the lost person’s 
+most likely path. Taken a significant step further, if unmanned aerial vehicles enabled with terrain recognition and 
+navigation capabilities derived from basic artificial intelligence principles could harness such a model, then they 
+should also be able to efficiently search for lost people across a space of wilderness. If achievable in the real 
+world, search and rescue teams could become more effective, less costly, and less dangerous to those doing the searching. 
+
+This medley of psychology, technology, and wilderness is explored through the use of a bespoke agent based simulation in which lost persons are pitted against their own disorientation and a Nevada mountain range. Developing the simulation and running evaluations with various agent types revealed demonstrable effects of the agents’ ability to navigate unfamiliar terrain and their likelihood of being detected by person-seeking aerial vehicles. More thoughtful and less erratic lost-person behavior makes it more likely for the agent to travel far from its starting location. Lost persons considering a smaller set of options were more often detected by the search vehicles. From the air, teams that collaborated on route quality were more likely to make detections. Developing a set of nuanced lost person agents was the focus of the development. Further research could improve this study by building more diversity into the search vehicle behaviors and the geography of the wilderness.
+
+Section&nbsp;1[https://github.com/deriggi/wilderness-sar/wiki]
