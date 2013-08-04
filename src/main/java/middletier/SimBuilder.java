@@ -54,31 +54,32 @@ public class SimBuilder {
         // type, behave
         // run until found simid
         
-        new SimBuilder().processDirectory(new File("C:/agentin/"), 10);
+//        new SimBuilder().processDirectory(new File("C:/agentin/"), 10);
+        new SimBuilder().evaluateAllAgents();
     }
     
     private void evaluateAllAgents(){
         ArrayList<FSMFactory.MachineName> machines = new ArrayList<FSMFactory.MachineName>();
         ArrayList<BBox> boxes = new ArrayList<BBox>();
 
-        machines.add(FSMFactory.MachineName.ADAPTIVE_EAST_WEST);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_EAST_WEST);
         machines.add(FSMFactory.MachineName.ADAPTIVE_WEST_EAST);
-        machines.add(FSMFactory.MachineName.ADAPTIVE_NORTH_SOUTH);
-        machines.add(FSMFactory.MachineName.ADAPTIVE_SOUTH_NORTH);
-        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_EAST);
-        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_NORTH);
-        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_SOUTH);
-        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_WEST);
-        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_EAST);
-        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_NORTH);
-        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_SOUTH);
-        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_WEST);
-        machines.add(FSMFactory.MachineName.ROUTE_SAMPLER);
-        machines.add(FSMFactory.MachineName.PENSIVE_EAST_WEST);
-        machines.add(FSMFactory.MachineName.DETERMINED_EAST_WEST);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_NORTH_SOUTH);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_SOUTH_NORTH);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_EAST);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_NORTH);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_SOUTH);
+//        machines.add(FSMFactory.MachineName.ADAPTIVE_RIGHT_ANGLES_WEST);
+//        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_EAST);
+//        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_NORTH);
+//        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_SOUTH);
+//        machines.add(FSMFactory.MachineName.OPPORTUNISTIC_RIGHT_ANGLES_WEST);
+//        machines.add(FSMFactory.MachineName.ROUTE_SAMPLER);
+//        machines.add(FSMFactory.MachineName.PENSIVE_EAST_WEST);
+//        machines.add(FSMFactory.MachineName.DETERMINED_EAST_WEST);
 
         boxes.add(BBox.SPOT_1);
-        boxes.add(BBox.SPOT_2);
+//        boxes.add(BBox.SPOT_2);
 
 
         SimBuilder sim = new SimBuilder();

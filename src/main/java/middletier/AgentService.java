@@ -93,6 +93,7 @@ public class AgentService {
         lineBuilder.append(loc[0]).append(FileExportHelper.COMMA);
         lineBuilder.append(loc[1]).append(FileExportHelper.LINE_SEPARATOR);
 
+        new File(baseOut).mkdirs();
         FileExportHelper.appendLineToFile(fileNameBuilder.toString(), lineBuilder.toString());
 
     }
@@ -102,7 +103,7 @@ public class AgentService {
 
         StringBuilder sb = new StringBuilder();
 
-        for (SkelatalAgent agent : agents) {
+        for (SkelatalAgent agent : agents) {    
             sb.append(AgentDataExtractor.getLineFromAgent(agent));
         }
 
