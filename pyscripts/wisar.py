@@ -38,6 +38,8 @@ def calcMetadata(singleFile, column, meanCenterLastPoint):
 		line.append(str(0))
 	else:
 		line.append(str(math.log(distance)))
+	
+	line.append( str(data[len(data)-1][0]) + ' , '+ str(data[len(data)-1][1]) ) 
 
 	metadataLine = ','.join(line) 
 
@@ -174,6 +176,8 @@ def makeHeader():
 	header.append('fractiondistbelowten')
 	header.append('distancetomeancenterlastpoint')
 	header.append('logdistance')
+	header.append('lastpointx')
+	header.append('lastpointy')
 	header.append('zscoretotaldistance')
 
 	return ','.join(header)
@@ -195,6 +199,8 @@ def makeStdvHeader():
 	header.append('standarddistancelastpoint')
 
 	header.append('ageragelogdistance')
+	header.append('lastpointx')
+	header.append('lastpointy')
 	header.append('averagezscore')
 
 	
@@ -255,6 +261,10 @@ def appendToStdvFile(inputfile, folder, outName, outputRoot):
 	line.append(str(averageColumn(5,data)))
 
 	line.append(str(averageColumn(6,data)))
+
+	line.append(str(averageColumn(7,data)))
+
+	line.append(str(averageColumn(8,data)))
 	
 
 
@@ -391,11 +401,11 @@ def runRouteSummary(outputRoot, spot):
 
 
 
-# outputRoot = 'C:/agentout/'
-# spot = "SPOT_1"
+outputRoot = 'C:/agentout/'
+spot = "SPOT_1"
 # runRouteSummary(outputRoot, spot)
-# runBehaviorSummary(outputRoot, spot)
+runBehaviorSummary(outputRoot, spot)
 
-processMergedAgentData('C:/agentout/mergedagentmetadata/', 'C:/agentout/combinedagentsummary.csv')
+# processMergedAgentData('C:/agentout/mergedagentmetadata/', 'C:/agentout/combinedagentsummary.csv')
 
 # todo: compare the last points of every route in a spot to see how different the algos are

@@ -14,6 +14,16 @@ def loadCsv(filename):
 
 	return theData
 
+def getCsvHeaderAsArray(filename):
+	openFile = open(filename, 'r')
+	someList = list(openFile)
+	openFile.close()
+	theData = []
+	firstRow  = someList[0]
+	lineParts = firstRow.split(',')	
+	
+	return lineParts
+
 def loadCsvStrings(filename):
 	openFile = open(filename, 'r')
 	someList = list(openFile)
@@ -96,6 +106,39 @@ def averageColumns(index, files):
 	return behaves
 
 
+
+# creates a file with all runs for one stat, by agent
+def mergeByStat(rootPath, column):
+	
+	folderList = os.listdir(rootPath)
+	
+	#outFileHandle = open(mergedFileName, 'a')
+	outFileHandle = None
+
+	masterData = []
+	for child in folderList:
+		if(os.path.isdir(rootPath + child )):
+			
+			oneMetaPath = getMetaDataPath(rootPath +child)
+
+			if outFileHandle == None:	
+				outname = rootPath + getCsvHeaderAsArray(oneMetaPath)[column]+'.csv'
+				if os.path.isfile(outname):
+					os.remove(outname)
+				outFileHandle = open(outname,'a')
+
+			
+
+			data = loadCsv(oneMetaPath)
+
+			outFileHandle.write(child+',')
+			for i in range(0, len(data)):
+				row = data[i]
+				outFileHandle.write(row[column]+',')
+
+			outFileHandle.write('\n')
+	outFileHandle.close()
+
 # starting point to merge all metadata, give it spot_1 level folder
 
 def mergeAllMetaDataFiles(outputRoot, spot, mergedFileName):
@@ -169,6 +212,16 @@ def getMetaData(folder):
 
 	return data
 
+def getMetaDataPath(parentFolder):
+	fileList = getFiles(parentFolder)
+	data = None
+	for i in range ( 0, len(fileList) ):
+		if(fileList[i][fileList[i].rfind('/')+1:] == 'metadata.csv'):
+			return fileList[i]
+
+	
+
+
 # given a list of dictionaries merge to key, n1, n2
 def mergeDictionaries(manyDicts):
 	masterDict = {}
@@ -186,6 +239,18 @@ def mergeDictionaries(manyDicts):
 # runner()
 #mergeAllMetaDataFiles('C:/agentout/', 'SPOT_1', 'C:/agentout/SPOT_1/allmetadata.csv')
 # mergeMetaFilesInFolderSet([ 'C:/agentout/SPOT_1/ROUTE_SAMPLER/', 'C:/agentout/SPOT_2/ROUTE_SAMPLER/'], 'C:/agentout/MERGED_ROUTE_SAMPLER.csv')
-mergeMetaResultsByAgent('C:/agentout/SPOT_1/', 'C:/agentout/SPOT_2/')
+#mergeMetaResultsByAgent('C:/agentout/SPOT_1/', 'C:/agentout/SPOT_2/')
+
+mergeByStat('C:/agentout/SPOT_1/', 1)
+mergeByStat('C:/agentout/SPOT_1/', 2)
+mergeByStat('C:/agentout/SPOT_1/', 4)
+mergeByStat('C:/agentout/SPOT_1/', 6)
+mergeByStat('C:/agentout/SPOT_1/', 7)
+
+mergeByStat('C:/agentout/SPOT_2/', 1)
+mergeByStat('C:/agentout/SPOT_2/', 2)
+mergeByStat('C:/agentout/SPOT_2/', 4)
+mergeByStat('C:/agentout/SPOT_2/', 6)
+mergeByStat('C:/agentout/SPOT_2/', 7)
 
 # g
