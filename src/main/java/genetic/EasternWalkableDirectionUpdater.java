@@ -25,16 +25,19 @@ public class EasternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
     
     @Override
     public String toString() {
-        return "east walkable";        
+        return "e_" + visrange + "_" +chanceHappening;        
     }
     
     // 16 for a moderately healty walker
     private int visrange = 10;
     private float chanceHappening = 0.5f;
+    private int dnaSequence= 0;
     
-    public EasternWalkableDirectionUpdater(int visrange, float chanceOfHappening){
+    public EasternWalkableDirectionUpdater(int visrange, float chanceOfHappening, int dnaSequence){
         this.visrange = visrange;
         this.chanceHappening = chanceOfHappening;
+        this.dnaSequence = dnaSequence;
+        
     }
     
     @Override
@@ -45,6 +48,8 @@ public class EasternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
         
         Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
         float[] loc = ownerAgent.getLocation();
+        
+                
         ArrayList<SlopeDataCell> visibleCells = raster.getVisibleCells((int) loc[0], (int) loc[1], visrange);
 
 //        raster.getEasternCutoutCells(visibleCells, (int)loc[0], (int)loc[1], 8);
@@ -53,8 +58,8 @@ public class EasternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
         
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
         
-        dxDy[0] = acceleration[0];
-        dxDy[1] = acceleration[1];
+        dxDy[0] += acceleration[0];
+        dxDy[1] += acceleration[1];
         
         
         

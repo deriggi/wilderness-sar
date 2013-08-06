@@ -17,6 +17,7 @@ import raster.domain.Raster2D;
 import raster.domain.agent.AgentName;
 import raster.domain.agent.IdLoc;
 import raster.domain.agent.SkelatalAgent;
+import strategy.DirectionUpdater;
 import strategy.WanderStrategy;
 import util.FileExportHelper;
 import util.WisarPaths;
@@ -378,16 +379,37 @@ public class AgentService {
         // strategery
         WanderStrategy wanderStrat = new WanderStrategy();
         wanderStrat.setName(behaviour.toString());
-//        wanderStrat.setConditionChecker(new AlmostOutOfBoundsConditionChecker());
         wanderStrat.addAllDirectinoUpdaters(FSMFactory.getMachine(behaviour));
 
-//        WanderStrategy goHomeStrategy = new WanderStrategy();
-//        goHomeStrategy.addAllDirectinoUpdaters(FSMFactory.getMachine(FSMFactory.MachineName.GO_TO_ORIGIN));
-//        goHomeStrategy.setConditionChecker(new NearOriginConditionChecker());
-//        goHomeStrategy.setName("GO_TO_ORIGIN");
 
         a.addMovementStrategy(wanderStrat);
-//        a.addMovementStrategy(goHomeStrategy);
+
+        return a;
+    }
+    
+    public SkelatalAgent createAgent(float column, float row, float speed, List<DirectionUpdater> dus, String simId) {
+        stopSim = false;
+
+        VectorAgent a = new VectorAgent();
+        a.setSpeed(speed);
+        a.setLocation(new float[]{column, row});
+        a.setOrigin(new float[]{column, row});
+        a.setId(getNextId());
+        a.setSimId(simId);
+
+        if (!agents.containsKey(simId)) {
+            agents.put(simId, new ArrayList<SkelatalAgent>());
+        }
+        agents.get(simId).add(a);
+        log.log(Level.INFO, "{0} agents in sim {1}", new String[]{Integer.toString(agents.get(simId).size()), simId});
+
+        // strategery
+        WanderStrategy wanderStrat = new WanderStrategy();
+        wanderStrat.setName("genetic");
+        wanderStrat.addAllDirectinoUpdaters(dus);
+
+
+        a.addMovementStrategy(wanderStrat);
 
         return a;
     }

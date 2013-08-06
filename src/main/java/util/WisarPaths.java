@@ -11,7 +11,7 @@ package util;
 public class WisarPaths {
     
     // the output folder for batch sims
-    public final static String AGENT_OUT = "C:\\agentout\\";
+    public final static String AGENT_OUT = "C:\\geneticagentout\\";
 //    public final static String AGENT_OUT = "/usr/share/agentout/";
     
     

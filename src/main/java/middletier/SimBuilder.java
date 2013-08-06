@@ -4,6 +4,8 @@
  */
 package middletier;
 
+import genetic.GeneticAgentMaker;
+import geomutils.VectorUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +22,7 @@ import raster.domain.Raster2D;
 import raster.domain.agent.AgentName;
 import raster.domain.agent.FSMFactory;
 import raster.domain.agent.SkelatalAgent;
+import strategy.DirectionUpdater;
 
 /**
  *
@@ -93,6 +98,29 @@ public class SimBuilder {
         }
     }
 
+    public  HashMap<String, Float> runGeneticVerboseAgent(String agentConfigId, List<DirectionUpdater> updaters,  int steps, BBox randomBox) {
+       
+        HashMap<String, Float> result = new HashMap<String, Float>();
+        
+//        String simId = SimId.getNewSimId();
+        double[] randy = getRandomPoint(randomBox);
+        
+        AgentService service = AgentService.get();
+        
+        Raster2D raster = RasterLoader.get(RasterConfig.BIG).getData();
+        float[] position = raster.getFloatPosition((float)randy[0], (float)randy[1]);
+        
+        SkelatalAgent agent=service.createAgent(position[0], position[1], 4.0f, updaters, agentConfigId);
+        agent.setNameTag(AgentName.UAV);
+        
+        AgentService.get().runForVerbose(agentConfigId, steps, "genetics", randomBox);
+        double dist = VectorUtils.distance(agent.getOrigin(), agent.getLocation());
+        result.put(agentConfigId, (float)dist);
+        
+        return result;
+    }
+    
+    
     private void runVerboseAgent(FSMFactory.MachineName machine, AgentName name, int steps, BBox randomBox) {
         // create an agent of each type
         String simId = SimId.getNewSimId();

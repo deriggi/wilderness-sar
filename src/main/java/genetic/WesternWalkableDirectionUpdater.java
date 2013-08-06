@@ -25,15 +25,17 @@ public class WesternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
 
     @Override
     public String toString() {
-        return "west walkable";
+        return "w_" + visrange + "_" +chanceHappening;
     }
     
     private int visrange = 10;
     private float chanceHappening = 0.5f;
+    private int dnaSequence = 0;
     
-    public WesternWalkableDirectionUpdater(int visrange, float chanceHappening){
+    public WesternWalkableDirectionUpdater(int visrange, float chanceHappening, int dnaSequence){
         this.visrange = visrange;
         this.chanceHappening = chanceHappening;
+        this.dnaSequence = dnaSequence;
     }
     
 
@@ -56,8 +58,8 @@ public class WesternWalkableDirectionUpdater extends SkelatalDirectionUpdater {
         // if acc is zero
 
 
-        dxDy[0] = acceleration[0];
-        dxDy[1] = acceleration[1];
+        dxDy[0] += acceleration[0];
+        dxDy[1] += acceleration[1];
 
 //        if (Math.abs(acceleration[0]) == 0 && Math.abs(acceleration[1]) == 0) {
 //

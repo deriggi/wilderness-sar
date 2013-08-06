@@ -25,14 +25,17 @@ public class SouthernWalkableDirectionUpdater extends SkelatalDirectionUpdater {
     
     @Override
     public String toString() {
-        return "east walkable";        
+        return "s_" + visrange + "_" +chanceHappening;        
     }
     
     private int visrange=  10;
     private float chanceHappening = 0.5f;
-    public SouthernWalkableDirectionUpdater(int visrange, float chanceHappening){
+    private int dnaSequence = 0;
+    
+    public SouthernWalkableDirectionUpdater(int visrange, float chanceHappening, int dnaSequence){
         this.visrange = visrange;
         this.chanceHappening = chanceHappening;
+        this.dnaSequence = dnaSequence;
     }
     
     @Override
@@ -50,8 +53,8 @@ public class SouthernWalkableDirectionUpdater extends SkelatalDirectionUpdater {
         
         float[] acceleration = raster.calculateForcesAgainst(new int[]{(int) loc[0], (int) loc[1]}, visibleCells);
         
-        dxDy[0] = acceleration[0];
-        dxDy[1] = acceleration[1];
+        dxDy[0] += acceleration[0];
+        dxDy[1] += acceleration[1];
         
         
         
