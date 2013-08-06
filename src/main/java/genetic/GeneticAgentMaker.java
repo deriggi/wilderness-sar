@@ -39,6 +39,31 @@ public class GeneticAgentMaker {
 
     }
 
+    public List<DirectionUpdater> spawnAgentFromName(String name){
+        
+        List<List<String>> elements = decodeName(name);
+        boolean[] dna = binaryStringFromNameElements(elements);
+        
+        return decode(dna);
+        
+    }
+    
+    public List<List<DirectionUpdater>> crossOver(String a, String b){
+        boolean[] encodedA = binaryStringFromNameElements(decodeName(a));
+        boolean[] encodedB = binaryStringFromNameElements(decodeName(b));
+        
+        boolean[][] children = crossover(encodedA, encodedB);
+        
+        
+        ArrayList<List<DirectionUpdater>> babies = new ArrayList<List<DirectionUpdater>>();
+        
+        babies.add(decode(children[0]));
+        babies.add(decode(children[1]));
+        
+        return babies;
+    }
+    
+    
     public static void main(String[] args) {
         GeneticAgentMaker gm = new GeneticAgentMaker();
         
@@ -212,7 +237,8 @@ public class GeneticAgentMaker {
         return listOfCodes;
     }
     
-    private void crossover(boolean[] dnaOne, boolean[] dnaTwo){
+    private boolean[][] crossover(boolean[] dnaOne, boolean[] dnaTwo){
+        boolean[][] babies = new boolean[2][17];
         double crossOverRate = Math.random();
         int fromIndex = (int)(dnaOne.length*crossOverRate);
         System.out.println("crossover inndex is " + fromIndex);
@@ -226,16 +252,9 @@ public class GeneticAgentMaker {
         boolean[] babyTwo = new boolean[dnaOne.length];
         System.arraycopy(dnaTwo, 0, babyTwo, 0, fromIndex);
         System.arraycopy(dnaOne, fromIndex, babyTwo, fromIndex, dnaOne.length - fromIndex);
-        
-        
-        for(boolean a : babyOne){
-            System.out.println(a);
-        }
-        System.out.println();
-        
-        
-        for(boolean b : babyTwo){
-            System.out.println(b);
-        }
+        babies[0] = babyOne;
+        babies[1] = babyTwo;
+        return babies;
+       
     }
 }
