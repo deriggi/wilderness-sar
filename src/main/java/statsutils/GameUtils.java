@@ -4,8 +4,6 @@
  */
 package statsutils;
 
-import java.util.logging.Logger;
-
 /**
  *
  * @author Johnny
