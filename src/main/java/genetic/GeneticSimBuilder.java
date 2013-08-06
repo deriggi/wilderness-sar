@@ -29,7 +29,7 @@ public class GeneticSimBuilder {
         SimBuilder sb = new SimBuilder();
         
         // create 500 agents
-        for(int i = 0;i  < 100; i++){
+        for(int i = 0;i  < 65; i++){
             population.add(god.makeRandomAgent());
         }
         
@@ -40,7 +40,7 @@ public class GeneticSimBuilder {
             
         }
         
-        List<DirectionUpdater> du = god.makeRandomAgent();
+       
         
         // run 500 agents
         
