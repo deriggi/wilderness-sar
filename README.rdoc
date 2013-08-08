@@ -9,14 +9,21 @@ To play with this code you should have Java 6 or 7. It is highly recommended tha
 Doing so will create two files: wisar.jar and wisar.war.  The jar can be used to run batch simulations. The war file is
 the web application
 
+=== Command Line Batch Mode
+Use this class SimBuilder[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/middletier/SimBuilder.java] to run a high volume of agents. Output will be sent to the output folder specified in WisarPaths[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/util/WisarPaths.java] 
+
+
+=== Genetic Algorithm
+After the basic terrain walking elements were constructed, a genetic algorithm was experimented with for its ability to generate a terrain walking agent.
+The core of the algorithm is here: GeneticAgentMaker[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/genetic/GeneticAgentMaker.java].
+The driver which runs the genetic algorithm is here: GeneticSimBuilder[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/genetic/GeneticSimBuilder.java]
+
+
 == Visualisations
 
 One of the metrics the agents use to decide when to change directions is the moving average of the dot-product of velocity: map[http://cdb.io/13kLToh]
 
-== Genetic Algorithm
-After the basic terrain walking elements were constructed, a genetic algorithm was experimented with for its ability to generate a terrain walking agent.
-The core of the algorithm is here: GeneticAgentMaker[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/genetic/GeneticAgentMaker.java].
-The driver which runs the genetic algorithm is here: GeneticSimBuilder[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/genetic/GeneticSimBuilder.java]
+
 
 == Abstract
 Search and rescue cases studies offer interesting insights into the thought process of a lost person. There is evidence 
