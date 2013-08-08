@@ -10,7 +10,7 @@ Doing so will create two files: wisar.jar and wisar.war.  The jar can be used to
 the web application
 
 === Live Web App
-I will keep this up for a couple weeks. At which point it it gets expensive i will see about putting it on a smaller machine, or shutting it down.
+The web app was used for watching agents move across the map. If you want to run a big simulation you should use the command line instead. I will keep this up for a couple weeks. At which point if it gets expensive I may put it on a smaller machine, or shut it down.
 If it does go down and you want to play with it then contact me at john.deriggi at gmail
 Live&nbsp;Web&nbsp;App[http://www.climateweb.co:8080/wisar/agentchooser/index.html]
 
