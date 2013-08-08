@@ -13,6 +13,9 @@ the web application
 
 One of the metrics the agents use to decide when to change directions is the moving average of the dot-product of velocity: map[http://cdb.io/13kLToh]
 
+== Genetic Algorithm
+After the basic terrain walking elements were constructed, a genetic algorithm was experimented with for its ability to generate a terrain walking agent.
+the driver for this algorithm is the GeneticAgentMaker[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/genetic/GeneticAgentMaker.java]
 
 == Abstract
 Search and rescue cases studies offer interesting insights into the thought process of a lost person. There is evidence 
