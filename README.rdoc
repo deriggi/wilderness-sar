@@ -12,7 +12,7 @@ the web application
 === Live Web App
 I will keep this up for a couple weeks. At which point it it gets expensive i will see about putting it on a smaller machine, or shutting it down.
 If it does go down and you want to play with it then contact me at john.deriggi at gmail
-(Live Web App)[http://www.climateweb.co:8080/wisar/agentchooser/index.html]
+Live&nbsp;Web&nbsp;App[http://www.climateweb.co:8080/wisar/agentchooser/index.html]
 
 === Command Line Batch Mode
 Use this class SimBuilder[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/middletier/SimBuilder.java] to run a high volume of agents. Output will be sent to the output folder specified in WisarPaths[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/util/WisarPaths.java] 
