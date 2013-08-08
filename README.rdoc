@@ -11,8 +11,7 @@ the web application
 
 == Visualisations
 
-One of the metrics the agents use to decide when to change directions is the moving average of the 
- dot-product of velocity: map[http://cdb.io/13kLToh]
+One of the metrics the agents use to decide when to change directions is the moving average of the dot-product of velocity: map[http://cdb.io/13kLToh]
 
 
 == Abstract
