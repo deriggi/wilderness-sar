@@ -10,9 +10,8 @@ Doing so will create two files: wisar.jar and wisar.war.  The jar can be used to
 the web application
 
 === Live Web App
-The web app was used for watching agents move across the map. If you want to run a big simulation you should use the command line instead. I will keep this up for a couple weeks. At which point if it gets expensive I may put it on a smaller machine, or shut it down.
-If it does go down and you want to play with it then contact me at john.deriggi at gmail
-Live&nbsp;Web&nbsp;App[http://www.climateweb.co:8080/wisar/agentchooser/index.html]
+I have disabled the live web app. If you would like to play with it let me know and I will turn it on again.
+Message me at john dot deriggi at gmail
 
 === Command Line Batch Mode
 Use this class SimBuilder[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/middletier/SimBuilder.java] to run a high volume of agents. Output will be sent to the output folder specified in WisarPaths[https://github.com/deriggi/wilderness-sar/blob/master/src/main/java/util/WisarPaths.java] 
